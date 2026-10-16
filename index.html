@@ -92,6 +92,7 @@ ol.guide{padding-left:20px;margin:6px 0;line-height:1.6;font-size:14.5px}
 <div class="bar"><div class="in">
   <div id="barActions" class="row"></div>
   <div class="tabs">
+    <button data-tab="delivery">배송</button>
     <button data-tab="plan" class="on">동선</button>
     <button data-tab="places">장소</button>
     <button data-tab="settings">설정</button>
@@ -139,10 +140,11 @@ function seed() {
 let S;
 try { S = JSON.parse(localStorage.getItem(LS_KEY)) || seed(); } catch(e) { S = seed(); }
 S.manual = S.manual || {}; S.cache = S.cache || {}; S.routeOpt = S.routeOpt || '0';
+S.dv = S.dv || {pass:'', data:null, tpl:null, localMap:{}, date:''}; S.dv.localMap = S.dv.localMap || {};
 const save = () => localStorage.setItem(LS_KEY, JSON.stringify(S));
 save();
 
-let tab = 'plan';
+let tab = S.tab || 'plan';
 const isDraft = () => !!(S.viewDraft && S.draft);
 const plan = () => isDraft() ? S.draft : (S.plans.find(p => p.id === S.cur) || S.plans[0]);
 const HERE = '__here';
@@ -256,6 +258,7 @@ async function fillMatrix(p, force=false, onProg) {
   for (const a of ids) for (const b of ids) if (a!==b) {
     if (a===endIdOf(p) && a!==p.startId) continue;
     if (b===p.startId && b!==endIdOf(p)) continue;
+    if (!place(a)?.lat || !place(b)?.lat) continue;
     if (force || !S.cache[a+'|'+b]) need.push([a,b]);
   }
   let n=0;
@@ -280,6 +283,7 @@ async function refineOrder(p, onProg) {
       const a=sc.pts[i], b=sc.pts[i+1];
       if (S.manual[a+'|'+b]!=null) continue;
       const depMin = i===0 ? sc.start : sc.rows[i-1].dep;
+      if (!place(a)?.lat || !place(b)?.lat) continue;
       S.cache[a+'|'+b] = await routeTime(a,b,isoKST(p.date,depMin));
       await sleep(120);
     }
@@ -372,6 +376,7 @@ function renderPlan(){
   const hasFixed = p.stops.some(s=>s.fixed);
   let h = '';
   const draft = isDraft();
+  if (p.kind==='dv') h += `<div class="row" style="margin-bottom:10px"><button class="btn sm ghost" data-act="dvBack">← 배송 목록</button><span class="muted">${esc(p.title)}</span></div>`;
   if (draft) {
     h += `<div class="card" style="background:#eef4ff;border:1px solid #c7d7fe"><div class="name">🔎 새 길찾기 <span class="muted" style="font-weight:400">· 아직 저장 안 됨</span></div>
       <div class="muted" style="margin-top:4px;line-height:1.5">${!p.stops.length ? '가야 할 목적지를 넣어 주세요. 여러 곳이면 하나씩 추가하면 돼요.' : (p.searched ? '길 찾기 결과예요. 바로 가려면 <b>티맵</b> 버튼, 계속 쓸 동선이면 <b>저장</b>, 조회만 했으면 <b>닫기</b>를 눌러 주세요.' : '목적지를 다 넣었으면 아래 <b>길 찾기</b>를 눌러 주세요.')}</div></div>`;
@@ -413,6 +418,11 @@ function renderPlan(){
         ${r&&r.wait>0.5?`<span class="bdg wait">${Math.round(r.wait)}분 일찍 도착 (대기)</span>`:''}
         ${r&&r.late>0.5?`<span class="bdg late">${Math.round(r.late)}분 늦음</span>`:''}
         ${s.memo?`<span class="bdg">📝 ${esc(s.memo)}</span>`:''}
+        ${s.noSlip?`<span class="bdg late">이번 주 전표 없음</span>`:''}
+        ${place(s.placeId)&&!place(s.placeId).lat?`<span class="bdg late">주소 없음 · 장소에서 입력</span>`:''}
+      </div>
+      ${s.items&&s.items.length?`<details style="margin-top:6px"><summary class="muted" style="cursor:pointer">📦 배송 품목 ${s.items.length}종 (이카운트)</summary><div style="font-size:13.5px;line-height:1.6;margin-top:4px">${s.items.map(it=>`· ${esc(it[0])} <b>${esc(it[1])}</b>${it[2]?` <span class="muted">(${esc(it[2].slice(5).replace('-','/'))} 전표)</span>`:''}`).join('<br>')}</div></details>`:''}
+      <div>
       </div>
       <div class="acts">
         <button class="btn sm ghost" data-act="up" data-i="${i}" ${i===0?'disabled':''}>▲</button>
@@ -489,8 +499,171 @@ function renderSettings(){
 
 function render(){
   renderPlanSel();
+  if (S.tab !== tab) { S.tab = tab; save(); }
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on', b.dataset.tab===tab));
-  if (tab==='plan') renderPlan(); else if (tab==='places') renderPlaces(); else renderSettings();
+  if (tab==='plan') renderPlan(); else if (tab==='places') renderPlaces(); else if (tab==='delivery') renderDelivery(); else renderSettings();
+}
+
+// ================= 배송 코스 (이카운트 판매전표 기준) =================
+const DV = {state:'idle', enc:null, msg:''};
+const WD = '일월화수목금토';
+const wdOf = d => new Date(d+'T00:00:00').getDay();
+const md = d => d.slice(5).replace('-','/') + '(' + WD[wdOf(d)] + ')';
+const addDays = (d,n) => { const x = new Date(d+'T00:00:00'); x.setDate(x.getDate()+n); return x.getFullYear()+'-'+pad(x.getMonth()+1)+'-'+pad(x.getDate()); };
+const b64u = s => Uint8Array.from(atob(s), c=>c.charCodeAt(0));
+async function dvDecrypt(enc, pass){
+  const te = new TextEncoder();
+  const base = await crypto.subtle.importKey('raw', te.encode(pass), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey({name:'PBKDF2', salt:b64u(enc.salt), iterations:200000, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['decrypt']);
+  const pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:b64u(enc.iv)}, key, b64u(enc.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+async function dvLoad(){
+  DV.state = 'loading';
+  try {
+    const r = await fetch('delivery.enc.json?t='+Date.now(), {cache:'no-store'});
+    if (!r.ok) throw new Error('파일 없음');
+    DV.enc = await r.json();
+  } catch(e) { DV.state = S.dv.data ? 'ok' : 'fail'; DV.msg = '배송 자료를 못 불러왔어요 (인터넷 연결 확인)'; return; }
+  if (!S.dv.pass) { DV.state = 'needpass'; return; }
+  try { S.dv.data = await dvDecrypt(DV.enc, S.dv.pass); dvSyncPlaces(); save(); DV.state = 'ok'; }
+  catch(e) { DV.state = 'needpass'; DV.msg = '암호가 맞지 않아요'; S.dv.pass = ''; save(); }
+}
+function dvSyncPlaces(){
+  const d = S.dv.data; if (!d) return;
+  for (const m of d.places) {
+    const id = 'dv_'+m.id; let P = place(id);
+    if (!P) { P = {id}; S.places.push(P); }
+    if (P.userEdited) { P.ecount = m.ecount; P.alias = m.alias; continue; }
+    Object.assign(P, {name: m.depot ? '빵을그리다 (출발·복귀)' : m.short, addr: m.addr || '(주소 확인 필요)', lat: m.lat, lon: m.lon, dv:true, ecount:m.ecount, alias:m.alias, note:m.note, conf:m.conf});
+  }
+}
+const dvDepot = () => 'dv_depot';
+function custPlace(c){ const d = S.dv.data; const id = S.dv.localMap[c] || (d?.custMap?.[c] ? 'dv_'+d.custMap[c] : null); return id && place(id) ? id : null; }
+function dvTpl(wd){
+  if (S.dv.tpl && S.dv.tpl[wd]) return S.dv.tpl[wd];
+  return (S.dv.data?.template?.[wd] || []).map(r => ({run:r.run, ids:r.ids.map(i=>'dv_'+i)}));
+}
+function weekRange(D){ const w = wdOf(D); const mon = addDays(D, w===0 ? -6 : 1-w); return [mon, addDays(mon,6)]; }
+// 그 주(월~일) 이카운트 판매전표 업체별 묶음
+function weekCusts(D){
+  const [a,b] = weekRange(D); const out = {};
+  const slips = S.dv.data?.slips || {};
+  for (const d of Object.keys(slips).sort()) { if (d < a || d > b) continue;
+    for (const [c, items] of Object.entries(slips[d])) { const o = out[c] ||= {cust:c, dates:[], items:[], placeId:custPlace(c)}; if (!o.dates.includes(d)) o.dates.push(d); items.forEach(it=>o.items.push([it[0], it[1], d])); }
+  }
+  return out;
+}
+const dvPlans = D => S.plans.filter(p => p.kind==='dv' && p.dvDate===D);
+function itemsFor(placeId, D){ const wk = weekCusts(D); const hit = Object.values(wk).filter(o=>o.placeId===placeId); return hit.flatMap(o=>o.items); }
+function newDvPlan(D, run, stops){
+  const p = {id:uid(), kind:'dv', dvDate:D, run, title:`${md(D)} ${run} 배송`, date:D, startId:dvDepot(), endId:'', startTime: /오후/.test(run) ? '13:00' : '08:30', stops: stops||[]};
+  S.plans.push(p); return p;
+}
+function dvMakeDefault(D){
+  const wk = weekCusts(D); const byPlace = {};
+  Object.values(wk).forEach(o => { if (o.placeId) (byPlace[o.placeId] ||= []).push(...o.items); });
+  const tpl = dvTpl(String(wdOf(D)));
+  if (!tpl.length) { newDvPlan(D, '배송', []); return 0; }
+  let n = 0;
+  for (const r of tpl) {
+    const stops = r.ids.filter(id=>place(id)).map(id => ({id:uid(), placeId:id, stay:10, fixed:'', lock:false, memo:'', items: byPlace[id]||[], noSlip: !byPlace[id]}));
+    n += stops.length; newDvPlan(D, r.run, stops);
+  }
+  return n;
+}
+function renderDelivery(){
+  let h = '';
+  $('#barActions').innerHTML = '';
+  if (!S.dv.data) {
+    if (DV.state === 'loading' || DV.state === 'idle') { h = '<div class="empty"><span class="spin"></span> 배송 자료 불러오는 중…</div>'; if (DV.state==='idle') dvLoad().then(render); }
+    else if (DV.state === 'needpass') h = `<div class="card"><b>빵을그리다 배송 코스</b><div class="muted" style="margin-top:4px">직원용 암호를 한 번만 넣으면 이 휴대폰에서 계속 볼 수 있어요.</div>
+      ${DV.msg?`<div class="warn" style="margin-top:10px">${esc(DV.msg)}</div>`:''}
+      <input class="inp" id="dvPass" type="password" placeholder="배송 자료 암호" style="margin-top:10px"><button class="btn primary" style="width:100%;margin-top:8px" data-act="dvPass">확인</button></div>`;
+    else h = `<div class="card"><div class="warn">${esc(DV.msg||'배송 자료를 못 불러왔어요')}</div><button class="btn" data-act="dvReload">다시 시도</button></div>`;
+    $('#main').innerHTML = h; return;
+  }
+  const D = S.dv.date || todayStr();
+  const [wa, wb] = weekRange(D);
+  h += `<div class="card"><div class="row"><div class="grow"><b>배송 코스</b><div class="muted">이카운트 판매전표 기준 · ${esc(S.dv.data.updated)} 자료</div></div><button class="btn sm ghost" data-act="dvReload">새로고침</button></div>
+    <div class="row" style="margin-top:10px"><button class="btn ghost" data-act="dvPrev">◀</button><input type="date" class="inp grow" id="dvDate" value="${D}"><span style="font-weight:800;font-size:17px">${WD[wdOf(D)]}</span><button class="btn ghost" data-act="dvNext">▶</button></div></div>`;
+  const plans = dvPlans(D);
+  if (!plans.length) {
+    const tpl = dvTpl(String(wdOf(D)));
+    h += `<div class="card"><b>${md(D)} 코스가 아직 없어요</b><div class="muted" style="margin-top:4px;line-height:1.5">${tpl.length ? `${WD[wdOf(D)]}요일 기본 코스(${tpl.map(r=>esc(r.run)+' '+r.ids.length+'곳').join(', ')})에 이번 주 전표 품목을 붙여서 만들어요.` : `${WD[wdOf(D)]}요일 기본 코스가 없어요. 빈 코스를 만든 뒤 아래 전표 업체를 넣어 주세요.`}</div>
+      <button class="btn primary" style="width:100%;margin-top:10px" data-act="dvMake">${tpl.length?'기본 코스 만들기':'빈 코스 만들기'}</button></div>`;
+  } else {
+    for (const p of plans) {
+      const sc = schedule(p, p.stops);
+      h += `<div class="card"><div class="row"><div class="grow"><div class="name">${esc(p.run)} 코스 <span class="muted" style="font-weight:400">· ${p.stops.length}곳</span></div>
+        <div class="muted">${sc.missing ? '시간 미계산 (코스 보기에서 계산)' : `${min2hm(sc.start)} 출발 → ${min2hm(sc.end)} 복귀 · ${sc.dist?kmTxt(sc.dist):''}`}</div></div>
+        <button class="btn sm primary" data-act="dvOpen" data-id="${p.id}">코스 보기·수정</button></div>
+        <div style="margin-top:8px;line-height:1.9">${p.stops.map((s,i)=>`<span class="bdg ${s.noSlip||!place(s.placeId)?.lat?'late':''}">${i+1}. ${esc(pname(s.placeId))}</span>`).join(' ') || '<span class="muted">아직 들를 곳이 없어요</span>'}</div>
+        <div class="acts"><button class="btn sm ghost" data-act="dvTpl" data-id="${p.id}">${WD[wdOf(D)]}요일 기본 코스로 저장</button><button class="btn sm ghost" data-act="dvRename" data-id="${p.id}">이름</button><button class="btn sm danger" data-act="dvDel" data-id="${p.id}">코스 삭제</button></div></div>`;
+    }
+    h += `<button class="btn ghost" style="width:100%;margin-bottom:10px" data-act="dvAddRun">＋ 코스 추가 (예: 오후)</button>`;
+  }
+  // 업체명으로 넣기
+  h += `<div class="card"><b>업체명으로 코스에 넣기</b><div class="muted" style="margin-top:2px">줄임말도 돼요 (예: 오월, 더티, 테블). 주소는 자동으로 붙어요.</div>
+    <input class="inp" id="dvQ" placeholder="업체명 입력" style="margin-top:8px" autocomplete="off"><div id="dvQres"></div></div>`;
+  // 이번 주 전표 업체
+  const wk = Object.values(weekCusts(D));
+  const inCourse = {}; plans.forEach(p => p.stops.forEach((s,i) => inCourse[s.placeId] = `${p.run} ${i+1}번`));
+  const known = wk.filter(o=>o.placeId).sort((a,b)=>a.dates[0].localeCompare(b.dates[0]));
+  const unknown = wk.filter(o=>!o.placeId).sort((a,b)=>a.cust.localeCompare(b.cust,'ko'));
+  const rowHtml = o => `<div class="it"><div class="grow"><div class="name" style="font-size:15.5px">${esc(o.placeId?pname(o.placeId):o.cust)}</div>
+      <div class="muted">${o.dates.map(md).join(', ')} 전표 · 품목 ${o.items.length}종${o.placeId?'':' · '+esc(o.cust)}</div></div>
+      ${o.placeId ? (inCourse[o.placeId] ? `<span class="bdg wait">✓ ${esc(inCourse[o.placeId])}</span>` : `<button class="btn sm" data-act="dvAddPlace" data-pid="${o.placeId}">코스에 넣기</button>`)
+        : `<button class="btn sm ghost" data-act="dvReg" data-cust="${esc(o.cust)}">배송처 등록</button>`}</div>`;
+  h += `<div class="card list"><b>이번 주 이카운트 전표 업체</b><div class="muted">${md(wa)} ~ ${md(wb)} · 배송처 ${known.length}곳</div>
+    ${known.map(rowHtml).join('') || '<div class="empty">이번 주 배송처 전표가 없어요</div>'}
+    ${unknown.length?`<details style="margin-top:8px"><summary style="font-weight:700;cursor:pointer">주소 등록 안 된 업체 ${unknown.length}곳 (택배 등)</summary>${unknown.map(rowHtml).join('')}</details>`:''}</div>`;
+  $('#main').innerHTML = h;
+  $('#dvDate').onchange = e => { S.dv.date = e.target.value; save(); render(); };
+  $('#dvQ').oninput = e => dvQuery(e.target.value.trim(), D);
+}
+function dvQuery(q, D){
+  const box = $('#dvQres'); if (!q) { box.innerHTML=''; return; }
+  const norm = s => String(s||'').replace(/\s|\(.*?\)|_N\d+|SD_[^_]+_|주식회사|㈜|\(주\)/g,'');
+  const qn = norm(q);
+  const hits = S.places.filter(P => P.dv && !/depot/.test(P.id) && [P.name, P.ecount, ...(P.alias||[])].some(x => norm(x).includes(qn) || (qn.length>=2 && qn.includes(norm(x)) && norm(x).length>=2)));
+  const allCust = new Set(); Object.values(S.dv.data.slips).forEach(o => Object.keys(o).forEach(c => allCust.add(c)));
+  const custHits = [...allCust].filter(c => !custPlace(c) && norm(c).includes(qn)).slice(0,6);
+  box.innerHTML = `<div class="list">${hits.map(P=>`<div class="it"><div class="grow"><div class="name" style="font-size:15.5px">${esc(P.name)}</div><div class="muted">${esc(P.addr)}</div></div><button class="btn sm primary" data-act="dvAddPlace" data-pid="${P.id}">넣기</button></div>`).join('')}
+    ${custHits.map(c=>`<div class="it"><div class="grow"><div class="name" style="font-size:15.5px">${esc(c)}</div><div class="muted">이카운트 거래처 · 주소 미등록</div></div><button class="btn sm ghost" data-act="dvReg" data-cust="${esc(c)}">배송처 등록</button></div>`).join('')}
+    ${!hits.length && !custHits.length ? `<div class="it"><div class="grow muted">맞는 업체가 없어요</div><button class="btn sm ghost" data-act="dvReg" data-cust="${esc(q)}">새 배송처 등록</button></div>`:''}</div>`;
+}
+function dvChooseRun(D, cb){
+  const plans = dvPlans(D);
+  if (!plans.length) { cb(newDvPlan(D, '배송', [])); return; }
+  if (plans.length === 1) { cb(plans[0]); return; }
+  openSheet(`<h2>어느 코스에 넣을까요?</h2>${plans.map(p=>`<button class="btn" style="width:100%;margin-bottom:8px" data-run="${p.id}">${esc(p.run)} 코스 (${p.stops.length}곳)</button>`).join('')}<button class="btn ghost" style="width:100%" id="rc">취소</button>`);
+  $('#rc').onclick = closeSheet;
+  $('#sheet').querySelectorAll('[data-run]').forEach(b => b.onclick = () => { closeSheet(); cb(S.plans.find(p=>p.id===b.dataset.run)); });
+}
+function dvAddPlace(pid, D){
+  dvChooseRun(D, p => {
+    if (p.stops.some(s=>s.placeId===pid)) { toast('이미 그 코스에 있어요'); return; }
+    const items = itemsFor(pid, D);
+    p.stops.push({id:uid(), placeId:pid, stay:10, fixed:'', lock:false, memo:'', items, noSlip:!items.length});
+    save(); render(); toast(`${pname(pid)} → ${p.run} 코스 ${p.stops.length}번째로 넣었어요`);
+  });
+}
+function dvRegister(cust, D){
+  const short = cust.replace(/^SD_[^_]+_/,'').replace(/^\([^)]*\)\s*/,'').replace(/_N\d+$/,'').replace(/주식회사\s*|\(주\)|㈜/g,'').trim();
+  openSheet(`<h2>배송처 등록</h2><div class="muted">이카운트 거래처: ${esc(cust)}</div>
+    <label class="f">부르는 이름</label><input class="inp" id="rn" value="${esc(short)}">
+    <div class="muted" style="margin-top:10px">주소는 다음 화면에서 검색해서 골라요.</div>
+    <div class="row" style="margin-top:14px"><button class="btn ghost grow" id="rcc">취소</button><button class="btn primary grow" id="rok">주소 찾기</button></div>`);
+  $('#rcc').onclick = closeSheet;
+  $('#rok').onclick = () => {
+    const nm = $('#rn').value.trim() || short;
+    pickPlace(`‘${nm}’ 주소 찾기`, id => {
+      const P = place(id); P.dv = true; P.ecount = cust; P.alias = [nm]; P.name = nm; delete P.temp; P.userEdited = true;
+      S.dv.localMap[cust] = id; save(); toast('배송처로 등록했어요'); dvAddPlace(id, D);
+    });
+    setTimeout(()=>{ const q=$('#pq'); if(q){ q.value = nm; } }, 60);
+  };
 }
 
 // ---------- 시트(팝업) ----------
@@ -585,10 +758,22 @@ function editPlace(id){
   openSheet(`<h2>장소 수정</h2>
     <label class="f">이름</label><input class="inp" id="pn" value="${esc(P.name)}">
     <label class="f">주소 (메모용)</label><input class="inp" id="pa" value="${esc(P.addr||'')}">
-    <div class="muted" style="margin-top:8px">${P.lat?'위치: '+P.lat.toFixed(5)+', '+P.lon.toFixed(5):'위치 정보 없음'}</div>
+    <div class="row" style="margin-top:8px"><div class="muted grow" id="pll">${P.lat?'위치: '+P.lat.toFixed(5)+', '+P.lon.toFixed(5):'위치 정보 없음'}</div><button class="btn sm" id="pgeo">주소로 위치 찾기</button></div>
+    ${P.ecount?`<div class="muted" style="margin-top:6px">이카운트 거래처명: ${esc(P.ecount)}</div>`:''}${P.note?`<div class="muted" style="margin-top:4px">참고: ${esc(P.note)}</div>`:''}
     <div class="row" style="margin-top:14px"><button class="btn danger" id="pd">삭제</button><button class="btn ghost grow" id="pc">취소</button><button class="btn primary grow" id="ps">저장</button></div>`);
   $('#pc').onclick = closeSheet;
-  $('#ps').onclick = () => { const o=place(id); o.name=$('#pn').value.trim()||o.name; o.addr=$('#pa').value.trim(); save(); closeSheet(); render(); };
+  let newLL = null;
+  $('#pgeo').onclick = async () => {
+    if (!S.key) { toast('설정에서 티맵 연결 키를 먼저 넣어 주세요'); return; }
+    const q = $('#pa').value.trim(); if (!q) { toast('주소를 먼저 입력해 주세요'); return; }
+    $('#pll').innerHTML = '<span class="spin"></span> 찾는 중…';
+    try {
+      const g = await tmapFetch(`/geo/fullAddrGeo?version=1&coordType=WGS84GEO&fullAddr=${encodeURIComponent(q)}`, {headers:{'Content-Type':'text/plain'}});
+      const c = g?.coordinateInfo?.coordinate?.[0]; const lat=+(c?.newLatEntr||c?.newLat||c?.latEntr||c?.lat), lon=+(c?.newLonEntr||c?.newLon||c?.lonEntr||c?.lon);
+      if (!lat) throw new Error('못 찾음'); newLL = {lat, lon}; $('#pll').textContent = '새 위치: '+lat.toFixed(5)+', '+lon.toFixed(5)+' (저장을 눌러야 반영)';
+    } catch(e) { $('#pll').textContent = '위치를 못 찾았어요. 도로명 주소로 다시 입력해 보세요'; }
+  };
+  $('#ps').onclick = () => { const o=place(id); o.name=$('#pn').value.trim()||o.name; o.addr=$('#pa').value.trim(); if (newLL) { o.lat=newLL.lat; o.lon=newLL.lon; for (const k in S.cache) if (k.split('|').includes(id)) delete S.cache[k]; } o.userEdited = true; save(); closeSheet(); render(); };
   $('#pd').onclick = () => {
     const used = S.plans.some(p=>p.startId===id||p.endId===id||p.stops.some(s=>s.placeId===id));
     if (used && !confirm('이 장소를 쓰는 동선이 있어요. 그래도 삭제할까요? (그 동선에서도 빠져요)')) return;
@@ -634,6 +819,21 @@ document.addEventListener('click', async e => {
   else if (act==='addStop') { if (isDraft()) addDestination(); else editStop(null,true); }
   else if (act==='findRoute') await findRoute();
   else if (act==='newDraft') startDraft();
+  else if (act==='dvPass') { const v = $('#dvPass').value.trim(); if (!v) return; S.dv.pass = v; DV.msg=''; save(); $('#main').innerHTML='<div class="empty"><span class="spin"></span> 확인 중…</div>'; await dvLoad(); render(); if (S.dv.data) toast('배송 자료를 불러왔어요'); }
+  else if (act==='dvReload') { $('#main').innerHTML='<div class="empty"><span class="spin"></span> 불러오는 중…</div>'; await dvLoad(); render(); toast(DV.state==='ok'?'최신 자료로 바꿨어요 ('+S.dv.data.updated+')':(DV.msg||'불러오지 못했어요')); }
+  else if (act==='dvPrev' || act==='dvNext') { S.dv.date = addDays(S.dv.date||todayStr(), act==='dvPrev'?-1:1); save(); render(); }
+  else if (act==='dvMake') { const D = S.dv.date||todayStr(); const n = dvMakeDefault(D); save(); render(); toast(n?`기본 코스를 만들었어요 (${n}곳)`:'빈 코스를 만들었어요. 아래에서 업체를 넣어 주세요'); }
+  else if (act==='dvOpen') { S.cur = t.dataset.id; S.viewDraft = false; tab='plan'; save(); render(); window.scrollTo(0,0); }
+  else if (act==='dvBack') { tab='delivery'; S.dv.date = p.dvDate || S.dv.date; save(); render(); window.scrollTo(0,0); }
+  else if (act==='dvTpl') { const dp = S.plans.find(x=>x.id===t.dataset.id); const wd = String(wdOf(dp.dvDate));
+    S.dv.tpl = S.dv.tpl || {}; const cur = dvTpl(wd).map(r=>({run:r.run, ids:r.ids.slice()}));
+    const runs = dvPlans(dp.dvDate).map(x=>({run:x.run, ids:x.stops.map(s=>s.placeId)}));
+    S.dv.tpl[wd] = runs.length ? runs : cur; save(); toast(`${WD[wdOf(dp.dvDate)]}요일 기본 코스로 저장했어요 (다음 주부터 이 순서로 만들어져요)`, 4000); }
+  else if (act==='dvRename') { const dp = S.plans.find(x=>x.id===t.dataset.id); const v = prompt('코스 이름 (예: 오전, 오후, 2차)', dp.run); if (v) { dp.run = v.trim(); dp.title = `${md(dp.dvDate)} ${dp.run} 배송`; save(); render(); } }
+  else if (act==='dvDel') { const dp = S.plans.find(x=>x.id===t.dataset.id); if (confirm(`${dp.run} 코스를 삭제할까요?`)) { S.plans = S.plans.filter(x=>x.id!==dp.id); if (S.cur===dp.id) S.cur = S.plans[0]?.id||''; save(); render(); } }
+  else if (act==='dvAddRun') { const D = S.dv.date||todayStr(); const v = prompt('새 코스 이름 (예: 오후, 2차)', '오후'); if (v) { newDvPlan(D, v.trim(), []); save(); render(); } }
+  else if (act==='dvAddPlace') dvAddPlace(t.dataset.pid, S.dv.date||todayStr());
+  else if (act==='dvReg') dvRegister(t.dataset.cust, S.dv.date||todayStr());
   else if (act==='saveDraft') saveDraft();
   else if (act==='closeDraft') closeDraft();
   else if (act==='pickStart') pickPlace('출발지 고르기', async id=>{ p.startId=id; if(isDraft()) p.searched=false; save(); render(); if(S.key && p.stops.length) await (isDraft()?findRoute():ensureTimes(false)); }, true);
@@ -678,7 +878,7 @@ async function doOptimize(quiet){
     if (missingAny) { if (!S.key) { toast('시간을 모르는 구간이 있어요. 키를 넣거나 구간 시간을 직접 입력해 주세요', 4000); return; } await ensureTimes(false); }
     sc0 = schedule(p,p.stops);
     const best = bestOrder(p);
-    if (!best) { toast('계산할 수 없어요. 구간 시간을 확인해 주세요'); return; }
+    if (!best) { const noLL = [p.startId, ...p.stops.map(s=>s.placeId)].filter(id=>!place(id)?.lat).map(pname); toast(noLL.length ? `주소(위치)가 없는 곳이 있어요: ${noLL.join(', ')}. 장소 탭에서 주소를 넣거나 구간 시간을 직접 입력해 주세요` : '계산할 수 없어요. 구간 시간을 확인해 주세요', 5000); return; }
     const diff = sc0.missing ? 0 : Math.round(sc0.total - best.sc.total);
     p.stops = best.order; save();
     if (S.key) await ensureTimes(false); else render();
@@ -714,6 +914,7 @@ $('#planMenuBtn').onclick = () => {
 };
 
 render();
+if (S.dv.pass) dvLoad().then(() => { if (tab==='delivery') render(); });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>

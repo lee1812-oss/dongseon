@@ -18,6 +18,12 @@ function setup() {
   setPass('2580');
   Logger.log('SS_URL ' + SpreadsheetApp.openById(id).getUrl());
 }
+function photoFolder_() {
+  const p = PropertiesService.getScriptProperties(); const id = p.getProperty('PHOTO_DIR');
+  if (id) { try { return DriveApp.getFolderById(id); } catch (e) { } }
+  const f = DriveApp.createFolder('빵을그리다 배송 완료 사진 (앱 자동)'); p.setProperty('PHOTO_DIR', f.getId()); return f;
+}
+function setupPhoto() { Logger.log('PHOTO_DIR ' + photoFolder_().getUrl()); }
 function setPass(pass) { PropertiesService.getScriptProperties().setProperty('TOKEN', sha_('dongseon|' + pass)); }
 function sha_(s) { return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, s, Utilities.Charset.UTF_8).map(function (b) { return ('0' + (b & 255).toString(16)).slice(-2); }).join(''); }
 function out_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
@@ -41,6 +47,14 @@ function handle_(b) {
   if (!b.token || b.token !== p.getProperty('TOKEN')) return out_({ ok: false, err: 'auth' });
   const sh = ss_().getSheetByName('store');
   if (b.op === 'ping') return out_({ ok: true, now: Date.now() });
+  if (b.op === 'photo') {
+    // 배송 완료 사진: base64 JPEG → 구글 드라이브 폴더 저장, 링크 공유(보기 전용)
+    const data = String(b.data || ''); if (!data || data.length > 4000000) return out_({ ok: false, err: 'size' });
+    const blob = Utilities.newBlob(Utilities.base64Decode(data), 'image/jpeg', String(b.name || ('photo_' + Date.now())) + '.jpg');
+    const f = photoFolder_().createFile(blob);
+    f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    return out_({ ok: true, id: f.getId(), url: 'https://drive.google.com/file/d/' + f.getId() + '/view', thumb: 'https://drive.google.com/thumbnail?id=' + f.getId() + '&sz=w600' });
+  }
   if (b.op === 'get') {
     const all = readAll_(sh); const keys = String(b.keys || '').split(',').filter(String); const res = {};
     keys.forEach(function (k) { if (all[k]) res[k] = { value: JSON.parse(all[k].value), at: all[k].at, by: all[k].by }; });

@@ -658,7 +658,7 @@ async function syncPull(D, force){
     if (d['day:'+D] && d['day:'+D].value) {
       if (!dirty && d['day:'+D].at !== S.dv.dayAt[D]) { const before = daySig(D); applyDay(D, d['day:'+D].value.runs||[]); S.dv.dayAt[D] = d['day:'+D].at; changed = changed || before !== S.dv.sig[D]; }
     } else if (dvPlans(D).length && !dirty) { S.dv.sig[D] = '__'; syncWatch(); }
-    const ck = d['chk:'+D]?.value || {}; if (JSON.stringify(ck) !== JSON.stringify(S.dv.chk[D]||{})) { S.dv.chk[D] = ck; changed = true; }
+    const ck = d['chk:'+D]?.value || {}; if (!(SY.pend?.[D] > 0) && JSON.stringify(ck) !== JSON.stringify(S.dv.chk[D]||{})) { S.dv.chk[D] = ck; changed = true; }
     if (d.tpl?.value && JSON.stringify(d.tpl.value) !== JSON.stringify(S.dv.tpl)) { S.dv.tpl = d.tpl.value; changed = true; }
     for (const [id, v] of Object.entries(d.places?.value || {})) { let P = place(id); if (!P) { P = {id, dv:true}; S.places.push(P); } const nv = {name:v.name, addr:v.addr, lat:v.lat, lon:v.lon, ecount:v.ecount||P.ecount, alias:v.alias||P.alias, dv:true, userEdited:true}; if (JSON.stringify([P.name,P.addr,P.lat,P.lon]) !== JSON.stringify([nv.name,nv.addr,nv.lat,nv.lon])) { Object.assign(P, nv); changed = true; } }
     for (const [c, id] of Object.entries(d.cmap?.value || {})) if (S.dv.localMap[c] !== id) { S.dv.localMap[c] = id; changed = true; }
@@ -677,7 +677,8 @@ function chkSet(D, path, val){
   const [grp, key] = path; ck[grp] = ck[grp] || {};
   if (val === null) delete ck[grp][key]; else ck[grp][key] = val;
   localStorage.setItem(LS_KEY, JSON.stringify(S));
-  syncMerge('chk:'+D, {[grp]: {[key]: val}});
+  SY.pend = SY.pend || {}; SY.pend[D] = (SY.pend[D]||0) + 1;
+  syncMerge('chk:'+D, {[grp]: {[key]: val}}).finally(() => { SY.pend[D]--; });
 }
 // 20초마다 새로 받기 (화면이 켜져 있고 배송·출고·배송코스 화면일 때)
 setInterval(() => {

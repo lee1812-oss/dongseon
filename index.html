@@ -18,8 +18,9 @@ button,input,select{font:inherit}
 header{position:sticky;top:0;z-index:5;background:var(--blue);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 14px 10px}
 header .row{display:flex;align-items:center;gap:8px;max-width:640px;margin:0 auto}
 header h1{font-size:19px;margin:0;flex:1}
-header select{max-width:62vw;border:0;border-radius:10px;padding:7px 10px;background:rgba(255,255,255,.18);color:#fff}
+header select{max-width:44vw;border:0;border-radius:10px;padding:7px 10px;background:rgba(255,255,255,.18);color:#fff}
 header select option{color:#000}
+@media (max-width:440px){ header h1{display:none} header select{flex:1;max-width:none;min-width:0} .iconbtn{padding:7px 9px} }
 .iconbtn{border:0;background:rgba(255,255,255,.18);color:#fff;border-radius:10px;padding:7px 11px;font-weight:700}
 main{padding:12px 12px 150px;max-width:640px;margin:0 auto}
 .card{background:#fff;border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(16,24,40,.06)}
@@ -82,6 +83,7 @@ ol.guide{padding-left:20px;margin:6px 0;line-height:1.6;font-size:14.5px}
   <div class="row">
     <h1>내 동선</h1>
     <select id="planSel" aria-label="동선 선택"></select>
+    <button class="iconbtn" id="newBtn" aria-label="새 길찾기">＋ 길찾기</button>
     <button class="iconbtn" id="planMenuBtn" aria-label="동선 메뉴">⋯</button>
   </div>
 </header>
@@ -141,7 +143,9 @@ const save = () => localStorage.setItem(LS_KEY, JSON.stringify(S));
 save();
 
 let tab = 'plan';
-const plan = () => S.plans.find(p => p.id === S.cur) || S.plans[0];
+const isDraft = () => !!(S.viewDraft && S.draft);
+const plan = () => isDraft() ? S.draft : (S.plans.find(p => p.id === S.cur) || S.plans[0]);
+const HERE = '__here';
 const place = id => S.places.find(p => p.id === id);
 const pname = id => place(id)?.name || '(삭제된 장소)';
 
@@ -163,7 +167,8 @@ function endIdOf(p){ return p.endId || p.startId; }
 
 // order: 배열(stop 객체). 반환: 일정
 function schedule(p, order) {
-  const pts = [p.startId, ...order.map(s => s.placeId), endIdOf(p)];
+  const oneWay = !!p.oneWay && order.length > 0;
+  const pts = [p.startId, ...order.map(s => s.placeId), ...(oneWay ? [] : [endIdOf(p)])];
   const legs = [];
   for (let i=0;i<pts.length-1;i++) legs.push(legInfo(pts[i], pts[i+1]));
   const missing = legs.some(l => !l);
@@ -186,7 +191,7 @@ function schedule(p, order) {
     rows.push({stop:s, arr, wait:w, late:lt, dep: t + (s.stay||0)});
     t += (s.stay||0);
   }
-  t += L[order.length];
+  if (!oneWay) t += L[order.length];
   const dist = legs.reduce((a,l)=>a+(l&&l.d||0),0), fare = legs.reduce((a,l)=>a+(l&&l.fare||0),0);
   const drive = L.reduce((a,b)=>a+b,0);
   return {pts, legs, missing, start, end:t, rows, late, wait, dist, fare, drive, total:t-start};
@@ -284,7 +289,76 @@ async function refineOrder(p, onProg) {
 
 // ---------- 화면: 동선 ----------
 function renderPlanSel(){
-  $('#planSel').innerHTML = S.plans.map(p=>`<option value="${p.id}" ${p.id===S.cur?'selected':''}>${esc(p.title)}</option>`).join('');
+  $('#planSel').innerHTML = (S.draft?`<option value="__draft" ${isDraft()?'selected':''}>🔎 새 길찾기 (저장 안 됨)</option>`:'')
+    + S.plans.map(p=>`<option value="${p.id}" ${!isDraft()&&p.id===S.cur?'selected':''}>${esc(p.title)}</option>`).join('');
+}
+
+// ---------- 새 길찾기 (저장 전 임시 동선) ----------
+function usedInPlans(id){ return S.plans.some(p=>p.startId===id||p.endId===id||p.stops.some(s=>s.placeId===id)); }
+function discardTempPlaces(){ S.places = S.places.filter(P => !P.temp || P.id===HERE || usedInPlans(P.id)); }
+function startDraft(){
+  if (S.draft) {
+    if (!confirm('작성 중인 새 길찾기가 있어요.\n[확인] 새로 시작 / [취소] 작성 중인 것 이어서 보기')) { S.viewDraft = true; save(); tab='plan'; render(); return; }
+    S.draft = null; discardTempPlaces();
+  }
+  const base = S.plans.find(p=>p.id===S.cur);
+  const now = new Date(); now.setMinutes(now.getMinutes() + 5 - now.getMinutes()%5);
+  S.draft = {id:'draft', title:'', date:todayStr(), startId: base?.startId || S.places.find(P=>!P.temp)?.id || '', endId:'', startTime: pad(now.getHours())+':'+pad(now.getMinutes()), stops:[], searched:false};
+  S.viewDraft = true; save(); tab='plan'; render(); window.scrollTo(0,0);
+  addDestination();
+}
+function addDestination(){
+  pickPlace('목적지 입력', async id => {
+    const p = plan();
+    p.stops.push({id:uid(), placeId:id, stay:0, fixed:'', lock:false, memo:''});
+    if (isDraft()) p.searched = false;
+    save(); render();
+    if (S.key) await findRoute();
+  });
+}
+async function findRoute(){
+  const p = plan();
+  if (!p.stops.length) { toast('목적지를 먼저 넣어 주세요'); return; }
+  if (p.stops.filter(s=>!s.lock).length >= 2) { await doOptimize(true); }
+  else {
+    if (S.key) { const ok = await ensureTimes(false); if (!ok) return; }
+    else if (schedule(p,p.stops).missing) { toast('티맵 연결 키가 없어서 시간을 못 받아요. 설정에서 키를 넣거나 구간 시간을 직접 입력해 주세요', 4500); return; }
+  }
+  const sc = schedule(p,p.stops);
+  if (!sc.missing) { p.searched = true; save(); render(); toast(`길 찾기 완료! ${min2hm(sc.end)} 도착 예상 (총 ${durTxt(sc.total*60)})`, 4000); }
+}
+function autoName(p){
+  const n = p.stops.length; const first = n ? pname(p.stops[0].placeId) : '새 동선';
+  return p.date.slice(5).replace('-','/') + ' ' + first + (n>1 ? ` 외 ${n-1}곳` : '');
+}
+function saveDraft(){
+  const p = S.draft; if (!p) return;
+  if (!p.stops.length) { toast('목적지를 먼저 넣어 주세요'); return; }
+  openSheet(`<h2>동선으로 저장</h2>
+    <div class="muted">저장하면 위쪽 동선 목록에 남아서 나중에 다시 불러올 수 있어요.</div>
+    <label class="f">이름 (그대로 두어도 돼요)</label><input class="inp" id="dn" value="${esc(autoName(p))}">
+    <div class="row" style="margin-top:14px"><button class="btn ghost grow" id="dc">취소</button><button class="btn primary grow" id="ds">저장</button></div>`);
+  $('#dc').onclick = closeSheet;
+  $('#ds').onclick = () => {
+    const np = JSON.parse(JSON.stringify(p)); np.id = uid(); np.title = $('#dn').value.trim() || autoName(p); delete np.searched;
+    S.plans.push(np); S.cur = np.id;
+    [np.startId, np.endId, ...np.stops.map(s=>s.placeId)].forEach(id => { const P = place(id); if (P && P.id!==HERE) delete P.temp; });
+    S.draft = null; S.viewDraft = false; save(); closeSheet(); render(); toast('동선으로 저장했어요');
+  };
+}
+function closeDraft(){
+  if (!confirm('저장하지 않고 닫을까요?\n(조회한 내용은 사라져요)')) return;
+  S.draft = null; S.viewDraft = false; discardTempPlaces(); save(); closeSheet(); render(); toast('닫았어요. 저장된 동선은 그대로예요');
+}
+function useHere(cb){
+  if (!navigator.geolocation) { toast('이 휴대폰에서는 위치 기능을 쓸 수 없어요'); return; }
+  toast('현재 위치 확인 중…', 8000);
+  navigator.geolocation.getCurrentPosition(pos => {
+    let P = place(HERE); if (!P) { P = {id:HERE, name:'현재 위치', addr:'', lat:0, lon:0, temp:true}; S.places.push(P); }
+    P.lat = pos.coords.latitude; P.lon = pos.coords.longitude; P.addr = '지금 있는 곳 (' + new Date().toTimeString().slice(0,5) + ' 기준)';
+    for (const k in S.cache) if (k.split('|').includes(HERE)) delete S.cache[k];
+    save(); toast('현재 위치를 찾았어요'); cb(HERE);
+  }, () => toast('위치를 가져오지 못했어요. 휴대폰 위치 권한을 확인해 주세요', 4500), {enableHighAccuracy:true, timeout:15000, maximumAge:60000});
 }
 function navLinks(id){
   const P = place(id); if (!P) return '';
@@ -293,10 +367,15 @@ function navLinks(id){
   return `<a class="navbtn kakao" href="https://map.kakao.com/link/search/${encodeURIComponent(P.addr||P.name)}" target="_blank" rel="noopener">지도 검색</a>`;
 }
 function renderPlan(){
-  const p = plan(); if (!p) { $('#main').innerHTML = '<div class="empty">동선이 없어요. 위 ⋯ 버튼에서 새 동선을 만들어 주세요.</div>'; return; }
+  const p = plan(); if (!p) { $('#main').innerHTML = '<div class="empty">저장된 동선이 없어요.<br>위쪽 <b>＋ 길찾기</b>를 눌러 목적지부터 넣어 보세요.</div>'; $('#barActions').innerHTML = `<button class="btn primary grow" data-act="newDraft">＋ 새 길찾기</button>`; return; }
   const sc = schedule(p, p.stops);
   const hasFixed = p.stops.some(s=>s.fixed);
   let h = '';
+  const draft = isDraft();
+  if (draft) {
+    h += `<div class="card" style="background:#eef4ff;border:1px solid #c7d7fe"><div class="name">🔎 새 길찾기 <span class="muted" style="font-weight:400">· 아직 저장 안 됨</span></div>
+      <div class="muted" style="margin-top:4px;line-height:1.5">${!p.stops.length ? '가야 할 목적지를 넣어 주세요. 여러 곳이면 하나씩 추가하면 돼요.' : (p.searched ? '길 찾기 결과예요. 바로 가려면 <b>티맵</b> 버튼, 계속 쓸 동선이면 <b>저장</b>, 조회만 했으면 <b>닫기</b>를 눌러 주세요.' : '목적지를 다 넣었으면 아래 <b>길 찾기</b>를 눌러 주세요.')}</div></div>`;
+  }
   if (!S.key) h += `<div class="warn">티맵 연결 키가 아직 없어요. 지금 들어 있는 시간은 미리 계산해 둔 값이에요. 새 장소를 넣고 시간을 자동으로 받으려면 <b>설정</b>에서 키를 넣어 주세요. (키 없이도 구간 시간을 눌러 직접 입력할 수 있어요)</div>`;
   h += `<div class="card"><div class="row"><div class="grow"><label class="f" style="margin-top:0">날짜</label><input type="date" class="inp" id="pDate" value="${esc(p.date)}"></div>`;
   h += hasFixed ? `<div class="grow"><label class="f" style="margin-top:0">출발 시각</label><div class="inp" style="background:#f8fafc">${isFinite(sc.start)&&!sc.missing?min2hm(sc.start):'-'} <span class="muted">(약속 시간에 맞춤)</span></div></div>`
@@ -306,8 +385,16 @@ function renderPlan(){
   // 출발
   h += `<div class="card"><div class="stop"><div class="dot home">출발</div><div class="grow">
     <div class="row"><div class="grow"><div class="name">${esc(pname(p.startId))}</div><div class="muted">${esc(place(p.startId)?.addr||'')}</div></div>
-    <div class="time">${sc.missing?'--:--':min2hm(sc.start)}</div></div>
+    <div class="time">${sc.missing?(p.stops.length?'--:--':esc(p.startTime||'')):min2hm(sc.start)}</div></div>
     <div class="acts"><button class="btn sm ghost" data-act="pickStart">출발지 바꾸기</button></div></div></div></div>`;
+  if (draft && !p.stops.length) {
+    h += `<button class="btn primary" style="width:100%;padding:18px;font-size:17px" data-act="addStop">＋ 목적지 입력</button>`;
+    $('#main').innerHTML = h;
+    $('#barActions').innerHTML = `<button class="btn ghost grow" data-act="closeDraft">닫기</button>`;
+    const pd0 = $('#pDate'); if (pd0) pd0.onchange = e => { p.date = e.target.value; save(); render(); };
+    const ps0 = $('#pStart'); if (ps0) ps0.onchange = e => { p.startTime = e.target.value; save(); render(); };
+    return;
+  }
   const legHtml = (i) => {
     const l = sc.legs[i], a = sc.pts[i], b = sc.pts[i+1];
     const txt = l ? `🚗 ${durTxt(l.t)}${l.d?' · '+kmTxt(l.d):''}${l.fare?' · 통행료 '+l.fare.toLocaleString()+'원':''}${l.src==='manual'?' · 직접입력':''}` : '🚗 시간 모름 · 눌러서 입력';
@@ -334,12 +421,18 @@ function renderPlan(){
         <button class="btn sm danger" data-act="delStop" data-i="${i}">삭제</button>
       </div></div></div></div>`;
   });
+  if (p.oneWay) h += `<div class="card"><div class="stop"><div class="dot home">끝</div><div class="grow">
+    <div class="row"><div class="grow"><div class="name">마지막 목적지에서 끝</div><div class="muted">돌아오는 길은 계산하지 않아요</div></div>
+    <div class="time">${sc.missing?'--:--':min2hm(sc.end)}</div></div>
+    <div class="acts"><button class="btn sm ghost" data-act="pickEnd">도착 방법 바꾸기</button></div></div></div></div>`;
+  else {
   h += legHtml(p.stops.length);
   h += `<div class="card"><div class="stop"><div class="dot home">도착</div><div class="grow">
     <div class="row"><div class="grow"><div class="name">${esc(pname(endIdOf(p)))}</div><div class="muted">${p.endId?'다른 곳에서 마침':'출발지로 돌아오기'}</div></div>
     <div class="time">${sc.missing?'--:--':min2hm(sc.end)}</div></div>
-    <div class="acts"><button class="btn sm ghost" data-act="pickEnd">도착지 바꾸기</button></div></div></div></div>`;
-  h += `<button class="btn" style="width:100%;margin-bottom:10px" data-act="addStop">＋ 들를 곳 추가</button>`;
+    <div class="acts"><button class="btn sm ghost" data-act="pickEnd">도착 방법 바꾸기</button></div></div></div></div>`;
+  }
+  h += `<button class="btn" style="width:100%;margin-bottom:10px" data-act="addStop">＋ ${draft?'목적지':'들를 곳'} 추가</button>`;
   if (!sc.missing) h += `<div class="card"><div class="summary">
       <div><span class="muted">전체 걸리는 시간</span><b>${durTxt(sc.total*60)}</b></div>
       <div><span class="muted">운전 시간</span><b>${durTxt(sc.drive*60)}</b></div>
@@ -347,7 +440,11 @@ function renderPlan(){
       <div><span class="muted">통행료</span><b>${sc.fare?sc.fare.toLocaleString()+'원':'0원'}</b></div>
     </div><div class="muted" style="margin-top:8px">시간은 티맵 예상값이라 실제 교통에 따라 달라질 수 있어요.</div></div>`;
   $('#main').innerHTML = h;
-  $('#barActions').innerHTML = `<button class="btn primary grow" data-act="optimize">최적 순서 찾기</button><button class="btn grow" data-act="refresh">티맵 시간 새로 받기</button>`;
+  $('#barActions').innerHTML = draft
+    ? (p.stops.length
+        ? `<button class="btn primary grow" data-act="findRoute">${p.searched?'다시 찾기':'길 찾기'}</button><button class="btn grow" data-act="saveDraft">저장</button><button class="btn ghost" data-act="closeDraft">닫기</button>`
+        : `<button class="btn primary grow" data-act="addStop">＋ 목적지 입력</button><button class="btn ghost" data-act="closeDraft">닫기</button>`)
+    : `<button class="btn primary grow" data-act="optimize">최적 순서 찾기</button><button class="btn grow" data-act="refresh">티맵 시간 새로 받기</button>`;
   const pd = $('#pDate'); if (pd) pd.onchange = e => { p.date = e.target.value; save(); render(); };
   const ps = $('#pStart'); if (ps) ps.onchange = e => { p.startTime = e.target.value; save(); render(); };
 }
@@ -355,7 +452,7 @@ function renderPlan(){
 // ---------- 화면: 장소 ----------
 function renderPlaces(){
   let h = `<div class="card"><div class="row"><div class="grow"><b>저장한 장소</b><div class="muted">동선에 넣을 장소를 여기서 관리해요.</div></div><button class="btn sm" data-act="newPlace">＋ 장소 추가</button></div></div>`;
-  h += `<div class="card list">` + (S.places.length ? S.places.map(P=>`<div class="it"><div class="grow"><div class="name" style="font-size:16px">${esc(P.name)}</div><div class="muted">${esc(P.addr||'')}${P.lat?'':' · 위치 정보 없음'}</div></div>
+  h += `<div class="card list">` + (S.places.filter(P=>!P.temp).length ? S.places.filter(P=>!P.temp).map(P=>`<div class="it"><div class="grow"><div class="name" style="font-size:16px">${esc(P.name)}</div><div class="muted">${esc(P.addr||'')}${P.lat?'':' · 위치 정보 없음'}</div></div>
      ${navLinks(P.id)}<button class="btn sm ghost" data-act="editPlace" data-id="${P.id}">수정</button></div>`).join('') : '<div class="empty">저장된 장소가 없어요.</div>') + `</div>`;
   $('#main').innerHTML = h; $('#barActions').innerHTML = '';
 }
@@ -402,16 +499,19 @@ function closeSheet(){ $('#sheet').style.display='none'; $('#sheetbg').style.dis
 $('#sheetbg').onclick = closeSheet;
 
 // 장소 고르기 (저장된 장소 + 새로 검색)
-function pickPlace(title, onPick){
+function pickPlace(title, onPick, allowHere){
   const draw = (q='') => {
-    const list = S.places.filter(P=>!q || (P.name+P.addr).includes(q));
+    const list = S.places.filter(P=>P.id!==HERE && (!q || (P.name+P.addr).includes(q)));
     openSheet(`<h2>${esc(title)}</h2>
       <div class="row"><input class="inp grow" id="pq" placeholder="장소 이름이나 주소 검색" value="${esc(q)}"><button class="btn primary" id="pqBtn">검색</button></div>
+      ${allowHere?'<button class="btn" style="width:100%;margin-top:8px" id="hereBtn">📍 지금 내 위치에서 출발</button>':''}
+      <div id="sres"></div>
       <div class="muted" style="margin:8px 0 2px">저장한 장소</div>
       <div class="list">${list.map(P=>`<div class="it" data-pick="${P.id}" style="cursor:pointer"><div class="grow"><div class="name" style="font-size:16px">${esc(P.name)}</div><div class="muted">${esc(P.addr||'')}</div></div><span class="btn sm">선택</span></div>`).join('') || '<div class="empty">없어요. 위에서 검색해 새로 추가하세요.</div>'}</div>
-      <div id="sres"></div>
       <button class="btn ghost" style="width:100%;margin-top:10px" id="pcancel">닫기</button>`);
     $('#pcancel').onclick = closeSheet;
+    if (allowHere) $('#hereBtn').onclick = () => { closeSheet(); useHere(onPick); };
+    setTimeout(()=>{ const qi=$('#pq'); if (qi && !q) qi.focus(); }, 50);
     $('#sheet').querySelectorAll('[data-pick]').forEach(el=>el.onclick=()=>{ closeSheet(); onPick(el.dataset.pick); });
     const go = () => searchNew($('#pq').value.trim(), onPick);
     $('#pqBtn').onclick = go; $('#pq').onkeydown = e => { if(e.key==='Enter') go(); };
@@ -423,7 +523,7 @@ async function searchNew(q, onPick){
   const box = $('#sres');
   if (!S.key) {
     box.innerHTML = `<div class="warn" style="margin-top:10px">티맵 연결 키가 없어서 검색을 못 해요. 이름과 주소만 저장할 수 있어요 (이 경우 시간은 직접 입력).</div><button class="btn" style="width:100%" id="manualAdd">‘${esc(q)}’ 이름으로 저장</button>`;
-    $('#manualAdd').onclick = () => { const P={id:uid(),name:q,addr:q,lat:null,lon:null}; S.places.push(P); save(); closeSheet(); onPick(P.id); };
+    $('#manualAdd').onclick = () => { const P={id:uid(),name:q,addr:q,lat:null,lon:null,temp:isDraft()||undefined}; S.places.push(P); save(); closeSheet(); onPick(P.id); };
     return;
   }
   box.innerHTML = '<div class="muted" style="padding:12px"><span class="spin"></span> 티맵에서 찾는 중…</div>';
@@ -443,7 +543,7 @@ async function searchNew(q, onPick){
     if (!items.length) { box.innerHTML = '<div class="empty">검색 결과가 없어요. 다른 이름이나 도로명 주소로 찾아보세요.</div>'; return; }
     box.innerHTML = `<div class="muted" style="margin:10px 0 2px">티맵 검색 결과</div><div class="list">${items.map((it,i)=>`<div class="it" data-new="${i}" style="cursor:pointer"><div class="grow"><div class="name" style="font-size:16px">${esc(it.name)}</div><div class="muted">${esc(it.addr)}</div></div><span class="btn sm primary">추가</span></div>`).join('')}</div>`;
     box.querySelectorAll('[data-new]').forEach(el=>el.onclick=()=>{
-      const it = items[+el.dataset.new]; const P = {id:uid(), ...it}; S.places.push(P); save(); closeSheet(); toast('장소를 저장했어요'); onPick(P.id);
+      const it = items[+el.dataset.new]; const P = {id:uid(), ...it}; if (isDraft()) P.temp = true; S.places.push(P); save(); closeSheet(); toast('장소를 저장했어요'); onPick(P.id);
     });
   } catch(e) { box.innerHTML = `<div class="warn" style="margin-top:10px">검색 중 문제가 생겼어요. 설정에서 키가 맞는지 확인해 주세요. (${esc(e.message)})</div>`; }
 }
@@ -531,29 +631,21 @@ document.addEventListener('click', async e => {
   else if (act==='down' && i<p.stops.length-1) { [p.stops[i+1],p.stops[i]]=[p.stops[i],p.stops[i+1]]; save(); render(); }
   else if (act==='delStop') { if (confirm(`‘${pname(p.stops[i].placeId)}’을(를) 이 동선에서 뺄까요?`)) { p.stops.splice(i,1); save(); render(); } }
   else if (act==='editStop') editStop(i,false);
-  else if (act==='addStop') editStop(null,true);
-  else if (act==='pickStart') pickPlace('출발지 고르기', async id=>{ p.startId=id; save(); render(); if(S.key) await ensureTimes(false); });
+  else if (act==='addStop') { if (isDraft()) addDestination(); else editStop(null,true); }
+  else if (act==='findRoute') await findRoute();
+  else if (act==='newDraft') startDraft();
+  else if (act==='saveDraft') saveDraft();
+  else if (act==='closeDraft') closeDraft();
+  else if (act==='pickStart') pickPlace('출발지 고르기', async id=>{ p.startId=id; if(isDraft()) p.searched=false; save(); render(); if(S.key && p.stops.length) await (isDraft()?findRoute():ensureTimes(false)); }, true);
   else if (act==='pickEnd') {
-    openSheet(`<h2>도착지</h2><button class="btn" style="width:100%;margin-bottom:8px" id="sameEnd">출발지로 돌아오기</button><button class="btn ghost" style="width:100%" id="otherEnd">다른 곳에서 마치기</button>`);
-    $('#sameEnd').onclick=()=>{ p.endId=''; save(); closeSheet(); render(); };
-    $('#otherEnd').onclick=()=>pickPlace('도착지 고르기', async id=>{ p.endId=id===p.startId?'':id; save(); render(); if(S.key) await ensureTimes(false); });
+    openSheet(`<h2>도착 방법</h2><button class="btn" style="width:100%;margin-bottom:8px" id="sameEnd">출발지로 돌아오기 (왕복)</button><button class="btn" style="width:100%;margin-bottom:8px" id="oneEnd">마지막 목적지에서 끝 (편도)</button><button class="btn ghost" style="width:100%" id="otherEnd">다른 곳에서 마치기</button>`);
+    const after = async () => { if (isDraft()) p.searched=false; save(); closeSheet(); render(); if (S.key && p.stops.length) await (isDraft()?findRoute():ensureTimes(false)); };
+    $('#sameEnd').onclick=()=>{ p.endId=''; p.oneWay=false; after(); };
+    $('#oneEnd').onclick=()=>{ p.endId=''; p.oneWay=true; after(); };
+    $('#otherEnd').onclick=()=>pickPlace('도착지 고르기', async id=>{ p.endId=id===p.startId?'':id; p.oneWay=false; after(); });
   }
   else if (act==='editLeg') editLeg(t.dataset.a, t.dataset.b);
-  else if (act==='optimize') {
-    if (p.stops.filter(s=>!s.lock).length < 2) { toast('순서를 바꿀 수 있는 곳이 2곳 이상이어야 해요'); return; }
-    let sc0 = schedule(p,p.stops);
-    if (sc0.missing || S.key) { /* 모르는 구간 먼저 채우기 */ }
-    const missingAny = (() => { const ids=[p.startId,endIdOf(p),...p.stops.map(s=>s.placeId)]; for(const a of ids) for(const b of ids) if(a!==b && !legInfo(a,b) && !(b===p.startId&&p.endId)) return true; return false; })();
-    if (missingAny) { if (!S.key) { toast('시간을 모르는 구간이 있어요. 키를 넣거나 구간 시간을 직접 입력해 주세요', 4000); return; } await ensureTimes(false); }
-    sc0 = schedule(p,p.stops);
-    const best = bestOrder(p);
-    if (!best) { toast('계산할 수 없어요. 구간 시간을 확인해 주세요'); return; }
-    const diff = sc0.missing ? 0 : Math.round(sc0.total - best.sc.total);
-    p.stops = best.order; save();
-    if (S.key) await ensureTimes(false); else render();
-    const after = schedule(p,p.stops);
-    toast(diff>0 ? `최적 순서로 바꿨어요. ${diff}분 줄었어요 (복귀 ${min2hm(after.end)})` : `지금 순서가 가장 빨라요 (복귀 ${min2hm(after.end)})`, 4000);
-  }
+  else if (act==='optimize') await doOptimize(false);
   else if (act==='refresh') { const ok = await ensureTimes(true); if (ok) toast('티맵 시간으로 새로 계산했어요'); }
   else if (act==='newPlace') editPlace(null);
   else if (act==='editPlace') editPlace(t.dataset.id);
@@ -566,9 +658,9 @@ document.addEventListener('click', async e => {
     render();
   }
   else if (act==='clearKey') { if (confirm('키를 지울까요?')) { S.key=''; save(); render(); } }
-  else if (act==='routeOpt') { S.routeOpt = t.dataset.v; S.cache = {}; save(); render(); toast('기준을 바꿨어요. 동선 화면에서 시간을 새로 받아 주세요'); }
+  else if (act==='routeOpt') { S.routeOpt = t.dataset.v; S.cache = {}; save(); render(); toast('기준을 바꾸었어요. 동선 화면에서 시간을 새로 받아 주세요'); }
   else if (act==='export') {
-    const data = {...S, key:''};
+    const data = {...S, key:'', draft:null, viewDraft:false};
     const blob = new Blob([JSON.stringify(data,null,1)], {type:'application/json'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `내동선_백업_${todayStr()}.json`; a.click();
     toast('백업 파일을 저장했어요 (키는 빼고 저장)');
@@ -577,21 +669,48 @@ document.addEventListener('click', async e => {
   else if (act==='reset') { if (confirm('정말 처음 상태로 되돌릴까요? 지금 데이터는 모두 지워져요.')) { const k=S.key; S=seed(); S.key=k; save(); tab='plan'; render(); } }
 });
 
-$('#planSel').onchange = e => { S.cur = e.target.value; save(); render(); };
-$('#planMenuBtn').onclick = () => {
+async function doOptimize(quiet){
   const p = plan();
+  {
+    if (p.stops.filter(s=>!s.lock).length < 2) { toast('순서를 바꿀 수 있는 곳이 2곳 이상이어야 해요'); return; }
+    let sc0 = schedule(p,p.stops);
+    const missingAny = (() => { const ids=[p.startId,endIdOf(p),...p.stops.map(s=>s.placeId)]; for(const a of ids) for(const b of ids) if(a!==b && !legInfo(a,b) && !(b===p.startId&&p.endId)) return true; return false; })();
+    if (missingAny) { if (!S.key) { toast('시간을 모르는 구간이 있어요. 키를 넣거나 구간 시간을 직접 입력해 주세요', 4000); return; } await ensureTimes(false); }
+    sc0 = schedule(p,p.stops);
+    const best = bestOrder(p);
+    if (!best) { toast('계산할 수 없어요. 구간 시간을 확인해 주세요'); return; }
+    const diff = sc0.missing ? 0 : Math.round(sc0.total - best.sc.total);
+    p.stops = best.order; save();
+    if (S.key) await ensureTimes(false); else render();
+    const after = schedule(p,p.stops);
+    if (!quiet) toast(diff>0 ? `최적 순서로 바꿨어요. ${diff}분 줄었어요 (복귀 ${min2hm(after.end)})` : `지금 순서가 가장 빨라요 (복귀 ${min2hm(after.end)})`, 4000);
+  }
+}
+
+$('#planSel').onchange = e => { const v = e.target.value; if (v==='__draft') S.viewDraft = true; else { S.viewDraft = false; S.cur = v; } save(); tab='plan'; render(); };
+$('#newBtn').onclick = startDraft;
+$('#planMenuBtn').onclick = () => {
+  if (isDraft()) {
+    openSheet(`<h2>새 길찾기</h2>
+      <button class="btn primary" style="width:100%;margin-bottom:8px" id="dSave">동선으로 저장</button>
+      <button class="btn danger" style="width:100%;margin-bottom:8px" id="dClose">저장하지 않고 닫기</button>
+      <button class="btn ghost" style="width:100%" id="mClose">취소</button>`);
+    $('#mClose').onclick = closeSheet; $('#dSave').onclick = () => { closeSheet(); saveDraft(); }; $('#dClose').onclick = closeDraft;
+    return;
+  }
+  const p = plan();
+  if (!p) { startDraft(); return; }
   openSheet(`<h2>동선 관리</h2>
-    <button class="btn" style="width:100%;margin-bottom:8px" id="mNew">＋ 새 동선 만들기</button>
+    <button class="btn" style="width:100%;margin-bottom:8px" id="mNew">＋ 새 길찾기 (목적지부터)</button>
     <button class="btn ghost" style="width:100%;margin-bottom:8px" id="mCopy">지금 동선 복사하기</button>
     <button class="btn ghost" style="width:100%;margin-bottom:8px" id="mRename">이름 바꾸기</button>
-    <button class="btn danger" style="width:100%;margin-bottom:8px" id="mDel" ${S.plans.length<2?'disabled':''}>지금 동선 삭제</button>
+    <button class="btn danger" style="width:100%;margin-bottom:8px" id="mDel">지금 동선 삭제</button>
     <button class="btn ghost" style="width:100%" id="mClose">닫기</button>`);
   $('#mClose').onclick = closeSheet;
-  $('#mNew').onclick = () => { const title = prompt('새 동선 이름', todayStr().slice(5).replace('-','/')+' 동선'); if(!title) return;
-    const np = {id:uid(), title, date:todayStr(), startId:p?.startId||S.places[0]?.id, endId:'', startTime:'09:00', stops:[]}; S.plans.push(np); S.cur=np.id; save(); closeSheet(); tab='plan'; render(); };
+  $('#mNew').onclick = () => { closeSheet(); startDraft(); };
   $('#mCopy').onclick = () => { const np = JSON.parse(JSON.stringify(p)); np.id=uid(); np.title=p.title+' (복사)'; np.date=todayStr(); np.stops.forEach(s=>s.id=uid()); S.plans.push(np); S.cur=np.id; save(); closeSheet(); render(); toast('복사했어요'); };
   $('#mRename').onclick = () => { const title = prompt('동선 이름', p.title); if(title){ p.title=title; save(); closeSheet(); render(); } };
-  $('#mDel').onclick = () => { if (confirm(`‘${p.title}’ 동선을 삭제할까요?`)) { S.plans = S.plans.filter(x=>x.id!==p.id); S.cur=S.plans[0].id; save(); closeSheet(); render(); } };
+  $('#mDel').onclick = () => { if (confirm(`‘${p.title}’ 동선을 삭제할까요?`)) { S.plans = S.plans.filter(x=>x.id!==p.id); S.cur=S.plans[0]?.id||''; discardTempPlaces(); save(); closeSheet(); render(); } };
 };
 
 render();

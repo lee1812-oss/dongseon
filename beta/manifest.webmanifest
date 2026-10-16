@@ -1,0 +1,25 @@
+{
+ "name": "내 동선 (테스트)",
+ "short_name": "동선 테스트",
+ "description": "티맵 기준으로 들를 곳 순서와 시간을 짜 주는 동선 앱",
+ "start_url": "./index.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#f4f6fa",
+ "theme_color": "#1f6feb",
+ "lang": "ko",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any maskable"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any maskable"
+  }
+ ]
+}

@@ -23,6 +23,20 @@ header select option{color:#000}
 @media (max-width:440px){ header h1{display:none} header select{flex:1;max-width:none;min-width:0} .iconbtn{padding:7px 9px} }
 .iconbtn{border:0;background:rgba(255,255,255,.18);color:#fff;border-radius:10px;padding:7px 11px;font-weight:700}
 main{padding:12px 12px 150px;max-width:640px;margin:0 auto}
+main.wide{max-width:1280px}
+.cols{display:block}
+@media (min-width:900px){ .cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start} .bar .in{max-width:1280px} }
+.board{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px;align-items:start}
+.bstop{border:2px solid var(--line);border-radius:14px;padding:12px;margin-top:10px;background:#fff}
+.bstop.done{border-color:#7ad3a8;background:#f0fbf5}
+.bstop .it2{display:flex;align-items:center;gap:10px;padding:7px 2px;border-bottom:1px dashed var(--line);font-size:15.5px;cursor:pointer}
+.bstop .it2:last-child{border-bottom:0}
+.bstop .it2 input{width:26px;height:26px;flex:0 0 26px}
+.bstop .it2.on{color:#667085;text-decoration:line-through}
+.prog{height:10px;background:#eef1f5;border-radius:6px;overflow:hidden;margin-top:6px}
+.prog i{display:block;height:100%;background:var(--green)}
+.syncdot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#12b76a;margin-right:5px;vertical-align:1px}
+.syncdot.off{background:#d0d5dd}.syncdot.err{background:#f04438}
 .card{background:#fff;border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(16,24,40,.06)}
 .muted{color:var(--sub);font-size:14px}
 .row{display:flex;align-items:center;gap:8px}
@@ -94,6 +108,7 @@ ol.guide{padding-left:20px;margin:6px 0;line-height:1.6;font-size:14.5px}
   <div class="tabs">
     <button data-tab="delivery">배송</button>
     <button data-tab="cust">거래처</button>
+    <button data-tab="board">출고</button>
     <button data-tab="plan" class="on">동선</button>
     <button data-tab="places">장소</button>
     <button data-tab="settings">설정</button>
@@ -142,10 +157,11 @@ let S;
 try { S = JSON.parse(localStorage.getItem(LS_KEY)) || seed(); } catch(e) { S = seed(); }
 S.manual = S.manual || {}; S.cache = S.cache || {}; S.routeOpt = S.routeOpt || '0';
 S.dv = S.dv || {pass:'', data:null, tpl:null, localMap:{}, date:''}; S.dv.localMap = S.dv.localMap || {};
-const save = () => localStorage.setItem(LS_KEY, JSON.stringify(S));
+const save = () => { localStorage.setItem(LS_KEY, JSON.stringify(S)); try { if (typeof syncWatch === 'function') syncWatch(); } catch(e){} };
 save();
 
 let tab = S.tab || 'plan';
+{ const hz = (location.hash||'').slice(1); if (['delivery','cust','board','plan','places','settings'].includes(hz)) tab = hz; }
 const isDraft = () => !!(S.viewDraft && S.draft);
 const plan = () => isDraft() ? S.draft : (S.plans.find(p => p.id === S.cur) || S.plans[0]);
 const HERE = '__here';
@@ -420,6 +436,7 @@ function renderPlan(){
         ${r&&r.late>0.5?`<span class="bdg late">${Math.round(r.late)}분 늦음</span>`:''}
         ${s.memo?`<span class="bdg">📝 ${esc(s.memo)}</span>`:''}
         ${s.noSlip?`<span class="bdg late">이번 주 전표 없음</span>`:''}
+        ${(() => { if (p.kind!=='dv') return ''; const ck = S.dv.chk?.[p.dvDate] || {}; const k = p.id+'|'+s.placeId; const dn = ck.done?.[k]; const nt = ck.note?.[k]; return (dn?`<span class="bdg wait">✓ 적재 완료 ${esc(dn.t||'')}</span>`:'') + (nt?`<span class="bdg late">⚠ ${esc(nt)}</span>`:''); })()}
         ${place(s.placeId)&&!place(s.placeId).lat?`<span class="bdg late">주소 없음 · 장소에서 입력</span>`:''}
       </div>
       ${s.items&&s.items.length?`<details style="margin-top:6px"><summary class="muted" style="cursor:pointer">📦 배송 품목 ${s.items.length}종 (이카운트)</summary><div style="font-size:13.5px;line-height:1.6;margin-top:4px">${s.items.map(it=>`· ${esc(it[0])} <b>${esc(it[1])}</b>${it[2]?` <span class="muted">(${esc(it[2].slice(5).replace('-','/'))} 전표)</span>`:''}`).join('<br>')}</div></details>`:''}
@@ -481,6 +498,9 @@ function renderSettings(){
       <li>상품 목록에서 <b>TMAP</b> → <b>사용 신청</b> → <b>무료(Free)</b> 요금제 선택</li>
       <li>대시보드의 앱 정보에서 <b>App Key</b> 복사 → 위 칸에 붙여넣기</li>
     </ol></details></div>`;
+  h += `<div class="card"><b>이 기기 이름</b><div class="muted" style="margin-top:4px">적재 완료·코스 수정 기록에 남아요 (예: 출고장 태블릿, 김기사 폰).</div>
+    <div class="row" style="margin-top:8px"><div class="inp grow" style="background:#f8fafc">${esc(S.dv.who||'아직 없음')}</div><button class="btn" data-act="setWho">바꾸기</button></div>
+    <div class="muted" style="margin-top:8px">배송 코스·출고 체크·기본 코스·배송처 주소는 구글 시트로 모든 기기에 공유돼요. 즐겨찾기(★)와 개인 길찾기는 이 기기에만 저장돼요.</div></div>`;
   h += `<div class="card"><b>길 찾기 기준</b><div class="chips" style="margin-top:8px">
     ${[['0','티맵 추천'],['10','최단 거리'],['4','고속도로 우선'],['2','편한 길']].map(([v,t])=>`<button class="chip ${S.routeOpt===v?'on':''}" data-act="routeOpt" data-v="${v}">${t}</button>`).join('')}
     </div><div class="muted" style="margin-top:6px">바꾼 뒤에는 동선 화면에서 ‘티맵 시간 새로 받기’를 눌러 주세요.</div></div>`;
@@ -502,7 +522,8 @@ function render(){
   renderPlanSel();
   if (S.tab !== tab) { S.tab = tab; save(); }
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on', b.dataset.tab===tab));
-  if (tab==='plan') renderPlan(); else if (tab==='places') renderPlaces(); else if (tab==='delivery') renderDelivery(); else if (tab==='cust') renderCust(); else renderSettings();
+  if (tab==='plan') renderPlan(); else if (tab==='places') renderPlaces(); else if (tab==='delivery') renderDelivery(); else if (tab==='cust') renderCust(); else if (tab==='board') renderBoard(); else renderSettings();
+  $('#main').classList.toggle('wide', ['delivery','board','cust'].includes(tab));
 }
 
 // ================= 배송 코스 (이카운트 판매전표 기준) =================
@@ -558,6 +579,7 @@ function weekCusts(D){
 const dvPlans = D => S.plans.filter(p => p.kind==='dv' && p.dvDate===D);
 function itemsFor(placeId, D){ const wk = weekCusts(D); const hit = Object.values(wk).filter(o=>o.placeId===placeId); return hit.flatMap(o=>o.items); }
 function newDvPlan(D, run, stops){
+  if (S.dv.sig && S.dv.sig[D] === undefined) S.dv.sig[D] = '__new';
   const p = {id:uid(), kind:'dv', dvDate:D, run, title:`${md(D)} ${run} 배송`, date:D, startId:dvDepot(), endId:'', startTime: /오후/.test(run) ? '13:00' : '08:30', stops: stops||[]};
   S.plans.push(p); return p;
 }
@@ -573,6 +595,135 @@ function dvMakeDefault(D){
   }
   return n;
 }
+// ================= 공유 저장 (구글 시트 · 모든 기기 같은 코스·체크) =================
+const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyicz3BGmhiCkS17yozBKvsy4jMaGjazpMiymhmF0DQPb2fhLLII5VMwvWrrkqHd14J/exec';
+const SY = {state:'off', at:0, timer:null, pushT:{}, pulling:{}, err:''};
+S.dv.sig = S.dv.sig || {}; S.dv.chk = S.dv.chk || {}; S.dv.dayAt = S.dv.dayAt || {};
+async function syncToken(){
+  if (!S.dv.pass) return null;
+  if (S.dv.tokFor === S.dv.pass && S.dv.tok) return S.dv.tok;
+  const h = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('dongseon|'+S.dv.pass)))).map(b=>b.toString(16).padStart(2,'0')).join('');
+  S.dv.tok = h; S.dv.tokFor = S.dv.pass; localStorage.setItem(LS_KEY, JSON.stringify(S)); return h;
+}
+async function syncCall(body){
+  const token = await syncToken(); if (!token) throw new Error('암호 없음');
+  const r = await fetch(SYNC_URL, {method:'POST', body: JSON.stringify({...body, token, by: S.dv.who || '이름 없는 기기'})});
+  const j = await r.json(); if (!j.ok) throw new Error(j.err || '실패'); return j;
+}
+const syncPut = (key, value) => syncCall({op:'put', key, value}).then(j => { SY.state='ok'; SY.at=Date.now(); return j; }).catch(e => { SY.state='err'; SY.err=e.message; });
+const syncMerge = (key, value) => syncCall({op:'merge', key, value}).then(j => { SY.state='ok'; SY.at=Date.now(); return j; }).catch(e => { SY.state='err'; SY.err=e.message; });
+function syncBadge(){
+  const t = SY.at ? new Date(SY.at).toTimeString().slice(0,5) : '';
+  if (SY.state==='ok') return `<span class="syncdot"></span>모든 기기와 공유 중 · ${t} 맞춤${S.dv.who?` · 이 기기: ${esc(S.dv.who)}`:` · <a href="#" data-act="setWho">이 기기 이름 정하기</a>`}`;
+  if (SY.state==='err') return `<span class="syncdot err"></span>공유 연결 안 됨 (${esc(SY.err)}) · 인터넷 확인`;
+  return `<span class="syncdot off"></span>공유 연결 중…`;
+}
+// 배송 코스(날짜별) → 공유용 모양
+function daySig(D){ return JSON.stringify(dvPlans(D).map(p=>({id:p.id, run:p.run, startTime:p.startTime, oneWay:!!p.oneWay, endId:p.endId||'', stops:p.stops.map(s=>({id:s.id, placeId:s.placeId, name:pname(s.placeId), stay:s.stay, fixed:s.fixed||'', lock:!!s.lock, memo:s.memo||'', items:s.items||[], noSlip:!!s.noSlip}))}))); }
+// save()마다: 바뀐 날짜 코스만 1.2초 뒤 올리기
+function syncWatch(){
+  if (!S.dv || !S.dv.pass || !S.dv.data) return;
+  const dates = new Set([...S.plans.filter(p=>p.kind==='dv').map(p=>p.dvDate), ...Object.keys(S.dv.sig)]);
+  for (const D of dates) {
+    if (S.dv.sig[D] === undefined) continue;
+    const sig = daySig(D); if (S.dv.sig[D] === sig) continue;
+    clearTimeout(SY.pushT[D]);
+    SY.pushT[D] = setTimeout(async () => {
+      const sig2 = daySig(D); if (S.dv.sig[D] === sig2) return;
+      const runs = JSON.parse(sig2);
+      const j = await syncPut('day:'+D, {runs});
+      if (j && j.ok) { S.dv.sig[D] = sig2; S.dv.dayAt[D] = j.at; localStorage.setItem(LS_KEY, JSON.stringify(S)); if (tab==='delivery'||tab==='board') { const b = document.querySelector('.syncline'); } }
+    }, 1200);
+  }
+}
+function applyDay(D, runs){
+  S.plans = S.plans.filter(p => !(p.kind==='dv' && p.dvDate===D));
+  for (const r of runs) {
+    for (const s of r.stops) if (!place(s.placeId)) S.places.push({id:s.placeId, name:s.name||'(알 수 없음)', addr:'(주소 확인 필요)', lat:null, lon:null, dv:true});
+    S.plans.push({id:r.id, kind:'dv', dvDate:D, run:r.run, title:`${md(D)} ${r.run} 배송`, date:D, startId:dvDepot(), endId:r.endId||'', oneWay:!!r.oneWay, startTime:r.startTime||'08:30',
+      stops:r.stops.map(s=>({id:s.id||uid(), placeId:s.placeId, stay:s.stay??10, fixed:s.fixed||'', lock:!!s.lock, memo:s.memo||'', items:s.items||[], noSlip:!!s.noSlip}))});
+  }
+  S.dv.sig[D] = daySig(D);
+}
+async function syncPull(D, force){
+  if (!S.dv.pass || !S.dv.data || SY.pulling[D]) return;
+  if (!force && SY.lastPull && SY.lastPullD===D && Date.now()-SY.lastPull < 8000) return;
+  SY.pulling[D] = true; SY.lastPull = Date.now(); SY.lastPullD = D;
+  try {
+    const j = await syncCall({op:'get', keys:['day:'+D, 'chk:'+D, 'tpl', 'places', 'cmap'].join(',')});
+    SY.state = 'ok'; SY.at = Date.now();
+    const d = j.data || {}; let changed = false;
+    const dirty = S.dv.sig[D] !== undefined && S.dv.sig[D] !== daySig(D);
+    if (d['day:'+D] && d['day:'+D].value) {
+      if (!dirty && d['day:'+D].at !== S.dv.dayAt[D]) { const before = daySig(D); applyDay(D, d['day:'+D].value.runs||[]); S.dv.dayAt[D] = d['day:'+D].at; changed = changed || before !== S.dv.sig[D]; }
+    } else if (dvPlans(D).length && !dirty) { S.dv.sig[D] = '__'; syncWatch(); }
+    const ck = d['chk:'+D]?.value || {}; if (JSON.stringify(ck) !== JSON.stringify(S.dv.chk[D]||{})) { S.dv.chk[D] = ck; changed = true; }
+    if (d.tpl?.value && JSON.stringify(d.tpl.value) !== JSON.stringify(S.dv.tpl)) { S.dv.tpl = d.tpl.value; changed = true; }
+    for (const [id, v] of Object.entries(d.places?.value || {})) { let P = place(id); if (!P) { P = {id, dv:true}; S.places.push(P); } const nv = {name:v.name, addr:v.addr, lat:v.lat, lon:v.lon, ecount:v.ecount||P.ecount, alias:v.alias||P.alias, dv:true, userEdited:true}; if (JSON.stringify([P.name,P.addr,P.lat,P.lon]) !== JSON.stringify([nv.name,nv.addr,nv.lat,nv.lon])) { Object.assign(P, nv); changed = true; } }
+    for (const [c, id] of Object.entries(d.cmap?.value || {})) if (S.dv.localMap[c] !== id) { S.dv.localMap[c] = id; changed = true; }
+    localStorage.setItem(LS_KEY, JSON.stringify(S));
+    if (changed) render(); else { const sb = document.querySelector('[data-sync]'); if (sb) sb.innerHTML = syncBadge(); }
+  } catch(e) { SY.state = 'err'; SY.err = e.message; const sb = document.querySelector('[data-sync]'); if (sb) sb.innerHTML = syncBadge(); }
+  finally { SY.pulling[D] = false; }
+}
+function syncPlace(id, cust){
+  const P = place(id); if (!P) return;
+  syncMerge('places', {[id]: {name:P.name, addr:P.addr, lat:P.lat??null, lon:P.lon??null, ecount:P.ecount||cust||'', alias:P.alias||[]}});
+  if (cust) syncMerge('cmap', {[cust]: id});
+}
+function chkSet(D, path, val){
+  const ck = S.dv.chk[D] = S.dv.chk[D] || {};
+  const [grp, key] = path; ck[grp] = ck[grp] || {};
+  if (val === null) delete ck[grp][key]; else ck[grp][key] = val;
+  localStorage.setItem(LS_KEY, JSON.stringify(S));
+  syncMerge('chk:'+D, {[grp]: {[key]: val}});
+}
+// 20초마다 새로 받기 (화면이 켜져 있고 배송·출고·배송코스 화면일 때)
+setInterval(() => {
+  if (document.hidden || !S.dv.data) return;
+  const p = plan();
+  const D = (tab==='plan' && p?.kind==='dv') ? p.dvDate : (tab==='delivery'||tab==='board') ? (S.dv.date||todayStr()) : null;
+  if (D) syncPull(D, true);
+}, 20000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.dv.data && (tab==='delivery'||tab==='board')) syncPull(S.dv.date||todayStr(), true); });
+
+// ================= 출고 보드 (출고장 태블릿용) =================
+function renderBoard(){
+  $('#barActions').innerHTML = '';
+  const gate = dvGate(); if (gate) { $('#main').innerHTML = gate; return; }
+  const D = S.dv.date || todayStr();
+  const plans = dvPlans(D); const ck = S.dv.chk[D] || {};
+  let total = 0, done = 0; const notes = [];
+  plans.forEach(p => p.stops.forEach(s => { total++; const k = p.id+'|'+s.placeId; if (ck.done?.[k]) done++; if (ck.note?.[k]) notes.push(`${p.run} · ${pname(s.placeId)}: ${ck.note[k]}`); if (s.noSlip) notes.push(`${p.run} · ${pname(s.placeId)}: 이번 주 전표 없음 (품목 확인)`); }));
+  let h = `<div class="card"><div class="row" style="flex-wrap:wrap"><div class="grow"><div class="name" style="font-size:20px">🚚 출고·배송 보드</div><div class="muted" data-sync>${syncBadge()}</div></div>
+    <button class="btn ghost" data-act="dvPrev">◀</button><input type="date" class="inp" id="bdDate" value="${D}" style="width:170px"><span style="font-weight:800;font-size:18px">${WD[wdOf(D)]}</span><button class="btn ghost" data-act="dvNext">▶</button></div>
+    ${total?`<div style="margin-top:10px;font-size:17px"><b>적재 ${done} / ${total}곳</b> ${done===total?'<span class="bdg wait">전부 완료</span>':''}</div><div class="prog"><i style="width:${Math.round(done/total*100)}%"></i></div>`:''}</div>`;
+  if (notes.length) h += `<div class="card" style="border:2px solid #fda29b;background:#fff6f5"><b style="color:var(--red)">⚠ 특이사항 ${notes.length}건 (모두 확인)</b><div style="margin-top:6px;line-height:1.7">${notes.map(n=>'· '+esc(n)).join('<br>')}</div></div>`;
+  if (!plans.length) { h += `<div class="card empty">${md(D)} 코스가 아직 없어요.<br><button class="btn primary" style="margin-top:10px" data-tab="delivery">배송 탭에서 코스 만들기</button></div>`; $('#main').innerHTML = h; bindBoardDate(); syncPull(D); return; }
+  h += `<div class="board">`;
+  for (const p of plans) {
+    const pd = p.stops.filter(s => ck.done?.[p.id+'|'+s.placeId]).length;
+    const sc = schedule(p, p.stops);
+    h += `<div class="card" style="margin:0"><div class="row"><div class="grow"><div class="name" style="font-size:19px">${esc(p.run)} 코스</div><div class="muted">${sc.missing?'':min2hm(sc.start)+' 출발 · '}${p.stops.length}곳 · 적재 ${pd}/${p.stops.length}</div></div><button class="btn sm ghost" data-act="dvOpen" data-id="${p.id}">순서·길안내</button></div>
+      <div class="prog"><i style="width:${p.stops.length?Math.round(pd/p.stops.length*100):0}%"></i></div>`;
+    p.stops.forEach((s, i) => {
+      const k = p.id+'|'+s.placeId; const dn = ck.done?.[k]; const nt = ck.note?.[k] || '';
+      const items = s.items || [];
+      h += `<div class="bstop ${dn?'done':''}"><div class="row"><div class="dot" style="flex:0 0 30px;height:30px">${i+1}</div><div class="grow"><div class="name" style="font-size:18px">${esc(pname(s.placeId))}</div>${s.noSlip?'<span class="bdg late">이번 주 전표 없음</span>':''}</div>
+        ${dn?`<button class="btn sm" style="background:#d1fadf;color:#05603a" data-act="bdDone" data-k="${k}">✓ 적재 완료 ${esc(dn.t||'')}</button>`:`<button class="btn sm primary" data-act="bdDone" data-k="${k}">적재 완료</button>`}</div>
+        <div style="margin-top:6px">${items.length ? items.map((it, j) => { const ik = k+'|'+j; const on = !!ck.item?.[ik]; return `<label class="it2 ${on?'on':''}"><input type="checkbox" data-ik="${esc(ik)}" ${on?'checked':''}><span class="grow">${esc(it[0])}</span><b style="font-size:17px">${esc(it[1])}</b></label>`; }).join('') : '<div class="muted">이카운트 품목 없음</div>'}</div>
+        <input class="inp" data-note="${esc(k)}" placeholder="특이사항 (예: 몰블랑 2박스 부족)" value="${esc(nt)}" style="margin-top:8px;${nt?'border-color:#f97066;background:#fff6f5':''}"></div>`;
+    });
+    h += `</div>`;
+  }
+  h += `</div>`;
+  $('#main').innerHTML = h; bindBoardDate();
+  document.querySelectorAll('[data-ik]').forEach(cb => cb.onchange = () => { chkSet(D, ['item', cb.dataset.ik], cb.checked ? true : null); cb.closest('.it2').classList.toggle('on', cb.checked); });
+  document.querySelectorAll('[data-note]').forEach(inp => inp.onchange = () => { const v = inp.value.trim(); chkSet(D, ['note', inp.dataset.note], v || null); render(); toast(v?'특이사항을 모두에게 공유했어요':'특이사항을 지웠어요'); });
+  syncPull(D);
+}
+function bindBoardDate(){ const bd = $('#bdDate'); if (bd) bd.onchange = e => { S.dv.date = e.target.value; save(); render(); }; }
+
 // ---------- 거래처 즐겨찾기 (이카운트 최근 3개월 거래처) ----------
 const custNorm = s => String(s||'').replace(/\s|\(.*?\)|_N\d+|SD_|주식회사|㈜|\(주\)|[_#&.,-]/g,'').toLowerCase();
 function custMatch(P, qn){ return [P.name, P.ecount, P.addr, P.region, ...(P.alias||[]), ...(P.ecountAlt||[])].some(x => custNorm(x).includes(qn)); }
@@ -651,6 +802,7 @@ function renderDelivery(){
   const D = S.dv.date || todayStr();
   const [wa, wb] = weekRange(D);
   h += `<div class="card"><div class="row"><div class="grow"><b>배송 코스</b><div class="muted">이카운트 판매전표 기준 · ${esc(S.dv.data.updated)} 자료</div></div><button class="btn sm ghost" data-act="dvReload">새로고침</button></div>
+    <div class="muted" style="margin-top:4px" data-sync>${syncBadge()}</div>
     <div class="row" style="margin-top:10px"><button class="btn ghost" data-act="dvPrev">◀</button><input type="date" class="inp grow" id="dvDate" value="${D}"><span style="font-weight:800;font-size:17px">${WD[wdOf(D)]}</span><button class="btn ghost" data-act="dvNext">▶</button></div></div>`;
   const plans = dvPlans(D);
   if (!plans.length) {
@@ -668,7 +820,8 @@ function renderDelivery(){
     }
     h += `<button class="btn ghost" style="width:100%;margin-bottom:10px" data-act="dvAddRun">＋ 코스 추가 (예: 오후)</button>`;
   }
-  // 업체명으로 넣기
+  // 업체명으로 넣기 (태블릿에서는 오른쪽 열)
+  h += `</div><div>`;
   h += `<div class="card"><b>업체명으로 코스에 넣기</b><div class="muted" style="margin-top:2px">줄임말도 돼요 (예: 오월, 더티, 테블). 주소는 자동으로 붙어요.</div>
     <input class="inp" id="dvQ" placeholder="업체명 입력" style="margin-top:8px" autocomplete="off"><div id="dvQres"></div></div>`;
   // 이번 주 전표 업체
@@ -683,7 +836,9 @@ function renderDelivery(){
   h += `<div class="card list"><b>이번 주 이카운트 전표 업체</b><div class="muted">${md(wa)} ~ ${md(wb)} · 배송처 ${known.length}곳</div>
     ${known.map(rowHtml).join('') || '<div class="empty">이번 주 배송처 전표가 없어요</div>'}
     ${unknown.length?`<details style="margin-top:8px"><summary style="font-weight:700;cursor:pointer">주소 등록 안 된 업체 ${unknown.length}곳 (택배 등)</summary>${unknown.map(rowHtml).join('')}</details>`:''}</div>`;
-  $('#main').innerHTML = h;
+  h += `</div></div>`;
+  $('#main').innerHTML = '<div class="cols"><div>' + h;
+  syncPull(D);
   $('#dvDate').onchange = e => { S.dv.date = e.target.value; save(); render(); };
   $('#dvQ').oninput = e => dvQuery(e.target.value.trim(), D);
 }
@@ -725,7 +880,7 @@ function dvRegister(cust, D){
     const nm = $('#rn').value.trim() || short;
     pickPlace(`‘${nm}’ 주소 찾기`, id => {
       const P = place(id); P.dv = true; P.ecount = cust; P.alias = [nm]; P.name = nm; delete P.temp; P.userEdited = true;
-      S.dv.localMap[cust] = id; save(); toast('배송처로 등록했어요'); dvAddPlace(id, D);
+      S.dv.localMap[cust] = id; save(); syncPlace(id, cust); toast('배송처로 등록했어요 (모든 기기에 공유)'); dvAddPlace(id, D);
     });
     setTimeout(()=>{ const q=$('#pq'); if(q){ q.value = nm; } }, 60);
   };
@@ -845,7 +1000,7 @@ function editPlace(id){
       if (!lat) throw new Error('못 찾음'); newLL = {lat, lon}; $('#pll').textContent = '새 위치: '+lat.toFixed(5)+', '+lon.toFixed(5)+' (저장을 눌러야 반영)';
     } catch(e) { $('#pll').textContent = '위치를 못 찾았어요. 도로명 주소로 다시 입력해 보세요'; }
   };
-  $('#ps').onclick = () => { const o=place(id); o.name=$('#pn').value.trim()||o.name; o.addr=$('#pa').value.trim(); if (newLL) { o.lat=newLL.lat; o.lon=newLL.lon; for (const k in S.cache) if (k.split('|').includes(id)) delete S.cache[k]; } o.userEdited = true; save(); closeSheet(); render(); };
+  $('#ps').onclick = () => { const o=place(id); o.name=$('#pn').value.trim()||o.name; o.addr=$('#pa').value.trim(); if (newLL) { o.lat=newLL.lat; o.lon=newLL.lon; for (const k in S.cache) if (k.split('|').includes(id)) delete S.cache[k]; } o.userEdited = true; save(); if (o.dv) syncPlace(id); closeSheet(); render(); };
   $('#pd').onclick = () => {
     const used = S.plans.some(p=>p.startId===id||p.endId===id||p.stops.some(s=>s.placeId===id));
     if (used && !confirm('이 장소를 쓰는 동선이 있어요. 그래도 삭제할까요? (그 동선에서도 빠져요)')) return;
@@ -897,16 +1052,20 @@ document.addEventListener('click', async e => {
   else if (act==='dvPass') { const v = $('#dvPass').value.trim(); if (!v) return; S.dv.pass = v; DV.msg=''; save(); $('#main').innerHTML='<div class="empty"><span class="spin"></span> 확인 중…</div>'; await dvLoad(); render(); if (S.dv.data) toast('배송 자료를 불러왔어요'); }
   else if (act==='dvReload') { $('#main').innerHTML='<div class="empty"><span class="spin"></span> 불러오는 중…</div>'; await dvLoad(); render(); toast(DV.state==='ok'?'최신 자료로 바꿨어요 ('+S.dv.data.updated+')':(DV.msg||'불러오지 못했어요')); }
   else if (act==='dvPrev' || act==='dvNext') { S.dv.date = addDays(S.dv.date||todayStr(), act==='dvPrev'?-1:1); save(); render(); }
-  else if (act==='dvMake') { const D = S.dv.date||todayStr(); const n = dvMakeDefault(D); save(); render(); toast(n?`기본 코스를 만들었어요 (${n}곳)`:'빈 코스를 만들었어요. 아래에서 업체를 넣어 주세요'); }
+  else if (act==='setWho') { e.preventDefault(); const v = prompt('이 기기 이름 (예: 출고장 태블릿, 김기사 폰, 사무실)', S.dv.who||''); if (v!==null) { S.dv.who = v.trim(); save(); render(); } }
+  else if (act==='bdDone') { const D = S.dv.date||todayStr(); const k = t.dataset.k; const cur = S.dv.chk[D]?.done?.[k];
+    if (!S.dv.who) { const v = prompt('누가 적재했는지 남기려면 이 기기 이름을 정해 주세요 (예: 출고장 태블릿)', ''); if (v) { S.dv.who = v.trim(); save(); } }
+    chkSet(D, ['done', k], cur ? null : {t: new Date().toTimeString().slice(0,5), by: S.dv.who||''}); render(); }
+  else if (act==='dvMake') { const D = S.dv.date||todayStr(); await syncPull(D, true); if (dvPlans(D).length) { render(); toast('다른 기기에서 이미 만든 코스를 불러왔어요'); return; } S.dv.sig[D] = '__new'; const n = dvMakeDefault(D); save(); render(); toast(n?`기본 코스를 만들었어요 (${n}곳)`:'빈 코스를 만들었어요. 아래에서 업체를 넣어 주세요'); }
   else if (act==='dvOpen') { S.cur = t.dataset.id; S.viewDraft = false; tab='plan'; save(); render(); window.scrollTo(0,0); }
   else if (act==='dvBack') { tab='delivery'; S.dv.date = p.dvDate || S.dv.date; save(); render(); window.scrollTo(0,0); }
   else if (act==='dvTpl') { const dp = S.plans.find(x=>x.id===t.dataset.id); const wd = String(wdOf(dp.dvDate));
     S.dv.tpl = S.dv.tpl || {}; const cur = dvTpl(wd).map(r=>({run:r.run, ids:r.ids.slice()}));
     const runs = dvPlans(dp.dvDate).map(x=>({run:x.run, ids:x.stops.map(s=>s.placeId)}));
-    S.dv.tpl[wd] = runs.length ? runs : cur; save(); toast(`${WD[wdOf(dp.dvDate)]}요일 기본 코스로 저장했어요 (다음 주부터 이 순서로 만들어져요)`, 4000); }
+    S.dv.tpl[wd] = runs.length ? runs : cur; save(); syncPut('tpl', S.dv.tpl); toast(`${WD[wdOf(dp.dvDate)]}요일 기본 코스로 저장했어요 (다음 주부터 이 순서로 만들어져요)`, 4000); }
   else if (act==='dvRename') { const dp = S.plans.find(x=>x.id===t.dataset.id); const v = prompt('코스 이름 (예: 오전, 오후, 2차)', dp.run); if (v) { dp.run = v.trim(); dp.title = `${md(dp.dvDate)} ${dp.run} 배송`; save(); render(); } }
   else if (act==='dvDel') { const dp = S.plans.find(x=>x.id===t.dataset.id); if (confirm(`${dp.run} 코스를 삭제할까요?`)) { S.plans = S.plans.filter(x=>x.id!==dp.id); if (S.cur===dp.id) S.cur = S.plans[0]?.id||''; save(); render(); } }
-  else if (act==='dvAddRun') { const D = S.dv.date||todayStr(); const v = prompt('새 코스 이름 (예: 오후, 2차)', '오후'); if (v) { newDvPlan(D, v.trim(), []); save(); render(); } }
+  else if (act==='dvAddRun') { const D = S.dv.date||todayStr(); const v = prompt('새 코스 이름 (예: 오후, 2차)', '오후'); if (v) { if (S.dv.sig[D]===undefined) S.dv.sig[D]='__new'; newDvPlan(D, v.trim(), []); save(); render(); } }
   else if (act==='dvAddPlace') dvAddPlace(t.dataset.pid, S.dv.date||todayStr());
   else if (act==='dvReg') dvRegister(t.dataset.cust, S.dv.date||todayStr());
   else if (act==='saveDraft') saveDraft();

@@ -3,6 +3,7 @@
 // 저장 위치: 구글 시트 「빵을그리다 배송 코스 공유 저장 (앱 자동)」 store 탭 (key / value(JSON) / updatedAt / by)
 // 사람이 보기 좋은 탭: 「보기_코스」 (오늘~7일 뒤 코스, 적재 여부, 특이사항) - 앱에서 바뀔 때마다 자동 갱신
 // 접근: 앱 직원용 암호에서 만든 토큰이 맞아야 읽기·쓰기 가능. 암호를 바꾸면 setPass('새암호') 실행.
+// 2026-10-23: 티맵 바로가기 앱의 「배송 전달사항」용 MSG_TOKEN 추가 - 이 열쇠로는 msg·msgr 키만 읽고 쓸 수 있다.
 
 function setup() {
   const p = PropertiesService.getScriptProperties();
@@ -15,7 +16,7 @@ function setup() {
     const v = ss.insertSheet('보기_코스');
     v.getRange(1, 1, 1, 7).setValues([['날짜', '코스', '순서', '업체', '적재', '특이사항', '마지막 수정']]); v.setFrozenRows(1);
   }
-  setPass('2580');
+  // 처음 설치 때만: setPass('새 암호')를 직접 실행한다 (암호를 코드에 적지 않는다)
   Logger.log('SS_URL ' + SpreadsheetApp.openById(id).getUrl());
 }
 function photoFolder_() {
@@ -44,7 +45,16 @@ function doGet(e) { return handle_(e.parameter || {}); }
 function doPost(e) { let b = {}; try { b = JSON.parse(e.postData.contents); } catch (x) { } return handle_(b); }
 function handle_(b) {
   const p = PropertiesService.getScriptProperties();
-  if (!b.token || b.token !== p.getProperty('TOKEN')) return out_({ ok: false, err: 'auth' });
+  const full = !!b.token && b.token === p.getProperty('TOKEN');
+  const msgOnly = !full && !!b.token && b.token === p.getProperty('MSG_TOKEN');
+  if (!full && !msgOnly) return out_({ ok: false, err: 'auth' });
+  if (b.op === 'setmsg') { if (!full) return out_({ ok: false, err: 'auth' }); p.setProperty('MSG_TOKEN', String(b.value || '')); return out_({ ok: true }); }
+  if (msgOnly) {
+    const okKey = function (k) { return k === 'msg' || k === 'msgr'; };
+    if (b.op === 'get' && !String(b.keys || '').split(',').filter(String).every(okKey)) return out_({ ok: false, err: 'auth' });
+    if ((b.op === 'put' || b.op === 'merge') && !okKey(String(b.key || ''))) return out_({ ok: false, err: 'auth' });
+    if (b.op === 'photo') return out_({ ok: false, err: 'auth' });
+  }
   const sh = ss_().getSheetByName('store');
   if (b.op === 'ping') return out_({ ok: true, now: Date.now() });
   if (b.op === 'photo') {

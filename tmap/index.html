@@ -103,7 +103,7 @@ body.editing .edit{display:flex}
   </div>
 
   <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v004 · 이 휴대폰에만 저장돼요</div>
+  <div class="ver">v005 · 이 휴대폰에만 저장돼요</div>
 </main>
 <div class="toast" id="toast"></div>
 
@@ -141,7 +141,10 @@ function readParam(){
 }
 readParam();
 function readHash(){
-  const h=location.hash.slice(1); if(!h.startsWith('p='))return;
+  const h=location.hash.slice(1);
+  const km=h.match(/(?:^|&)k=([A-Za-z0-9_-]{16,})/);
+  if(km){localStorage.setItem('tmapgo_k',km[1]);history.replaceState(null,'',location.pathname+location.search);return}
+  if(!h.startsWith('p='))return;
   try{
     const o=JSON.parse(decodeURIComponent(h.slice(2)));
     const stops=(o.s||[]).map(r=>({n:r[0]||'',a:r[1]||'',y:r[2]?+r[2]:null,x:r[3]?+r[3]:null,m:r[4]||''})).filter(s=>s.n||s.a);
@@ -225,8 +228,9 @@ $('share').addEventListener('click',async()=>{
   const o={d:S.day||'',s:S.stops.map(s=>[s.n,s.a,s.y?+(+s.y).toFixed(6):0,s.x?+(+s.x).toFixed(6):0,s.m||''])};
   const base=location.origin+location.pathname;
   let url;
-  if(S.preset&&ROUTES[S.preset]) url=base+'?d='+S.preset;
-  else if(S.stops.every(s=>s.id)) url=base+'?c='+S.stops.map(s=>s.id).join('.')+(S.day?'&day='+S.day.replace(/-/g,''):'');
+  const kk=localStorage.getItem('tmapgo_k'), kh=kk?'#k='+kk:'';
+  if(S.preset&&ROUTES[S.preset]) url=base+'?d='+S.preset+kh;
+  else if(S.stops.every(s=>s.id)) url=base+'?c='+S.stops.map(s=>s.id).join('.')+(S.day?'&day='+S.day.replace(/-/g,''):'')+kh;
   else url=base+'#p='+encodeURIComponent(JSON.stringify(o));
   const dd=S.day?S.day.slice(5).replace('-','/')+' ':'';
   const text=dd+'배송지 '+S.stops.length+'곳 ('+S.stops.map(s=>s.n).join(', ')+')\n링크를 열고 「티맵 길안내 시작」을 누르세요.';
@@ -261,8 +265,26 @@ function showPass(on){$('fpass').style.display=on?'block':'none';if(on)setTimeou
 async function custLoad(){
   if(C.state==='loading')return;
   if(!C.list){try{const c=JSON.parse(localStorage.getItem(CKEY));if(c&&c.list){C.list=c.list;C.at=c.at}}catch(e){}}
+  const lk=localStorage.getItem('tmapgo_k');
+  if(lk){
+    C.state='loading';fmsg('거래처를 불러오는 중…');
+    try{
+      const r=await fetch('../tmap_cust.enc.json?t='+Date.now(),{cache:'no-store'});
+      if(!r.ok)throw new Error('net');
+      const D=await decData(await r.json(),lk);
+      const from=ymd(new Date(Date.now()-183*864e5));
+      C.list=(D.list||[]).filter(c=>c.l&&c.l>=from);C.at=D.updated||'';
+      localStorage.setItem(CKEY,JSON.stringify({at:C.at,list:C.list}));showPass(false);
+      fmsg('최근 6개월 이카운트 판매 거래처 · '+(C.at?C.at+' 기준':''));
+      C.state='idle';renderFind();applyPending();return;
+    }catch(e){
+      if(e&&e.name==='OperationError')localStorage.removeItem('tmapgo_k');
+      else if(C.list){fmsg('인터넷이 안 돼서 저장된 목록으로 찾아요.');C.state='idle';renderFind();applyPending();return}
+      C.state='idle';
+    }
+  }
   const pass=getPass();
-  if(!pass){showPass(true);fmsg('직원 암호를 한 번 넣으면 거래처 목록이 열려요.');renderFind();return}
+  if(!pass){fmsg('카톡으로 받은 링크로 한 번만 열면 거래처가 바로 보여요.');$('fmsg').insertAdjacentHTML('beforeend',' <a href="#" id="fpwlink" style="color:#6B4423">직원 암호로 열기</a>');$('fpwlink').onclick=e=>{e.preventDefault();showPass(true)};renderFind();return}
   C.state='loading';fmsg('거래처를 불러오는 중…');
   try{
     const r=await fetch('../delivery.enc.json?t='+Date.now(),{cache:'no-store'});
@@ -305,7 +327,7 @@ function applyPending(){
   const dd=(sp.get('day')||'').replace(/\D/g,'');
   C.pending={ids:c.split(/[.,]/).filter(Boolean),day:dd.length===8?dd.slice(0,4)+'-'+dd.slice(4,6)+'-'+dd.slice(6):''};
   history.replaceState(null,'',location.pathname);
-  const n=$('notice');n.textContent='받은 링크에 거래처 '+C.pending.ids.length+'곳이 있어요. 직원 암호를 넣으면 등록돼요.';n.style.display='block';
+  const n=$('notice');n.textContent='받은 링크의 거래처 '+C.pending.ids.length+'곳을 불러오는 중이에요…';n.style.display='block';
 })();
 $('fq').addEventListener('input',renderFind);
 $('fq').addEventListener('focus',()=>{if(!C.list&&C.state!=='loading')custLoad()});

@@ -9,17 +9,18 @@
 <link rel="icon" href="icon_192.png">
 <link rel="apple-touch-icon" href="icon_192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="티맵 바로가기">
 <style>
-:root{--br:#6B4423;--br2:#F4EDE6;--tx:#1d1d1f;--mu:#5b5b60;--ln:#dcdce0;--bl:#1550d6;--gr:#1F6B45;--rd:#c62828}
+:root{--br:#6B4423;--br2:#F4EDE6;--tx:#1d1d1f;--mu:#5b5b60;--ln:#dcdce0;--bl:#1550d6;--gr:#1F6B45;--rd:#c62828;--or:#b45309}
 *{box-sizing:border-box}
 body{margin:0;font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;background:#f3f3f5;color:var(--tx);font-size:17px;word-break:keep-all;overflow-wrap:break-word;-webkit-tap-highlight-color:transparent}
-header{background:var(--br);color:#fff;padding:14px 16px calc(14px) ;padding-top:calc(14px + env(safe-area-inset-top))}
+header{background:var(--br);color:#fff;padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top))}
 header h1{margin:0;font-size:21px}
 header .sub{margin-top:4px;font-size:15px;opacity:.9}
-main{max-width:640px;margin:0 auto;padding:12px 12px 120px}
-.day{display:flex;align-items:center;gap:8px;margin:4px 2px 10px;font-weight:700;font-size:18px}
-.day input{font-size:17px;padding:6px 8px;border:1px solid var(--ln);border-radius:8px;background:#fff;color:var(--tx)}
+main{max-width:640px;margin:0 auto;padding:12px 12px 60px}
+h2.sec{font-size:19px;margin:16px 2px 10px;display:flex;align-items:center;gap:6px}
+h2.sec:first-of-type{margin-top:6px}
 .card{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:14px;margin-bottom:12px}
 .card.done{opacity:.55}
 .row{display:flex;align-items:flex-start;gap:10px}
@@ -29,7 +30,7 @@ main{max-width:640px;margin:0 auto;padding:12px 12px 120px}
 .ad{color:var(--mu);margin-top:3px;font-size:16px;line-height:1.4}
 .memo{margin-top:4px;font-size:15px;color:#7a4b12}
 .go{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:60px;margin-top:12px;border:0;border-radius:12px;background:var(--bl);color:#fff;font-size:20px;font-weight:800;text-decoration:none}
-.go:active{filter:brightness(.9)}
+.go:active,.fgo:active{filter:brightness(.9)}
 .subs{display:flex;gap:8px;margin-top:8px}
 .sb{flex:1;min-height:50px;border:1px solid var(--ln);border-radius:10px;background:#fff;color:var(--tx);font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;text-decoration:none}
 .sb.ok{border-color:var(--gr);color:var(--gr)}
@@ -39,77 +40,90 @@ body.editing .edit{display:flex}
 .edit button{flex:1;min-height:46px;border-radius:10px;border:1px solid var(--ln);background:#fafafa;font-size:16px}
 .edit .del{color:var(--rd);border-color:#f0c2c2}
 .tag{display:inline-block;font-size:13px;padding:2px 7px;border-radius:6px;background:#fff4e0;color:#9a5b00;margin-left:4px;vertical-align:2px;font-weight:600}
-.box{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:14px;margin-top:6px}
-.box h2{margin:0 0 10px;font-size:18px}
-.box label{display:block;font-size:15px;color:var(--mu);margin:8px 0 4px}
-.box input,.box textarea{width:100%;font-size:17px;padding:12px;border:1px solid #c9c9ce;border-radius:10px;font-family:inherit}
-.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:56px;margin-top:12px;border:0;border-radius:12px;font-size:18px;font-weight:800}
+.fav{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:4px 14px}
+.fv{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid #ececf0}
+.fv:first-child{border-top:0}
+.fv .t{flex:1;min-width:0}
+.fv .t b{font-size:18px;display:block}
+.fv .t span{font-size:14.5px;color:var(--mu)}
+.fgo{flex:0 0 auto;min-height:54px;padding:0 16px;border-radius:12px;background:var(--bl);color:#fff;font-weight:800;font-size:17px;display:flex;align-items:center;text-decoration:none}
+.fdel{display:none;flex:0 0 auto;min-height:54px;padding:0 12px;border-radius:12px;border:1px solid #f0c2c2;background:#fff;color:var(--rd);font-size:16px}
+body.editing .fdel{display:block}
+.empty{color:var(--mu);padding:16px 4px;font-size:16px;line-height:1.5}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:56px;margin-top:12px;border:0;border-radius:12px;font-size:18px;font-weight:800;font-family:inherit}
 .btn.br{background:var(--br);color:#fff}
 .btn.gr{background:var(--gr);color:#fff}
 .btn.ln{background:#fff;color:var(--tx);border:1px solid var(--ln);font-weight:700}
+.btn.ol{background:#fff;color:var(--br);border:2px solid var(--br)}
 .hint{font-size:14.5px;color:var(--mu);line-height:1.5;margin-top:8px}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222;color:#fff;padding:12px 18px;border-radius:12px;font-size:16px;display:none;z-index:9;max-width:90%;text-align:center}
-.empty{text-align:center;color:var(--mu);padding:30px 10px}
-.ver{text-align:center;color:#9a9aa0;font-size:13px;margin-top:18px}
-.fr{border-top:1px solid #ececf0;padding:11px 0}
+.box{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:14px;margin-top:12px}
+.box h3{margin:0 0 10px;font-size:18px;display:flex;justify-content:space-between;align-items:center}
+.box h3 button{border:0;background:none;font-size:16px;color:var(--mu);min-height:40px}
+.box label{display:block;font-size:15px;color:var(--mu);margin:8px 0 4px}
+.box input{width:100%;font-size:17px;padding:12px;border:1px solid #c9c9ce;border-radius:10px;font-family:inherit}
+#fq{font-size:18px;padding:14px;border:2px solid var(--br);border-radius:12px}
+.fr{border-top:1px solid #ececf0;padding:11px 0;display:flex;gap:10px;align-items:center}
 .fr:first-child{border-top:0}
+.fr .t{flex:1;min-width:0}
 .fr .fn{font-size:18px;font-weight:800}
 .fr .fs{font-size:14.5px;color:var(--mu);margin-top:2px;line-height:1.4}
-.fr .fb{display:flex;gap:8px;margin-top:8px}
-.fr .fb a,.fr .fb button{flex:1;min-height:52px;border-radius:10px;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;text-decoration:none}
-.fr .fb a{background:var(--bl);color:#fff;border:0}
-.fr .fb button{background:#fff;color:var(--br);border:1.5px solid var(--br)}
-.fr .fb button.in{background:var(--br2);color:#8a7a6a;border-color:#d8cbbd}
-#fq{width:100%;font-size:18px;padding:14px;border:2px solid var(--br);border-radius:12px;font-family:inherit}
-.cnt{font-size:14px;color:var(--mu);font-weight:600}
+.fr button{flex:0 0 auto;min-height:52px;padding:0 14px;border-radius:10px;font-size:16.5px;font-weight:800;background:#fff;color:var(--br);border:1.5px solid var(--br)}
+.fr button.in{background:var(--br2);color:#8a7a6a;border-color:#d8cbbd}
+.inst{background:#fff8e6;border:1px solid #f1d48a;border-radius:14px;padding:12px 14px;margin-bottom:12px;display:none}
+.inst b{font-size:17px}
+.inst .hint{margin-top:4px;color:#6b5420}
+.inst .btn{min-height:52px;margin-top:10px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222;color:#fff;padding:12px 18px;border-radius:12px;font-size:16px;display:none;z-index:9;max-width:90%;text-align:center}
+.ver{text-align:center;color:#9a9aa0;font-size:13px;margin-top:18px}
 .notice{background:#e8f0ff;border:1px solid #c4d6ff;color:#173c8a;border-radius:12px;padding:10px 12px;font-size:15.5px;margin-bottom:10px;display:none}
 </style>
 </head>
 <body>
 <header>
   <h1>티맵 바로가기</h1>
-  <div class="sub">빵을그리다 배송 · 거래처를 누르면 티맵 길안내가 바로 시작돼요</div>
+  <div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div>
 </header>
 <main>
+  <div class="inst" id="inst"></div>
   <div class="notice" id="notice"></div>
-  <div class="box" id="findBox" style="margin:0 0 12px">
-    <h2>🔍 거래처 찾기 <span class="cnt" id="fcnt"></span></h2>
+
+  <h2 class="sec" id="dayTitle">📦 배송 목록</h2>
+  <div id="list"></div>
+
+  <h2 class="sec">⭐ 빠른 찾기</h2>
+  <div id="favs"></div>
+  <button class="btn ol" id="regOpen">＋ 빠른 찾기 등록</button>
+
+  <div class="box" id="reg" style="display:none">
+    <h3>⭐ 빠른 찾기 등록 <button id="regClose">닫기 ✕</button></h3>
+    <input id="fq" type="search" placeholder="거래처 이름·지역 (예: 바다백미, 곤지암)" autocomplete="off">
+    <div class="hint" id="fmsg">최근 6개월 이카운트 판매 거래처에서 찾아요.</div>
     <div id="fpass" style="display:none">
-      <label for="fpw">직원 암호 (「내 동선」 앱과 같은 암호, 처음 한 번만)</label>
+      <label for="fpw">직원 암호 (「내 동선」 앱과 같은 암호)</label>
       <input id="fpw" type="password" inputmode="numeric" autocomplete="off">
       <button class="btn br" id="fpwok">확인</button>
     </div>
-    <input id="fq" type="search" placeholder="거래처 이름·지역 (예: 바다백미, 화성)" autocomplete="off">
-    <div class="hint" id="fmsg">최근 6개월 이카운트 판매 거래처에서 찾아요.</div>
     <div id="fres"></div>
+    <details style="margin-top:12px">
+      <summary style="font-size:16px;color:var(--br);font-weight:700;cursor:pointer;min-height:40px">목록에 없나요? 직접 입력</summary>
+      <label for="fn">이름</label>
+      <input id="fn" placeholder="예) (화성)바다백미">
+      <label for="fa">주소</label>
+      <input id="fa" placeholder="예) 경기 화성시 서신면 백미길 210-35">
+      <button class="btn br" id="addManual">빠른 찾기에 등록</button>
+      <div class="hint">주소로 등록한 곳은 티맵이 열리면 검색 결과에서 한 번 더 눌러 주세요.</div>
+    </details>
   </div>
 
-  <div class="day">배송일 <input type="date" id="day"></div>
-  <div id="list"></div>
-
-  <button class="btn gr" id="share">📨 이 목록 링크 보내기 (카톡·문자)</button>
-  <div class="hint">받은 사람이 링크를 열면 거래처가 그대로 등록돼요. 바로 「티맵 길안내」만 누르면 됩니다.</div>
-
-  <div class="box" id="addBox">
-    <h2>➕ 거래처 추가</h2>
-    <label for="fn">거래처 이름</label>
-    <input id="fn" placeholder="예) (화성)바다백미">
-    <label for="fa">주소</label>
-    <input id="fa" placeholder="예) 경기 화성시 서신면 백미길 210-35">
-    <label for="fm">메모 (선택)</label>
-    <input id="fm" placeholder="예) 2층 카페, 뒷문 하차">
-    <button class="btn br" id="add">추가하기</button>
-    <div class="hint">주소만 넣어도 돼요. 티맵이 열리면 검색 결과에서 맞는 곳을 한 번 눌러 주세요.<br>조조에게 거래처 이름만 알려 주면 정확한 위치까지 넣은 링크를 만들어 드려요.</div>
-  </div>
-
+  <button class="btn gr" id="share" style="margin-top:22px">📨 배송 목록 링크 보내기 (카톡·문자)</button>
   <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v006 · 이 휴대폰에만 저장돼요</div>
+  <div class="ver">v007 · 이 휴대폰에만 저장돼요</div>
 </main>
 <div class="toast" id="toast"></div>
 
 <script>
-const KEY='tmapgo_v1';
-// 짧은 링크용 배송 목록 (?d=1024 처럼 열면 그날 목록이 등록됨)
+const KEY='tmapgo_v1', FKEY='tmapgo_fav', PKEY='tmapgo_pass', CKEY='tmapgo_cust';
+// 날짜별 배송 목록 (?d=1024 처럼 열면 그날 목록이 등록됨)
 const ROUTES={
  '1024':{day:'2026-10-24',stops:[
   {n:'(화성)서신노을카페_에코팜랜드',a:'경기 화성시 서신면 영종로안길 24 (화성에코팜테마파크 안)',y:37.11982835,x:126.69359386,m:''},
@@ -119,76 +133,73 @@ const ROUTES={
 const DEFAULT=Object.assign({preset:'1024'},ROUTES['1024']);
 const $=id=>document.getElementById(id);
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let S=load();
-function load(){try{const j=JSON.parse(localStorage.getItem(KEY));if(j&&Array.isArray(j.stops))return j}catch(e){}return JSON.parse(JSON.stringify(DEFAULT))}
-function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+const WD='일월화수목금토';
 function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display='none',2600)}
-const isAndroid=/Android/i.test(navigator.userAgent), isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+function note(t){const n=$('notice');n.textContent=t;n.style.display=t?'block':'none'}
+const UA=navigator.userAgent, isAndroid=/Android/i.test(UA), isIOS=/iPhone|iPad|iPod/i.test(UA), inKakao=/KAKAOTALK/i.test(UA);
+const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 
-// 링크로 받은 목록 읽기 (#p=...)
-// 열쇠(k): 주소 어디에 있든(?k= / #k= / 카톡이 #을 %23으로 바꾼 경우) 찾아 저장하고 주소창에서 지운다
+let S=(()=>{try{const j=JSON.parse(localStorage.getItem(KEY));if(j&&Array.isArray(j.stops))return j}catch(e){}return JSON.parse(JSON.stringify(DEFAULT))})();
+let FAV=(()=>{try{const j=JSON.parse(localStorage.getItem(FKEY));if(Array.isArray(j))return j}catch(e){}return []})();
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+// v007: 사용자 요청으로 배송 목록을 내일(10/24) 두 곳으로 한 번 맞춤 (이전 목록은 _prev에 보관)
+if(!localStorage.getItem('tmapgo_mig7')){if(S.preset!=='1024'||S.stops.length!==2){if(S.stops.length)localStorage.setItem(KEY+'_prev',JSON.stringify(S));S=JSON.parse(JSON.stringify(DEFAULT));save()}localStorage.setItem('tmapgo_mig7','1')}
+function saveFav(){localStorage.setItem(FKEY,JSON.stringify(FAV))}
+
+// ---- 링크 읽기 ----
+// 열쇠(k): ?k= / #k= / 카톡이 #을 %23으로 바꾼 경우 모두 찾아 저장하고 주소창에서 지운다
 (function readKey(){
   let href=location.href; try{href=decodeURIComponent(href)}catch(e){}
   const m=href.match(/[?&#]k=([A-Za-z0-9_-]{16,})/);
-  if(!m) return;
+  if(!m)return;
   localStorage.setItem('tmapgo_k',m[1]);
   const sp=new URLSearchParams(location.search); sp.delete('k');
   const dv=sp.get('d'); if(dv&&/k=/.test(dv)) sp.set('d',(dv.match(/\d{4}/)||[''])[0]);
   const qs=sp.toString(), hs=location.hash.replace(/(^#|&)k=[A-Za-z0-9_-]+/,'').replace(/^#&?$/,'');
   history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+hs);
 })();
-function readParam(){
+(function readParam(){
   let ds=location.search; try{ds=decodeURIComponent(ds)}catch(e){}
-  const k=((ds.match(/[?&]d=(\d{4})/)||[])[1])||'';
-  if(!k)return;
-  const R=ROUTES[k]; const keepQ=location.search.replace(/[?&]d=[^&]*/,'').replace(/^&/,'?');
-  if(R){
-    if(S.preset!==k){
-      if(S.stops.length) localStorage.setItem(KEY+'_prev',JSON.stringify(S));
-      S=JSON.parse(JSON.stringify(Object.assign({preset:k},R))); save();
-      const n=$('notice'); n.textContent='✅ '+k.slice(0,2)+'/'+k.slice(2)+' 배송지 '+R.stops.length+'곳을 등록했어요.'; n.style.display='block';
-    }
+  const k=((ds.match(/[?&]d=(\d{4})/)||[])[1])||''; if(!k)return;
+  const R=ROUTES[k];
+  if(R&&S.preset!==k){
+    if(S.stops.length) localStorage.setItem(KEY+'_prev',JSON.stringify(S));
+    S=JSON.parse(JSON.stringify(Object.assign({preset:k},R))); save();
+    note('✅ '+k.slice(0,2)+'/'+k.slice(2)+' 배송지 '+R.stops.length+'곳을 등록했어요.');
   }
-  history.replaceState(null,'',location.pathname+(keepQ&&keepQ!=='?'?keepQ:'')+location.hash);
-}
-readParam();
-function readHash(){
-  const h=location.hash.slice(1);
-  const km=h.match(/(?:^|&)k=([A-Za-z0-9_-]{16,})/);
-  if(km){localStorage.setItem('tmapgo_k',km[1]);history.replaceState(null,'',location.pathname+location.search);return}
-  if(!h.startsWith('p='))return;
+  const sp=new URLSearchParams(location.search); sp.delete('d'); const qs=sp.toString();
+  history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+location.hash);
+})();
+(function readHash(){
+  const h=location.hash.slice(1); if(!h.startsWith('p='))return;
   try{
     const o=JSON.parse(decodeURIComponent(h.slice(2)));
     const stops=(o.s||[]).map(r=>({n:r[0]||'',a:r[1]||'',y:r[2]?+r[2]:null,x:r[3]?+r[3]:null,m:r[4]||''})).filter(s=>s.n||s.a);
     if(stops.length){
       if(S.stops.length) localStorage.setItem(KEY+'_prev',JSON.stringify(S));
-      S={day:o.d||'',stops}; save();
-      const n=$('notice'); n.textContent='✅ 받은 링크의 거래처 '+stops.length+'곳을 등록했어요.'; n.style.display='block';
+      S={day:o.d||'',stops}; save(); note('✅ 받은 링크의 거래처 '+stops.length+'곳을 등록했어요.');
     }
   }catch(e){}
-  history.replaceState(null,'',location.pathname);
-}
-readHash();
-window.addEventListener('hashchange',()=>{readHash();render()});
+  history.replaceState(null,'',location.pathname+location.search);
+})();
 
+// ---- 티맵·카카오 링크 ----
 function tmapQuery(s){
   if(s.y&&s.x) return 'route?goalname='+encodeURIComponent(s.n)+'&goalx='+s.x+'&goaly='+s.y;
   return 'search?name='+encodeURIComponent(s.a||s.n);
 }
-function tmapHref(s){
-  const q=tmapQuery(s);
-  if(isAndroid) return 'intent://'+q+'#Intent;scheme=tmap;package=com.skt.tmap.ku;end';
-  return 'tmap://'+q;
-}
+function tmapHref(s){const q=tmapQuery(s);return isAndroid?'intent://'+q+'#Intent;scheme=tmap;package=com.skt.tmap.ku;end':'tmap://'+q}
 function kakaoHref(s){
   if(s.y&&s.x) return 'https://map.kakao.com/link/to/'+encodeURIComponent(s.n)+','+s.y+','+s.x;
   return 'https://map.kakao.com/link/search/'+encodeURIComponent(s.a||s.n);
 }
+
+// ---- 화면 ----
 function render(){
-  $('day').value=S.day||'';
+  if(S.day){const d=new Date(S.day+'T00:00:00');$('dayTitle').textContent='📦 '+(d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+') 배송'}
+  else $('dayTitle').textContent='📦 배송 목록';
   const L=$('list');
-  if(!S.stops.length){L.innerHTML='<div class="empty">등록된 거래처가 없어요.<br>아래에서 추가해 주세요.</div>';return}
-  L.innerHTML=S.stops.map((s,i)=>`
+  L.innerHTML=S.stops.length?S.stops.map((s,i)=>`
   <div class="card ${s.done?'done':''}">
     <div class="row"><div class="no">${s.done?'✓':i+1}</div>
       <div style="flex:1;min-width:0">
@@ -196,7 +207,7 @@ function render(){
         <div class="ad">${esc(s.a)}</div>
         ${s.m?`<div class="memo">📝 ${esc(s.m)}</div>`:''}
       </div></div>
-    <a class="go" href="${tmapHref(s)}" data-i="${i}" data-act="go">🚗 티맵 길안내 시작</a>
+    <a class="go" href="${tmapHref(s)}" data-act="go">🚗 티맵 길안내 시작</a>
     <div class="subs">
       <a class="sb" href="${kakaoHref(s)}" target="_blank" rel="noopener">카카오맵</a>
       <button class="sb" data-act="copy" data-i="${i}">주소 복사</button>
@@ -207,51 +218,17 @@ function render(){
       <button data-act="down" data-i="${i}">▼ 아래로</button>
       <button class="del" data-act="del" data-i="${i}">삭제</button>
     </div>
-  </div>`).join('');
+  </div>`).join(''):'<div class="card empty">배송 목록이 비어 있어요. 받은 링크를 열어 주세요.</div>';
+  renderFav();
 }
-document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-act]'); if(!b)return;
-  const i=+b.dataset.i, act=b.dataset.act, s=S.stops[i];
-  if(act==='go'){
-    // 티맵이 안 깔려 있을 때 안내 (아이폰)
-    if(isIOS){const t=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t<3000)toast('티맵이 안 열리면 앱스토어에서 「TMAP」을 설치해 주세요.')},2000)}
-    return;
-  }
-  if(act==='fadd'){const c=C.list&&C.list.find(z=>z.id===b.dataset.id);if(!c)return;
-    if(S.stops.some(z=>z.id===c.id)){toast('이미 목록에 있어요');return}
-    S.stops.push(toStop(c));delete S.preset;save();render();renderFind();toast('「'+c.n+'」을(를) 목록에 넣었어요');return}
-  if(act==='fgo')return;
-  if(act==='copy'){navigator.clipboard?.writeText(s.a||s.n).then(()=>toast('주소를 복사했어요'),()=>toast(s.a));return}
-  if(act==='done'){s.done=!s.done;save();render();return}
-  if(act==='up'&&i>0){[S.stops[i-1],S.stops[i]]=[S.stops[i],S.stops[i-1]];delete S.preset;save();render();return}
-  if(act==='down'&&i<S.stops.length-1){[S.stops[i+1],S.stops[i]]=[S.stops[i],S.stops[i+1]];delete S.preset;save();render();return}
-  if(act==='del'){if(confirm('「'+s.n+'」을(를) 목록에서 지울까요?')){S.stops.splice(i,1);delete S.preset;save();render()}return}
-});
-$('day').addEventListener('change',e=>{S.day=e.target.value;save()});
-$('add').addEventListener('click',()=>{
-  const n=$('fn').value.trim(), a=$('fa').value.trim(), m=$('fm').value.trim();
-  if(!n&&!a){toast('거래처 이름이나 주소를 넣어 주세요');return}
-  S.stops.push({n:n||a,a,y:null,x:null,m}); delete S.preset; save(); render();
-  $('fn').value=$('fa').value=$('fm').value=''; toast('추가했어요');
-});
-$('editT').addEventListener('click',()=>{document.body.classList.toggle('editing');$('editT').textContent=document.body.classList.contains('editing')?'✔ 편집 끝':'✏️ 순서 바꾸기·삭제'});
-$('share').addEventListener('click',async()=>{
-  if(!S.stops.length){toast('보낼 거래처가 없어요');return}
-  const o={d:S.day||'',s:S.stops.map(s=>[s.n,s.a,s.y?+(+s.y).toFixed(6):0,s.x?+(+s.x).toFixed(6):0,s.m||''])};
-  const base=location.origin+location.pathname;
-  let url;
-  const kk=localStorage.getItem('tmapgo_k'), kh=kk?'&k='+kk:'';
-  if(S.preset&&ROUTES[S.preset]) url=base+'?d='+S.preset+kh;
-  else if(S.stops.every(s=>s.id)) url=base+'?c='+S.stops.map(s=>s.id).join('.')+(S.day?'&day='+S.day.replace(/-/g,''):'')+kh;
-  else url=base+'#p='+encodeURIComponent(JSON.stringify(o));
-  const dd=S.day?S.day.slice(5).replace('-','/')+' ':'';
-  const text=dd+'배송지 '+S.stops.length+'곳 ('+S.stops.map(s=>s.n).join(', ')+')\n링크를 열고 「티맵 길안내 시작」을 누르세요.';
-  if(navigator.share){try{await navigator.share({title:'티맵 바로가기',text,url});return}catch(e){if(e.name==='AbortError')return}}
-  try{await navigator.clipboard.writeText(text+'\n'+url);toast('링크를 복사했어요. 카톡에 붙여넣기 하세요')}catch(e){prompt('이 링크를 복사하세요',url)}
-});
-// ===== 거래처 찾기 (내 동선 앱의 암호화 자료, 매일 06:30 갱신) =====
+function renderFav(){
+  $('favs').innerHTML=FAV.length?'<div class="fav">'+FAV.map((f,i)=>`<div class="fv"><div class="t"><b>${esc(f.n)}</b><span>${esc(f.a||'주소 미확인 · 티맵에서 이름으로 찾기')}</span></div>
+    <a class="fgo" href="${tmapHref(f)}" data-act="go">🚗 티맵</a><button class="fdel" data-act="fdel" data-i="${i}">삭제</button></div>`).join('')+'</div>'
+    :'<div class="card empty">아직 등록된 곳이 없어요.<br>자주 가는 거래처를 등록해 두면 여기서 바로 티맵을 열 수 있어요.</div>';
+}
+
+// ---- 거래처 명단 (암호화 파일, 매일 06:30 갱신 · 신규 거래처 자동 추가) ----
 const C={list:null,at:'',state:'idle',badPass:false,pending:null};
-const PKEY='tmapgo_pass', CKEY='tmapgo_cust';
 const b64u=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const norm=s=>String(s||'').toLowerCase().replace(/[\s()（）\[\]_\-·.,/]/g,'');
@@ -269,42 +246,41 @@ function buildList(D){
   return (D.places||[]).filter(p=>!p.depot).map(p=>{
     let l=(p.last||'').replace(/\//g,'-'); if(lastBy[p.id]&&lastBy[p.id]>l) l=lastBy[p.id];
     return {id:p.id,n:p.short||p.ecount,e:p.ecount||'',al:(p.alias||[]).join(' '),r:p.region||'',a:p.addr||'',y:p.lat||null,x:p.lon||null,k:p.n||0,l};
-  }).filter(c=>c.l&&c.l>=from).sort((a,b)=>b.k-a.k||a.n.localeCompare(b.n,'ko'));
+  }).filter(c=>c.l&&c.l>=from).sort((a,b)=>a.n.localeCompare(b.n,'ko'));
 }
 function toStop(c){return {id:c.id,n:c.n,a:c.a||((c.r?c.r+' ':'')+c.n),y:c.y,x:c.x,m:c.a?'':'주소 미확인 · 티맵에서 이름으로 찾아요'}}
 function fmsg(t){$('fmsg').textContent=t}
-function showPass(on){$('fpass').style.display=on?'block':'none';if(on)setTimeout(()=>$('fpw').focus(),50)}
+function showPass(on){$('fpass').style.display=on?'block':'none'}
+function loaded(D,list){
+  C.list=list;C.at=D.updated||'';
+  localStorage.setItem(CKEY,JSON.stringify({at:C.at,list:C.list}));showPass(false);
+  fmsg('최근 6개월 이카운트 판매 거래처 '+C.list.length+'곳'+(C.at?' · '+C.at+' 기준':''));
+}
 async function custLoad(){
   if(C.state==='loading')return;
   if(!C.list){try{const c=JSON.parse(localStorage.getItem(CKEY));if(c&&c.list){C.list=c.list;C.at=c.at}}catch(e){}}
+  C.state='loading';
   const lk=localStorage.getItem('tmapgo_k');
   if(lk){
-    C.state='loading';fmsg('거래처를 불러오는 중…');
     try{
       const r=await fetch('../tmap_cust.enc.json?t='+Date.now(),{cache:'no-store'});
       if(!r.ok)throw new Error('net');
       const D=await decData(await r.json(),lk);
       const from=ymd(new Date(Date.now()-183*864e5));
-      C.list=(D.list||[]).filter(c=>c.l&&c.l>=from);C.at=D.updated||'';
-      localStorage.setItem(CKEY,JSON.stringify({at:C.at,list:C.list}));showPass(false);
-      fmsg('최근 6개월 이카운트 판매 거래처 · '+(C.at?C.at+' 기준':''));
+      loaded(D,(D.list||[]).filter(c=>c.l&&c.l>=from).sort((a,b)=>a.n.localeCompare(b.n,'ko')));
       C.state='idle';renderFind();applyPending();return;
     }catch(e){
       if(e&&e.name==='OperationError')localStorage.removeItem('tmapgo_k');
       else if(C.list){fmsg('인터넷이 안 돼서 저장된 목록으로 찾아요.');C.state='idle';renderFind();applyPending();return}
-      C.state='idle';
     }
   }
   const pass=getPass();
-  if(!pass){fmsg('카톡으로 받은 링크로 한 번만 열면 거래처가 바로 보여요.');$('fmsg').insertAdjacentHTML('beforeend',' <a href="#" id="fpwlink" style="color:#6B4423">직원 암호로 열기</a>');$('fpwlink').onclick=e=>{e.preventDefault();showPass(true)};renderFind();return}
-  C.state='loading';fmsg('거래처를 불러오는 중…');
+  if(!pass){C.state='idle';fmsg(C.list?'저장된 목록으로 찾아요.':'카톡으로 받은 「티맵 바로가기」 링크로 한 번 열면 거래처가 보여요.');renderFind();return}
   try{
     const r=await fetch('../delivery.enc.json?t='+Date.now(),{cache:'no-store'});
     if(!r.ok)throw new Error('net');
     const D=await decData(await r.json(),pass);
-    C.list=buildList(D);C.at=D.updated||'';
-    localStorage.setItem(CKEY,JSON.stringify({at:C.at,list:C.list}));localStorage.setItem(PKEY,pass);showPass(false);
-    fmsg('최근 6개월 이카운트 판매 거래처 · '+(C.at?C.at+' 기준':''));
+    loaded(D,buildList(D));localStorage.setItem(PKEY,pass);
   }catch(e){
     if(e&&e.name==='OperationError'){localStorage.removeItem(PKEY);C.badPass=true;showPass(true);fmsg('암호가 맞지 않아요. 다시 넣어 주세요.')}
     else fmsg(C.list?'인터넷이 안 돼서 저장된 목록으로 찾아요.':'거래처 자료를 못 불러왔어요 (인터넷 연결 확인).');
@@ -312,17 +288,15 @@ async function custLoad(){
   C.state='idle';renderFind();applyPending();
 }
 function renderFind(){
-  $('fcnt').textContent=C.list?C.list.length+'곳':'';
-  const R=$('fres');
-  if(!C.list){R.innerHTML=$('fq').value.trim()?'<div class="hint" style="margin-top:10px;color:#b45309">거래처 목록이 아직 열리지 않았어요. 카톡으로 받은 「티맵 바로가기」 링크를 다시 눌러 주세요.</div>':'';return}
-  const q=norm($('fq').value);
-  let L;
-  if(!q){L=C.list.slice(0,6);R.innerHTML='<div class="hint" style="margin:10px 0 0">자주 가는 곳</div>'}
-  else{L=C.list.filter(c=>norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(q)).slice(0,30);R.innerHTML=L.length?'':'<div class="hint" style="margin-top:10px">「'+esc($('fq').value)+'」 거래처가 없어요. 아래 「➕ 거래처 추가」에 직접 넣어 주세요.</div>'}
-  R.innerHTML+=L.map(c=>{const st=toStop(c),inL=S.stops.some(z=>z.id===c.id);
-    return `<div class="fr"><div class="fn">${esc(c.n)}</div>
-    <div class="fs">${c.r?esc(c.r)+' · ':''}최근 ${esc(c.l.slice(5).replace('-','/'))}${c.k?' · 2026년 '+c.k+'회':''}<br>${c.a?esc(c.a):'<span style="color:#b45309">주소 미확인 (티맵에서 이름으로 찾기)</span>'}</div>
-    <div class="fb"><a href="${tmapHref(st)}" data-act="fgo">🚗 바로 티맵</a><button data-act="fadd" data-id="${c.id}" class="${inL?'in':''}">${inL?'✓ 목록에 있음':'➕ 목록에 추가'}</button></div></div>`}).join('');
+  const R=$('fres'), q=norm($('fq').value);
+  if(!q){R.innerHTML='';return}
+  if(!C.list){R.innerHTML='<div class="hint" style="margin-top:10px;color:var(--or)">거래처 목록이 아직 안 열렸어요. 카톡으로 받은 「티맵 바로가기」 링크를 다시 눌러 주세요.</div>';return}
+  const L=C.list.filter(c=>norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(q)).slice(0,30);
+  R.innerHTML=L.length?L.map(c=>{const inF=FAV.some(f=>f.id===c.id);
+    return `<div class="fr"><div class="t"><div class="fn">${esc(c.n)}</div>
+    <div class="fs">${c.r?esc(c.r)+' · ':''}${c.a?esc(c.a):'<span style="color:var(--or)">주소 미확인</span>'}</div></div>
+    <button data-act="fadd" data-id="${c.id}" class="${inF?'in':''}">${inF?'✓ 등록됨':'⭐ 등록'}</button></div>`}).join('')
+    :'<div class="hint" style="margin-top:10px">「'+esc($('fq').value)+'」 거래처가 없어요. 아래 「직접 입력」으로 등록해 주세요.</div>';
 }
 function applyPending(){
   if(!C.pending||!C.list)return;
@@ -330,8 +304,8 @@ function applyPending(){
   const stops=P.ids.map(id=>C.list.find(c=>c.id===id)).filter(Boolean).map(toStop);
   if(!stops.length)return;
   if(S.stops.length)localStorage.setItem(KEY+'_prev',JSON.stringify(S));
-  S={day:P.day,stops};save();render();renderFind();
-  const n=$('notice');n.textContent='✅ 받은 링크의 거래처 '+stops.length+'곳을 등록했어요.';n.style.display='block';
+  S={day:P.day,stops};save();render();
+  note('✅ 받은 링크의 거래처 '+stops.length+'곳을 등록했어요.');
 }
 (function readC(){
   const sp=new URLSearchParams(location.search), c=sp.get('c');
@@ -339,13 +313,75 @@ function applyPending(){
   const dd=(sp.get('day')||'').replace(/\D/g,'');
   C.pending={ids:c.split(/[.,]/).filter(Boolean),day:dd.length===8?dd.slice(0,4)+'-'+dd.slice(4,6)+'-'+dd.slice(6):''};
   history.replaceState(null,'',location.pathname);
-  const n=$('notice');n.textContent='받은 링크의 거래처 '+C.pending.ids.length+'곳을 불러오는 중이에요…';n.style.display='block';
+  note('받은 링크의 거래처 '+C.pending.ids.length+'곳을 불러오는 중이에요…');
 })();
+
+// ---- 버튼 ----
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(!b)return;
+  const i=+b.dataset.i, act=b.dataset.act, s=S.stops[i];
+  if(act==='go'){if(isIOS){const t=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t<3000)toast('티맵이 안 열리면 앱스토어에서 「TMAP」을 설치해 주세요.')},2000)}return}
+  if(act==='fadd'){const c=C.list&&C.list.find(z=>z.id===b.dataset.id);if(!c)return;
+    if(FAV.some(f=>f.id===c.id)){toast('이미 등록돼 있어요');return}
+    const st=toStop(c);FAV.push({id:st.id,n:st.n,a:c.a,y:st.y,x:st.x});saveFav();renderFav();renderFind();toast('⭐ 「'+c.n+'」을(를) 빠른 찾기에 등록했어요');return}
+  if(act==='fdel'){const f=FAV[i];if(f&&confirm('「'+f.n+'」을(를) 빠른 찾기에서 지울까요?')){FAV.splice(i,1);saveFav();renderFav()}return}
+  if(act==='copy'){navigator.clipboard?.writeText(s.a||s.n).then(()=>toast('주소를 복사했어요'),()=>toast(s.a));return}
+  if(act==='done'){s.done=!s.done;save();render();return}
+  if(act==='up'&&i>0){[S.stops[i-1],S.stops[i]]=[S.stops[i],S.stops[i-1]];delete S.preset;save();render();return}
+  if(act==='down'&&i<S.stops.length-1){[S.stops[i+1],S.stops[i]]=[S.stops[i],S.stops[i+1]];delete S.preset;save();render();return}
+  if(act==='del'){if(confirm('「'+s.n+'」을(를) 배송 목록에서 지울까요?')){S.stops.splice(i,1);delete S.preset;save();render()}return}
+});
+$('regOpen').addEventListener('click',()=>{$('reg').style.display='block';$('regOpen').style.display='none';$('fq').focus();if(!C.list||C.state==='idle')custLoad()});
+$('regClose').addEventListener('click',()=>{$('reg').style.display='none';$('regOpen').style.display='flex';$('fq').value='';renderFind()});
 $('fq').addEventListener('input',renderFind);
-$('fq').addEventListener('focus',()=>{if(!C.list&&C.state!=='loading')custLoad()});
-$('fpwok').addEventListener('click',()=>{const v=$('fpw').value.trim();if(!v){toast('암호를 넣어 주세요');return}localStorage.setItem(PKEY,v);$('fpw').value='';custLoad()});
-$('fpw').addEventListener('keydown',e=>{if(e.key==='Enter')$('fpwok').click()});
+$('fpwok').addEventListener('click',()=>{const v=$('fpw').value.trim();if(!v){toast('암호를 넣어 주세요');return}localStorage.setItem(PKEY,v);C.badPass=false;$('fpw').value='';custLoad()});
+$('addManual').addEventListener('click',()=>{
+  const n=$('fn').value.trim(), a=$('fa').value.trim();
+  if(!n&&!a){toast('이름이나 주소를 넣어 주세요');return}
+  FAV.push({id:'m'+Date.now(),n:n||a,a,y:null,x:null});saveFav();renderFav();
+  $('fn').value=$('fa').value='';toast('⭐ 빠른 찾기에 등록했어요');
+});
+$('editT').addEventListener('click',()=>{document.body.classList.toggle('editing');$('editT').textContent=document.body.classList.contains('editing')?'✔ 편집 끝':'✏️ 순서 바꾸기·삭제'});
+$('share').addEventListener('click',async()=>{
+  if(!S.stops.length){toast('보낼 거래처가 없어요');return}
+  const base=location.origin+location.pathname, kk=localStorage.getItem('tmapgo_k'), kh=kk?'&k='+kk:'';
+  let url;
+  if(S.preset&&ROUTES[S.preset]) url=base+'?d='+S.preset+kh;
+  else if(S.stops.every(s=>s.id)) url=base+'?c='+S.stops.map(s=>s.id).join('.')+(S.day?'&day='+S.day.replace(/-/g,''):'')+kh;
+  else url=base+'#p='+encodeURIComponent(JSON.stringify({d:S.day||'',s:S.stops.map(s=>[s.n,s.a,s.y?+(+s.y).toFixed(6):0,s.x?+(+s.x).toFixed(6):0,s.m||''])}));
+  const dd=S.day?S.day.slice(5).replace('-','/')+' ':'';
+  const text=dd+'배송지 '+S.stops.length+'곳 ('+S.stops.map(s=>s.n).join(', ')+')\n링크를 열고 「티맵 길안내 시작」을 누르세요.';
+  if(navigator.share){try{await navigator.share({title:'티맵 바로가기',text,url});return}catch(e){if(e.name==='AbortError')return}}
+  try{await navigator.clipboard.writeText(text+'\n'+url);toast('링크를 복사했어요. 카톡에 붙여넣기 하세요')}catch(e){prompt('이 링크를 복사하세요',url)}
+});
+
+// ---- 앱 설치 ----
+let deferredPrompt=null;
+function instShow(html){const b=$('inst');b.innerHTML=html;b.style.display='block'}
+function setupInstall(){
+  if(isStandalone())return;
+  const kk=localStorage.getItem('tmapgo_k');
+  const openUrl=location.origin+location.pathname+(kk?'?k='+kk:'');
+  if(inKakao){
+    instShow('<b>📲 휴대폰에 앱으로 설치하기</b><div class="hint">카톡 안에서는 설치가 안 돼요. 아래 버튼으로 '+(isIOS?'사파리':'크롬')+'에서 연 다음 설치해 주세요.</div><button class="btn br" id="openExt">'+(isIOS?'사파리':'크롬')+'에서 열기</button>');
+    $('openExt').onclick=()=>{location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(openUrl)};
+    return;
+  }
+  if(isIOS){
+    instShow('<b>📲 홈 화면에 앱으로 설치하기</b><div class="hint">사파리 아래쪽 <b>공유 버튼(□↑)</b> → <b>「홈 화면에 추가」</b>를 누르면 앱처럼 쓸 수 있어요.</div>');
+    return;
+  }
+  setTimeout(()=>{if(!deferredPrompt&&!isStandalone()&&isAndroid)instShow('<b>📲 홈 화면에 앱으로 설치하기</b><div class="hint">크롬 오른쪽 위 <b>⋮ 메뉴</b> → <b>「홈 화면에 추가」</b> 또는 <b>「앱 설치」</b>를 눌러 주세요.</div>')},3500);
+}
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  instShow('<b>📲 홈 화면에 앱으로 설치하기</b><div class="hint">한 번 설치하면 아이콘을 눌러 바로 열 수 있어요.</div><button class="btn br" id="doInst">앱 설치</button>');
+  $('doInst').onclick=async()=>{deferredPrompt.prompt();const r=await deferredPrompt.userChoice;deferredPrompt=null;if(r.outcome==='accepted'){$('inst').style.display='none';toast('설치했어요. 홈 화면 아이콘으로 열어 주세요')}};
+});
+window.addEventListener('appinstalled',()=>{$('inst').style.display='none'});
+
 render();
+setupInstall();
 custLoad();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>

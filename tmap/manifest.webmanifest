@@ -1,22 +1,33 @@
 {
+ "id": "/dongseon/tmap/",
  "name": "티맵 바로가기 (빵을그리다 배송)",
  "short_name": "티맵 바로가기",
+ "description": "빵을그리다 배송지를 누르면 티맵 길안내가 바로 시작돼요",
+ "lang": "ko",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
+ "orientation": "portrait",
  "background_color": "#ffffff",
  "theme_color": "#6B4423",
  "icons": [
   {
    "src": "icon_192.png",
    "sizes": "192x192",
-   "type": "image/png"
+   "type": "image/png",
+   "purpose": "any"
   },
   {
    "src": "icon_512.png",
    "sizes": "512x512",
    "type": "image/png",
-   "purpose": "any maskable"
+   "purpose": "any"
+  },
+  {
+   "src": "icon_512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
   }
  ]
 }

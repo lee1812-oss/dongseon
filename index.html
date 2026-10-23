@@ -156,7 +156,7 @@ function seed() {
 let S;
 try { S = JSON.parse(localStorage.getItem(LS_KEY)) || seed(); } catch(e) { S = seed(); }
 S.manual = S.manual || {}; S.cache = S.cache || {}; S.routeOpt = S.routeOpt || '0';
-S.dv = S.dv || {pass:'', data:null, tpl:null, localMap:{}, date:''}; S.dv.localMap = S.dv.localMap || {};
+S.dv = S.dv || {pass:'', data:null, tpl:null, localMap:{}, date:''}; S.dv.localMap = S.dv.localMap || {}; if (!S.dv.pass) { try { const bp = localStorage.getItem('drawbread_pass'); if (bp) S.dv.pass = bp; } catch(e){} }
 const save = () => { localStorage.setItem(LS_KEY, JSON.stringify(S)); try { if (typeof syncWatch === 'function') syncWatch(); } catch(e){} };
 save();
 
@@ -795,9 +795,9 @@ function custInfo(id){
 function dvGate(){
   if (S.dv.data) return '';
   if (DV.state === 'loading' || DV.state === 'idle') { if (DV.state==='idle') dvLoad().then(render); return '<div class="empty"><span class="spin"></span> 자료 불러오는 중…</div>'; }
-  if (DV.state === 'needpass') return `<div class="card"><b>빵을그리다 직원용 자료</b><div class="muted" style="margin-top:4px">직원용 암호를 한 번만 넣으면 이 휴대폰에서 계속 볼 수 있어요. (배송 코스·거래처 공통)</div>
+  if (DV.state === 'needpass') return `<div class="card"><b>빵을그리다 직원용 자료</b><div class="muted" style="margin-top:4px">담당자에게 받은 「바로 열기」 링크를 한 번 누르면 이 휴대폰에서 암호 없이 계속 열려요. (배송 코스·거래처 공통)</div>
       ${DV.msg?`<div class="warn" style="margin-top:10px">${esc(DV.msg)}</div>`:''}
-      <input class="inp" id="dvPass" type="password" placeholder="직원용 암호" style="margin-top:10px"><button class="btn primary" style="width:100%;margin-top:8px" data-act="dvPass">확인</button></div>`;
+      <input class="inp" id="dvPass" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="링크가 없을 때만: 직원용 암호" style="margin-top:10px;-webkit-text-security:disc"><button class="btn primary" style="width:100%;margin-top:8px" data-act="dvPass">확인</button></div>`;
   return `<div class="card"><div class="warn">${esc(DV.msg||'자료를 못 불러왔어요')}</div><button class="btn" data-act="dvReload">다시 시도</button></div>`;
 }
 function renderDelivery(){
@@ -805,9 +805,9 @@ function renderDelivery(){
   $('#barActions').innerHTML = '';
   if (!S.dv.data) {
     if (DV.state === 'loading' || DV.state === 'idle') { h = '<div class="empty"><span class="spin"></span> 배송 자료 불러오는 중…</div>'; if (DV.state==='idle') dvLoad().then(render); }
-    else if (DV.state === 'needpass') h = `<div class="card"><b>빵을그리다 배송 코스</b><div class="muted" style="margin-top:4px">직원용 암호를 한 번만 넣으면 이 휴대폰에서 계속 볼 수 있어요.</div>
+    else if (DV.state === 'needpass') h = `<div class="card"><b>빵을그리다 배송 코스</b><div class="muted" style="margin-top:4px">담당자에게 받은 「바로 열기」 링크를 한 번 누르면 이 휴대폰에서 암호 없이 계속 열려요.</div>
       ${DV.msg?`<div class="warn" style="margin-top:10px">${esc(DV.msg)}</div>`:''}
-      <input class="inp" id="dvPass" type="password" placeholder="배송 자료 암호" style="margin-top:10px"><button class="btn primary" style="width:100%;margin-top:8px" data-act="dvPass">확인</button></div>`;
+      <input class="inp" id="dvPass" type="text" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="링크가 없을 때만: 직원용 암호" style="margin-top:10px;-webkit-text-security:disc"><button class="btn primary" style="width:100%;margin-top:8px" data-act="dvPass">확인</button></div>`;
     else h = `<div class="card"><div class="warn">${esc(DV.msg||'배송 자료를 못 불러왔어요')}</div><button class="btn" data-act="dvReload">다시 시도</button></div>`;
     $('#main').innerHTML = h; return;
   }

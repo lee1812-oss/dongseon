@@ -205,6 +205,19 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 #keyBox .kb b{font-size:18px}#keyBox .kr{display:flex;gap:8px;margin-top:10px}
 #keyBox input{flex:1;min-width:0;min-height:54px;font-size:22px;letter-spacing:4px;padding:0 12px;border:1.5px solid var(--ln);border-radius:10px}
 #keyBox button{min-height:54px;padding:0 20px;font-size:18px;font-weight:800;background:var(--br);color:#fff;border:0;border-radius:10px}
+
+/* v025 거래처 담당자 연락처 */
+.ctb{margin-top:10px;background:#F3F8F4;border:1px solid #cfe3d5;border-radius:12px;padding:8px 10px}
+.ctl{padding:6px 0;border-top:1px dashed #cfe3d5}.ctl:first-child{border-top:0}
+.ctn{font-size:17px;color:#222;line-height:1.35;word-break:keep-all}.ctn b{font-weight:800}.ctn span{color:#444;white-space:nowrap;margin-left:4px}
+.ctbt{display:flex;gap:8px;margin-top:6px}.ctbt a{flex:1;display:flex;align-items:center;justify-content:center;min-height:50px;border-radius:10px;font-size:17px;font-weight:800;text-decoration:none}
+.ctbt .ctc{background:#1F6B45;color:#fff}.ctbt .cts{background:#fff;color:#1F6B45;border:1.5px solid #1F6B45}
+.ctf{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;font-size:13.5px;color:#6b6b72}
+.ctf button,.ctnone button{border:1px solid #b9b9c2;background:#fff;border-radius:9px;min-height:40px;padding:0 12px;font-size:15px;font-weight:700;color:#333;font-family:inherit}
+.ctnone{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:16px;color:#6b6b72}
+.ctm{color:#1F6B45!important}.ctm a{color:#1F6B45;font-weight:800;text-decoration:none;white-space:nowrap}
+.cted{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid #ececf0}.cted:first-child{border-top:0}
+.cted input{width:100%;min-height:52px;font-size:18px;padding:8px 12px;border:1.5px solid #c9c9ce;border-radius:10px;box-sizing:border-box;font-family:inherit}
 </style>
 </head>
 <body>
@@ -258,7 +271,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div></div>
-    <div class="ver">v025 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="ver">v026 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
@@ -365,7 +378,7 @@ function kakaoHref(s){
 const OPEN=new Set();
 const chipOf=s=>s.done?['dn','✔ 완료'+((s.fin||s.arr)?' '+esc(s.fin||s.arr):'')]:s.arr?['ar','📍 도착 '+esc(s.arr)]:s.dep?['mv','🚚 이동 중']:['wt','대기'];
 function msgBtn2(s){const p=pidOf(s),n=msgCount(p),u=unread(p);return '<button class="sb mb2'+(u?' unread':n?' has':'')+'" data-act="msg" data-pid="'+esc(p)+'" data-pn="'+esc(s.n)+'">'+(u?'🔴 새 전달 '+u+'개':n?'💬 전달사항 '+n:'💬 전달사항')+'</button>'}
-function stopBody(s,i){return `<div class="ad">${esc(s.a)}</div>${s.m?`<div class="memo">📝 ${esc(s.m)}</div>`:''}${msgPrev(s)}${tripLine(s)}
+function stopBody(s,i){return `<div class="ad">${esc(s.a)}</div>${ctRow(s)}${s.m?`<div class="memo">📝 ${esc(s.m)}</div>`:''}${msgPrev(s)}${tripLine(s)}
   <a class="go" href="${tmapHref(s)}" data-act="go" data-i="${i}">${s.dep&&!s.done?'🚗 티맵 다시 열기':'🚚 출발 · 티맵 길안내'}</a>
   <div class="subs"><button class="sb ok${s.done?' undo':''}" data-act="done" data-i="${i}">${s.done?'↩ 완료 취소':'✔ 배송 완료'}</button>${msgBtn2(s)}</div>
   <div class="lkrow"><a class="lk" href="${kakaoHref(s)}" target="_blank" rel="noopener">카카오맵</a><button class="lk" data-act="copy" data-i="${i}">주소 복사</button></div>`}
@@ -474,7 +487,7 @@ function renderFind(){
   const L=C.list.filter(c=>norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(q)).slice(0,30);
   R.innerHTML=L.length?L.map(c=>{const inF=FAV.some(f=>f.id===c.id), mc=msgCount(c.id);
     return `<div class="fr"><div class="t"><div class="fn">${esc(c.n)}</div>
-    <div class="fs">${c.r?esc(c.r)+' · ':''}${c.a?esc(c.a):'<span style="color:var(--or)">주소 미확인</span>'}</div></div>
+    <div class="fs">${c.r?esc(c.r)+' · ':''}${c.a?esc(c.a):'<span style="color:var(--or)">주소 미확인</span>'}</div>${ctMini(c)}</div>
     <button class="star${inF?' in':''}" data-act="fadd" data-id="${c.id}">${inF?'⭐ 등록됨':'⭐ 빠른 등록'}</button>
     <div class="r2">${addBtn(c.id)}<a class="fgo" href="${tmapHref(toStop(c))}" data-act="go">🚗 티맵</a></div>
     <div class="lkrow"><button class="lk" data-act="msg" data-pid="${esc(c.id)}" data-pn="${esc(c.n)}">💬 전달사항${mc?' '+mc:''}</button></div></div>`}).join('')
@@ -623,7 +636,7 @@ async function openSheet(pid,pn){
   SHP=pid;SHN=pn||'거래처';
   const st=(C.list&&C.list.find(c=>c.id===pid))||S.stops.find(s=>pidOf(s)===pid)||FAV.find(f=>pidOf(f)===pid);
   if(st){$('shGo').href=tmapHref(st.a!==undefined&&st.l!==undefined?toStop(st):st);$('shGo').style.display='flex'}else $('shGo').style.display='none';
-  renderSheet();$('sheet').classList.add('on');
+  renderSheet();ctSheet();$('sheet').classList.add('on');ctPull();
   SEEN[pid]=Date.now();localStorage.setItem('tmapgo_seen',JSON.stringify(SEEN));render();
   if(me())storeCall({op:'merge',key:'msgr',value:{[pid]:{[me()]:Date.now()}},by:me()}).catch(()=>{});
   msgPull();
@@ -994,7 +1007,7 @@ async function shareEta(s){const t=etaOf(s);
   const cur=()=>$('aTx').value.trim(), copy=async()=>{try{await navigator.clipboard.writeText(cur());return true}catch(e){const a=$('aTx');a.select();try{return document.execCommand('copy')}catch(_){return false}}};
   $('aX').onclick=()=>b.classList.remove('on');
   $('aCp').onclick=async()=>{toast(await copy()?'📋 복사했어요. 원하는 곳에 붙여 넣어 주세요':'글을 길게 눌러 복사해 주세요')};
-  const sm=$('aSm');if(sm)sm.onclick=()=>{location.href='sms:'+(isI?'&':'?')+'body='+encodeURIComponent(cur())};
+  const sm=$('aSm');if(sm){const cp=ctPhones(pidOf(s))[0];if(cp)sm.textContent='✉️ '+(cp.t||'담당자')+'께 문자로 보내기';sm.onclick=()=>{location.href='sms:'+(cp?cp.p.replace(/[^0-9]/g,''):'')+(isI?'&':'?')+'body='+encodeURIComponent(cur())}}
   $('aKa').onclick=async()=>{const x=cur();
     if(pc&&window.Kakao&&Kakao.isInitialized&&Kakao.isInitialized()){try{const u='https://lee1812-oss.github.io/dongseon/tmap/';
       Kakao.Share.sendDefault({objectType:'text',text:x.length>200?x.slice(0,199)+'…':x,link:{webUrl:u,mobileWebUrl:u},buttons:[]});copy();
@@ -1041,7 +1054,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='✅ 열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v025';
+const APP_VER='v026';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){
@@ -1060,6 +1073,55 @@ verCheck();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)verCheck()});
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 
+
+// ===== v025 거래처 담당자 연락처 (이카운트 판매 인쇄 「☎ 담당1 / 담당2」 자동 + 앱에서 고치기, 공유 저장 cinfo) =====
+var CI=(()=>{try{return JSON.parse(localStorage.getItem('tmapgo_cinfo'))||{}}catch(e){return {}}})();
+function ctBase(pid){const c=C.list&&C.list.find(x=>x.id===pid);return (c&&Array.isArray(c.ct))?c.ct:[]}
+function ctOf(pid){const o=(CI||{})[pid];if(o&&Array.isArray(o.ct))return {ct:o.ct,ed:o};return {ct:ctBase(pid),ed:null}}
+function ctPhones(pid){return ctOf(pid).ct.filter(o=>o&&o.p)}
+function telOf(p){return String(p||'').replace(/[^0-9]/g,'')}
+function ctLines(pid,pn){const {ct,ed}=ctOf(pid);
+  if(!ct.length)return '<div class="ctnone"><span>👤 담당자 연락처가 없어요</span><button data-ct="edit" data-pid="'+esc(pid)+'" data-pn="'+esc(pn||'')+'">✏️ 넣기</button></div>';
+  return ct.map(o=>'<div class="ctl"><div class="ctn">👤 <b>'+esc(o.t||'담당자')+'</b>'+(o.p?'<span>'+esc(o.p)+'</span>':'')+'</div>'
+    +(o.p?'<div class="ctbt"><a class="ctc" href="tel:'+telOf(o.p)+'">📞 전화</a><a class="cts" href="sms:'+telOf(o.p)+'">💬 문자</a></div>':'')+'</div>').join('')
+    +'<div class="ctf"><span>'+(ed?'앱에서 고침 · '+esc(ed.by||'')+' '+(ed.at?hm(ed.at):''):'이카운트 거래처 담당')+'</span><button data-ct="edit" data-pid="'+esc(pid)+'" data-pn="'+esc(pn||'')+'">✏️ 고치기</button></div>'}
+function ctRow(s){return '<div class="ctb">'+ctLines(pidOf(s),s.n)+'</div>'}
+function ctMini(c){const p=ctPhones(c.id)[0];return p?'<div class="fs ctm">👤 '+esc(p.t||'담당자')+' · <a href="tel:'+telOf(p.p)+'">📞 '+esc(p.p)+'</a></div>':''}
+function ctSheet(){let d=$('shCt');if(!d){d=document.createElement('div');d.id='shCt';const g=$('shGo');g.parentNode.insertBefore(d,g.nextSibling)}
+  if(!SHP){d.innerHTML='';return}d.className='ctb';d.style.margin='8px 14px';d.innerHTML=ctLines(SHP,SHN)}
+var CTW=0;
+async function ctPull(){if(!localStorage.getItem('tmapgo_k'))return;const st=Date.now();try{const j=await storeCall({op:'get',keys:'cinfo'});if(st<CTW)return;CI=((j.data||{}).cinfo||{}).value||{};localStorage.setItem('tmapgo_cinfo',JSON.stringify(CI));render();renderFind();if(SHP)ctSheet()}catch(e){}}
+function ctEdit(pid,pn){
+  if(!localStorage.getItem('tmapgo_k')){toast('맨 위에 직원 암호를 넣어 주세요');return}
+  let b=$('ctsheet');if(!b){b=document.createElement('div');b.className='sheet';b.id='ctsheet';document.body.appendChild(b);b.addEventListener('click',e=>{if(e.target.id==='ctsheet')b.classList.remove('on')})}
+  const {ct,ed}=ctOf(pid), base=ctBase(pid);
+  const rows=(ct.length?ct:[{t:'',p:''}]).map(o=>({t:o.t||'',p:o.p||''}));
+  const draw=()=>{b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">✏️ '+esc(pn||'거래처')+' 담당자</b><button id="ctX">닫기</button></div><div class="sh-l">'
+    +'<div class="hint" style="margin:0 0 4px">이름·직책과 전화번호를 고치면 모든 직원 휴대폰에 같이 바뀌어요. (이카운트에는 안 바뀌어요)</div>'
+    +rows.map((o,k)=>'<div class="cted"><input data-k="'+k+'" data-f="t" placeholder="이름·직책 (예: 홍길동 실장님)" value="'+esc(o.t)+'"><input data-k="'+k+'" data-f="p" inputmode="tel" placeholder="전화번호 (예: 010-1234-5678)" value="'+esc(o.p)+'">'
+      +(rows.length>1?'<button class="lk" data-k="'+k+'" data-rm="1" style="align-self:flex-end">이 사람 빼기</button>':'')+'</div>').join('')
+    +(rows.length<3?'<button class="btn ln" id="ctAdd" style="margin-top:6px">＋ 한 사람 더</button>':'')
+    +'<button class="btn br" id="ctSave" style="margin-top:10px">💾 저장</button>'
+    +(ed&&base.length?'<button class="btn ln" id="ctBack" style="margin-top:8px">↩ 이카운트 원래 연락처로 되돌리기</button><div class="hint">이카운트: '+esc(base.map(o=>(o.t||'담당자')+(o.p?' '+o.p:'')).join(' / '))+'</div>':'')
+    +'</div></div>';
+    b.querySelectorAll('input').forEach(x=>x.addEventListener('input',()=>{rows[+x.dataset.k][x.dataset.f]=x.value}));
+    b.querySelectorAll('[data-rm]').forEach(x=>x.onclick=()=>{rows.splice(+x.dataset.k,1);draw()});
+    $('ctX').onclick=()=>b.classList.remove('on');
+    const ad=$('ctAdd');if(ad)ad.onclick=()=>{rows.push({t:'',p:''});draw()};
+    $('ctSave').onclick=()=>{const L=rows.map(o=>({t:o.t.trim().slice(0,30),p:o.p.trim().slice(0,20)})).filter(o=>o.t||o.p);
+      if(L.some(o=>o.p&&telOf(o.p).length<8)){toast('전화번호를 다시 확인해 주세요');return}
+      ctSave(pid,{ct:L,by:me()||'',at:Date.now()},b)};
+    const bk=$('ctBack');if(bk)bk.onclick=()=>{if(confirm('앱에서 고친 연락처를 지우고 이카운트 연락처로 되돌릴까요?'))ctSave(pid,null,b)};
+  };
+  draw();b.classList.add('on');
+}
+async function ctSave(pid,v,b){CTW=Date.now();const old=CI[pid];if(v)CI[pid]=v;else delete CI[pid];
+  try{await storeCall({op:'merge',key:'cinfo',value:{[pid]:v},by:me()||''});localStorage.setItem('tmapgo_cinfo',JSON.stringify(CI));b.classList.remove('on');render();renderFind();if(SHP)ctSheet();toast(v?'💾 저장했어요':'↩ 이카운트 연락처로 되돌렸어요')}
+  catch(e){if(old)CI[pid]=old;else delete CI[pid];toast('저장하지 못했어요. 인터넷 연결을 확인해 주세요')}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ct]');if(!b)return;e.preventDefault();e.stopPropagation();ctEdit(b.dataset.pid,b.dataset.pn)},true);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)ctPull()});
+setInterval(()=>{if(!document.hidden)ctPull()},300000);
+setTimeout(ctPull,1200);
 </script>
 </body>
 </html>

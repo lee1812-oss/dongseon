@@ -258,7 +258,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div></div>
-    <div class="ver">v023 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="ver">v024 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
@@ -977,8 +977,24 @@ function nextExtra(ni){const s=S.stops[ni];if(!s)return '';const more=S.stops.so
 function etaOf(s){const t=s.te||s.eta;if(t&&/^\d\d:\d\d$/.test(t))return t;return ''}
 async function shareEta(s){const t=etaOf(s);
   const txt='안녕하세요, 빵을그리다 배송입니다. '+s.n+'에 '+(t?t+'쯤':'곧')+' 도착할 예정입니다. 감사합니다.';
-  if(navigator.share){try{await navigator.share({text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}
-  try{await navigator.clipboard.writeText(txt);toast('문구를 복사했어요. 카톡·문자에 붙여 넣어 보내 주세요')}catch(e){location.href='sms:?body='+encodeURIComponent(txt)}}
+  let b=$('asheet');if(!b){b=document.createElement('div');b.className='sheet';b.id='asheet';document.body.appendChild(b);b.addEventListener('click',e=>{if(e.target.id==='asheet')b.classList.remove('on')})}
+  const isA=/Android/i.test(navigator.userAgent),isI=/iPhone|iPad|iPod/i.test(navigator.userAgent),pc=!isA&&!isI;
+  b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">📲 도착 알리기</b><button id="aX">닫기</button></div><div class="sh-l">'
+   +'<div class="hint" style="margin:0 0 6px">보낼 글 (고쳐도 돼요)</div><textarea id="aTx" style="width:100%;min-height:96px;font-size:17px;padding:10px;border:1.5px solid var(--ln);border-radius:10px;box-sizing:border-box">'+esc(txt)+'</textarea>'
+   +'<button class="btn" id="aKa" style="background:#FEE500;color:#191919;font-weight:800;margin-top:10px">💬 카카오톡으로 보내기</button>'
+   +(pc?'<div class="hint" id="aPc" style="margin-top:6px">PC에서는 글이 복사돼요. PC 카톡에서 보낼 방을 열고 <b>Ctrl+V</b> → 전송</div>':'<div class="hint" style="margin-top:6px">카톡이 열리면 보낼 방(사람)을 고르면 돼요</div>')
+   +(!pc?'<button class="btn ln" id="aSm" style="margin-top:8px">✉️ 문자로 보내기</button>':'')
+   +'<button class="btn ln" id="aCp" style="margin-top:8px">📋 글만 복사</button></div></div>';
+  b.classList.add('on');
+  const cur=()=>$('aTx').value.trim(), copy=async()=>{try{await navigator.clipboard.writeText(cur());return true}catch(e){const a=$('aTx');a.select();try{return document.execCommand('copy')}catch(_){return false}}};
+  $('aX').onclick=()=>b.classList.remove('on');
+  $('aCp').onclick=async()=>{toast(await copy()?'📋 복사했어요. 원하는 곳에 붙여 넣어 주세요':'글을 길게 눌러 복사해 주세요')};
+  const sm=$('aSm');if(sm)sm.onclick=()=>{location.href='sms:'+(isI?'&':'?')+'body='+encodeURIComponent(cur())};
+  $('aKa').onclick=async()=>{const x=cur();
+    if(isA){await copy();location.href='intent:#Intent;action=android.intent.action.SEND;type=text/plain;S.android.intent.extra.TEXT='+encodeURIComponent(x)+';package=com.kakao.talk;S.browser_fallback_url='+encodeURIComponent('https://play.google.com/store/apps/details?id=com.kakao.talk')+';end';return}
+    if(isI&&navigator.share){try{await navigator.share({text:x});return}catch(e){if(e&&e.name==='AbortError')return}}
+    const ok=await copy();toast(ok?'📋 복사했어요. 카톡에서 보낼 방을 열고 붙여 넣기(Ctrl+V) 해 주세요':'글을 복사하지 못했어요. 글을 길게 눌러 복사해 주세요');
+    if(isI)location.href='kakaotalk://'}}
 function laterStop(i){const s=S.stops[i];if(!s)return;
   if(!confirm('「'+s.n+'」은(는) 맨 뒤로 보내고\n다음 곳으로 먼저 갈까요?'))return;
   S.stops.splice(i,1);delete s.dep;delete s.te;delete s.teR;delete s.arr;S.stops.push(s);delete S.preset;noPlan();save();render();
@@ -1017,7 +1033,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='✅ 열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v023';
+const APP_VER='v024';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

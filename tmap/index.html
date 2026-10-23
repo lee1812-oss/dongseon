@@ -80,7 +80,7 @@ body.editing .edit{display:flex}
   </div>
 
   <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v001 · 이 휴대폰에만 저장돼요</div>
+  <div class="ver">v002 · 이 휴대폰에만 저장돼요</div>
 </main>
 <div class="toast" id="toast"></div>
 
@@ -99,7 +99,7 @@ function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';cle
 const isAndroid=/Android/i.test(navigator.userAgent), isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 // 링크로 받은 목록 읽기 (#p=...)
-(function readHash(){
+function readHash(){
   const h=location.hash.slice(1); if(!h.startsWith('p='))return;
   try{
     const o=JSON.parse(decodeURIComponent(h.slice(2)));
@@ -111,7 +111,9 @@ const isAndroid=/Android/i.test(navigator.userAgent), isIOS=/iPhone|iPad|iPod/i.
     }
   }catch(e){}
   history.replaceState(null,'',location.pathname);
-})();
+}
+readHash();
+window.addEventListener('hashchange',()=>{readHash();render()});
 
 function tmapQuery(s){
   if(s.y&&s.x) return 'route?goalname='+encodeURIComponent(s.n)+'&goalx='+s.x+'&goaly='+s.y;

@@ -103,7 +103,7 @@ body.editing .edit{display:flex}
   </div>
 
   <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v005 · 이 휴대폰에만 저장돼요</div>
+  <div class="ver">v006 · 이 휴대폰에만 저장돼요</div>
 </main>
 <div class="toast" id="toast"></div>
 
@@ -126,10 +126,22 @@ function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';cle
 const isAndroid=/Android/i.test(navigator.userAgent), isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 // 링크로 받은 목록 읽기 (#p=...)
+// 열쇠(k): 주소 어디에 있든(?k= / #k= / 카톡이 #을 %23으로 바꾼 경우) 찾아 저장하고 주소창에서 지운다
+(function readKey(){
+  let href=location.href; try{href=decodeURIComponent(href)}catch(e){}
+  const m=href.match(/[?&#]k=([A-Za-z0-9_-]{16,})/);
+  if(!m) return;
+  localStorage.setItem('tmapgo_k',m[1]);
+  const sp=new URLSearchParams(location.search); sp.delete('k');
+  const dv=sp.get('d'); if(dv&&/k=/.test(dv)) sp.set('d',(dv.match(/\d{4}/)||[''])[0]);
+  const qs=sp.toString(), hs=location.hash.replace(/(^#|&)k=[A-Za-z0-9_-]+/,'').replace(/^#&?$/,'');
+  history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+hs);
+})();
 function readParam(){
-  const k=(new URLSearchParams(location.search).get('d')||'').replace(/\D/g,'').slice(-4);
+  let ds=location.search; try{ds=decodeURIComponent(ds)}catch(e){}
+  const k=((ds.match(/[?&]d=(\d{4})/)||[])[1])||'';
   if(!k)return;
-  const R=ROUTES[k];
+  const R=ROUTES[k]; const keepQ=location.search.replace(/[?&]d=[^&]*/,'').replace(/^&/,'?');
   if(R){
     if(S.preset!==k){
       if(S.stops.length) localStorage.setItem(KEY+'_prev',JSON.stringify(S));
@@ -137,7 +149,7 @@ function readParam(){
       const n=$('notice'); n.textContent='✅ '+k.slice(0,2)+'/'+k.slice(2)+' 배송지 '+R.stops.length+'곳을 등록했어요.'; n.style.display='block';
     }
   }
-  history.replaceState(null,'',location.pathname+location.hash);
+  history.replaceState(null,'',location.pathname+(keepQ&&keepQ!=='?'?keepQ:'')+location.hash);
 }
 readParam();
 function readHash(){
@@ -228,7 +240,7 @@ $('share').addEventListener('click',async()=>{
   const o={d:S.day||'',s:S.stops.map(s=>[s.n,s.a,s.y?+(+s.y).toFixed(6):0,s.x?+(+s.x).toFixed(6):0,s.m||''])};
   const base=location.origin+location.pathname;
   let url;
-  const kk=localStorage.getItem('tmapgo_k'), kh=kk?'#k='+kk:'';
+  const kk=localStorage.getItem('tmapgo_k'), kh=kk?'&k='+kk:'';
   if(S.preset&&ROUTES[S.preset]) url=base+'?d='+S.preset+kh;
   else if(S.stops.every(s=>s.id)) url=base+'?c='+S.stops.map(s=>s.id).join('.')+(S.day?'&day='+S.day.replace(/-/g,''):'')+kh;
   else url=base+'#p='+encodeURIComponent(JSON.stringify(o));
@@ -302,7 +314,7 @@ async function custLoad(){
 function renderFind(){
   $('fcnt').textContent=C.list?C.list.length+'곳':'';
   const R=$('fres');
-  if(!C.list){R.innerHTML='';return}
+  if(!C.list){R.innerHTML=$('fq').value.trim()?'<div class="hint" style="margin-top:10px;color:#b45309">거래처 목록이 아직 열리지 않았어요. 카톡으로 받은 「티맵 바로가기」 링크를 다시 눌러 주세요.</div>':'';return}
   const q=norm($('fq').value);
   let L;
   if(!q){L=C.list.slice(0,6);R.innerHTML='<div class="hint" style="margin:10px 0 0">자주 가는 곳</div>'}

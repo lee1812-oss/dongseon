@@ -78,6 +78,21 @@ body.editing .fdel{display:block}
 .inst .btn{min-height:52px;margin-top:10px}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222;color:#fff;padding:12px 18px;border-radius:12px;font-size:16px;display:none;z-index:9;max-width:90%;text-align:center}
 .ver{text-align:center;color:#9a9aa0;font-size:13px;margin-top:18px}
+.mt{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-top:1px solid #ececf0;cursor:pointer}.mt:first-child{border-top:0}
+.mt .t{flex:1;min-width:0}.mt b{font-size:17.5px}.mt .p{font-size:15.5px;color:#333;margin-top:2px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.mt .w{font-size:13.5px;color:var(--mu);margin-top:2px}
+.new{display:inline-block;background:var(--rd);color:#fff;border-radius:999px;font-size:12.5px;font-weight:800;padding:1px 8px;margin-left:6px;vertical-align:2px}
+.mbtn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:50px;margin-top:8px;border-radius:10px;border:1.5px solid #d9c6b3;background:#FBF6F0;color:var(--br);font-size:16.5px;font-weight:800}
+.mbtn.has{border-color:#e0a24a;background:#FFF4E0;color:#8a4b00}.mbtn.unread{border-color:var(--rd);background:#FDECEC;color:var(--rd)}
+.mprev{margin-top:10px;background:#FFF8E6;border:1px solid #f1d48a;border-radius:10px;padding:9px 11px;font-size:16px;line-height:1.45}.mprev small{display:block;color:#7a5b16;font-size:13.5px;margin-bottom:2px}
+.fr .fbtns .mb{min-height:44px;background:#FBF6F0;color:var(--br);border:1.5px solid #d9c6b3;font-size:15.5px}
+.fv .mb{flex:0 0 auto;min-height:54px;padding:0 12px;border-radius:12px;border:1.5px solid #d9c6b3;background:#FBF6F0;color:var(--br);font-size:16px;font-weight:800}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;z-index:8;align-items:flex-end;justify-content:center}
+.sheet.on{display:flex}.sh{background:#fff;width:100%;max-width:640px;max-height:92vh;border-radius:18px 18px 0 0;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom)}
+.sh-h{display:flex;align-items:center;gap:8px;padding:14px 14px 10px;border-bottom:1px solid #eee}.sh-h b{flex:1;font-size:19px}.sh-h button{border:0;background:#f1f1f3;border-radius:10px;min-height:44px;padding:0 14px;font-size:16px}
+.sh-l{flex:1;overflow:auto;padding:12px 14px;background:#f6f6f8}.bub{max-width:86%;margin:0 0 10px;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid #e3e3e8;font-size:17px;line-height:1.45;white-space:pre-wrap}
+.bub.me{margin-left:auto;background:#F4EDE6;border-color:#e2d2c2}.bub small{display:block;font-size:13px;color:var(--mu);margin-bottom:3px}.bub .del{border:0;background:none;color:var(--rd);font-size:13px;padding:0 0 0 6px}
+.sh-f{padding:10px 14px 14px;border-top:1px solid #eee}.sh-f textarea{width:100%;min-height:84px;font-size:17px;padding:10px 12px;border:1.5px solid #c9c9ce;border-radius:12px;font-family:inherit;resize:vertical}
+.qk{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}.qk button{flex:1;min-height:44px;border-radius:10px;border:1px solid var(--ln);background:#fff;font-size:15.5px;white-space:nowrap}
 .notice{background:#e8f0ff;border:1px solid #c4d6ff;color:#173c8a;border-radius:12px;padding:10px 12px;font-size:15.5px;margin-bottom:10px;display:none}
 </style>
 </head>
@@ -101,6 +116,9 @@ body.editing .fdel{display:block}
     <div id="fres"></div>
   </div>
 
+  <h2 class="sec">💬 배송 전달사항 <span class="cnt" id="mcnt"></span></h2>
+  <div id="mbox" class="fav"></div>
+
   <h2 class="sec" id="dayTitle">📦 배송 목록</h2>
   <div id="list"></div>
 
@@ -121,8 +139,18 @@ body.editing .fdel{display:block}
 
   <button class="btn gr" id="share" style="margin-top:22px">📨 배송 목록 링크 보내기 (카톡·문자)</button>
   <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v009 · 이 휴대폰에만 저장돼요</div>
+  <div class="ver">v010 · 이 휴대폰에만 저장돼요</div>
 </main>
+<div class="sheet" id="sheet"><div class="sh">
+  <div class="sh-h"><b id="shT">전달사항</b><a class="fgo" id="shGo" href="#" data-act="go" style="min-height:44px">🚗 티맵</a><button id="shX">닫기</button></div>
+  <div class="sh-l" id="shL"></div>
+  <div class="sh-f">
+    <div class="hint" style="margin:0 0 6px">보내는 사람: <b id="shMe"></b> <a href="#" id="shName" style="color:var(--br)">이름 바꾸기</a></div>
+    <textarea id="shIn" placeholder="예) 뒷문으로 하차해 주세요 / 오늘 10시 전까지 도착 부탁드려요"></textarea>
+    <div class="qk"><button data-q="✅ 확인했어요">✅ 확인했어요</button><button data-q="🚚 도착했어요">🚚 도착했어요</button><button data-q="📦 배송 완료했어요">📦 배송 완료</button></div>
+    <button class="btn br" id="shSend">보내기</button>
+  </div>
+</div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -130,8 +158,8 @@ const KEY='tmapgo_v1', FKEY='tmapgo_fav', PKEY='tmapgo_pass', CKEY='tmapgo_cust'
 // 날짜별 배송 목록 (?d=1024 처럼 열면 그날 목록이 등록됨)
 const ROUTES={
  '1024':{day:'2026-10-24',stops:[
-  {n:'(화성)서신노을카페_에코팜랜드',a:'경기 화성시 서신면 영종로안길 24 (화성에코팜테마파크 안)',y:37.11982835,x:126.69359386,m:''},
-  {n:'(화성)바다백미',a:'경기 화성시 서신면 백미길 210-35 (백미항, 카페 바다백미)',y:37.14345643,x:126.68014266,m:''}
+  {id:'cozcv5v',n:'(화성)서신노을카페_에코팜랜드',a:'경기 화성시 서신면 영종로안길 24 (화성에코팜테마파크 안)',y:37.11982835,x:126.69359386,m:''},
+  {id:'c1u2lkno',n:'(화성)바다백미',a:'경기 화성시 서신면 백미길 210-35 (백미항, 카페 바다백미)',y:37.14345643,x:126.68014266,m:''}
  ]}
 };
 const DEFAULT=Object.assign({preset:'1024'},ROUTES['1024']);
@@ -146,6 +174,7 @@ const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigat
 let S=(()=>{try{const j=JSON.parse(localStorage.getItem(KEY));if(j&&Array.isArray(j.stops))return j}catch(e){}return JSON.parse(JSON.stringify(DEFAULT))})();
 let FAV=(()=>{try{const j=JSON.parse(localStorage.getItem(FKEY));if(Array.isArray(j))return j}catch(e){}return []})();
 function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+if(S.preset&&ROUTES[S.preset])S.stops.forEach((s,i)=>{const r=ROUTES[S.preset].stops[i];if(!s.id&&r&&r.id&&r.n===s.n)s.id=r.id});
 // v007: 사용자 요청으로 배송 목록을 내일(10/24) 두 곳으로 한 번 맞춤 (이전 목록은 _prev에 보관)
 if(!localStorage.getItem('tmapgo_mig7')){if(S.preset!=='1024'||S.stops.length!==2){if(S.stops.length)localStorage.setItem(KEY+'_prev',JSON.stringify(S));S=JSON.parse(JSON.stringify(DEFAULT));save()}localStorage.setItem('tmapgo_mig7','1')}
 function saveFav(){localStorage.setItem(FKEY,JSON.stringify(FAV))}
@@ -211,7 +240,9 @@ function render(){
         <div class="ad">${esc(s.a)}</div>
         ${s.m?`<div class="memo">📝 ${esc(s.m)}</div>`:''}
       </div></div>
+    ${msgPrev(s)}
     <a class="go" href="${tmapHref(s)}" data-act="go">🚗 티맵 길안내 시작</a>
+    ${msgBtn(s)}
     <div class="subs">
       <a class="sb" href="${kakaoHref(s)}" target="_blank" rel="noopener">카카오맵</a>
       <button class="sb" data-act="copy" data-i="${i}">주소 복사</button>
@@ -224,10 +255,11 @@ function render(){
     </div>
   </div>`).join(''):'<div class="card empty">배송 목록이 비어 있어요. 받은 링크를 열어 주세요.</div>';
   renderFav();
+  if(typeof renderMsgs==='function')renderMsgs();
 }
 function renderFav(){
   $('favs').innerHTML=FAV.length?'<div class="fav">'+FAV.map((f,i)=>`<div class="fv"><div class="t"><b>${esc(f.n)}</b><span>${esc(f.a||'주소 미확인 · 티맵에서 이름으로 찾기')}</span></div>
-    <a class="fgo" href="${tmapHref(f)}" data-act="go">🚗 티맵</a><button class="fdel" data-act="fdel" data-i="${i}">삭제</button></div>`).join('')+'</div>'
+    <button class="mb" data-act="msg" data-pid="${esc(pidOf(f))}" data-pn="${esc(f.n)}">💬${msgCount(pidOf(f))||''}</button><a class="fgo" href="${tmapHref(f)}" data-act="go">🚗 티맵</a><button class="fdel" data-act="fdel" data-i="${i}">삭제</button></div>`).join('')+'</div>'
     :'<div class="card empty">아직 등록된 곳이 없어요.<br>자주 가는 거래처를 등록해 두면 여기서 바로 티맵을 열 수 있어요.</div>';
 }
 
@@ -299,7 +331,7 @@ function renderFind(){
   R.innerHTML=L.length?L.map(c=>{const inF=FAV.some(f=>f.id===c.id);
     return `<div class="fr"><div class="t"><div class="fn">${esc(c.n)}</div>
     <div class="fs">${c.r?esc(c.r)+' · ':''}${c.a?esc(c.a):'<span style="color:var(--or)">주소 미확인</span>'}</div></div>
-    <div class="fbtns"><a class="fgo" href="${tmapHref(toStop(c))}" data-act="go">🚗 티맵</a><button data-act="fadd" data-id="${c.id}" class="${inF?'in':''}">${inF?'✓ 등록됨':'⭐ 등록'}</button></div></div>`}).join('')
+    <div class="fbtns"><a class="fgo" href="${tmapHref(toStop(c))}" data-act="go">🚗 티맵</a><button data-act="fadd" data-id="${c.id}" class="${inF?'in':''}">${inF?'✓ 등록됨':'⭐ 등록'}</button><button class="mb" data-act="msg" data-pid="${esc(c.id)}" data-pn="${esc(c.n)}">💬 전달${msgCount(c.id)?' '+msgCount(c.id):''}</button></div></div>`}).join('')
     :'<div class="hint" style="margin-top:10px">「'+esc($('fq').value)+'」 거래처가 없어요. 아래 「직접 입력」으로 등록해 주세요.</div>';
 }
 function applyPending(){
@@ -324,6 +356,8 @@ function applyPending(){
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]'); if(!b)return;
   const i=+b.dataset.i, act=b.dataset.act, s=S.stops[i];
+  if(act==='msg'){openSheet(b.dataset.pid,b.dataset.pn);return}
+  if(act==='mdel'){msgDel(b.dataset.pid,b.dataset.mid);return}
   if(act==='go'){if(isIOS){const t=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t<3000)toast('티맵이 안 열리면 앱스토어에서 「TMAP」을 설치해 주세요.')},2000)}return}
   if(act==='fadd'){const c=C.list&&C.list.find(z=>z.id===b.dataset.id);if(!c)return;
     if(FAV.some(f=>f.id===c.id)){toast('이미 등록돼 있어요');return}
@@ -385,9 +419,73 @@ window.addEventListener('beforeinstallprompt',e=>{
 });
 window.addEventListener('appinstalled',()=>{$('inst').style.display='none'});
 
+
+// ===== 💬 배송 전달사항 (사무실 ↔ 기사, 공유 저장소의 msg·msgr 키만 쓰는 전용 열쇠) =====
+const STORE_URL='https://script.google.com/macros/s/AKfycbyicz3BGmhiCkS17yozBKvsy4jMaGjazpMiymhmF0DQPb2fhLLII5VMwvWrrkqHd14J/exec';
+let M=(()=>{try{const j=JSON.parse(localStorage.getItem('tmapgo_msg'));if(j&&j.msg)return j}catch(e){}return {msg:{},msgr:{}}})();
+let SEEN=(()=>{try{return JSON.parse(localStorage.getItem('tmapgo_seen'))||{}}catch(e){return {}}})();
+let MT=null, SHP=null, SHN='';
+const me=()=>localStorage.getItem('tmapgo_name')||'';
+function pidOf(s){if(s.id)return s.id;let h=0;for(const ch of String(s.n||s.a))h=(h*31+ch.charCodeAt(0))>>>0;return 'x'+h.toString(36)}
+async function msgTok(){if(MT)return MT;const k=localStorage.getItem('tmapgo_k');if(!k)return null;const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('tmapmsg|'+k));MT=[...new Uint8Array(b)].map(v=>v.toString(16).padStart(2,'0')).join('');return MT}
+async function storeCall(o){const t=await msgTok();if(!t)throw new Error('nokey');const r=await fetch(STORE_URL,{method:'POST',body:JSON.stringify(Object.assign({token:t},o))});const j=await r.json();if(!j.ok)throw new Error(j.err||'fail');return j}
+function msgsOf(pid){const o=(M.msg||{})[pid]||{};return Object.entries(o).map(([id,m])=>Object.assign({id},m)).filter(m=>m&&m.t).sort((a,b)=>a.t-b.t)}
+function msgCount(pid){return msgsOf(pid).length}
+function unread(pid){const L=msgsOf(pid);const s=SEEN[pid]||0;return L.filter(m=>m.t>s&&m.by!==me()).length}
+const hm=t=>{const d=new Date(t),n=new Date();const tt=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');return (d.toDateString()===n.toDateString()?'오늘 ':(d.getMonth()+1)+'/'+d.getDate()+' ')+tt};
+function msgPrev(s){const L=msgsOf(pidOf(s));if(!L.length)return '';const m=L[L.length-1];return '<div class="mprev"><small>💬 '+esc(m.by||'')+' · '+hm(m.t)+(L.length>1?' · 전체 '+L.length+'개':'')+'</small>'+esc(m.x)+'</div>'}
+function msgBtn(s){const p=pidOf(s),n=msgCount(p),u=unread(p);return '<button class="mbtn '+(u?'unread':n?'has':'')+'" data-act="msg" data-pid="'+esc(p)+'" data-pn="'+esc(s.n)+'">'+(u?'🔴 새 전달사항 '+u+'개 보기':n?'💬 전달사항 '+n+'개 보기·답하기':'💬 전달사항 남기기')+'</button>'}
+function renderMsgs(){
+  const box=$('mbox'); const from=Date.now()-30*864e5;
+  const T=Object.keys(M.msg||{}).map(pid=>{const L=msgsOf(pid).filter(m=>m.t>=from);return L.length?{pid,L,last:L[L.length-1]}:null}).filter(Boolean).sort((a,b)=>b.last.t-a.last.t);
+  const nu=T.reduce((a,x)=>a+unread(x.pid),0);
+  $('mcnt').innerHTML=nu?'<span class="new">새 글 '+nu+'</span>':'';
+  if(!localStorage.getItem('tmapgo_k')){box.innerHTML='<div class="empty">카톡으로 받은 「티맵 바로가기」 링크로 열면 전달사항을 보고 쓸 수 있어요.</div>';return}
+  box.innerHTML=T.length?T.slice(0,8).map(x=>{const u=unread(x.pid);return '<div class="mt" data-act="msg" data-pid="'+esc(x.pid)+'" data-pn="'+esc(x.last.pn||'')+'"><div class="t"><b>'+esc(x.last.pn||'거래처')+'</b>'+(u?'<span class="new">새 글 '+u+'</span>':'')+'<div class="p">'+esc(x.last.x)+'</div><div class="w">'+esc(x.last.by||'')+' · '+hm(x.last.t)+' · '+x.L.length+'개</div></div></div>'}).join('')
+    :'<div class="empty">아직 전달사항이 없어요.<br>거래처 옆 <b>💬</b>를 누르면 배송 전달사항을 남길 수 있어요.</div>';
+}
+async function msgPull(){try{const j=await storeCall({op:'get',keys:'msg,msgr'});M={msg:(j.data.msg||{}).value||{},msgr:(j.data.msgr||{}).value||{}};localStorage.setItem('tmapgo_msg',JSON.stringify(M));render();renderFind();if(SHP)renderSheet()}catch(e){renderMsgs()}}
+function askName(){let n=prompt('이름을 알려 주세요 (예: 사무실 이혜영, 기사 김OO)',me()||'');if(n===null)return false;n=n.trim().slice(0,20);if(!n){toast('이름을 넣어 주세요');return false}localStorage.setItem('tmapgo_name',n);$('shMe').textContent=n;return true}
+function renderSheet(){
+  const L=msgsOf(SHP); const rd=(M.msgr||{})[SHP]||{};
+  $('shT').textContent='💬 '+SHN; $('shMe').textContent=me()||'(이름 없음)';
+  $('shL').innerHTML=L.length?L.map(m=>{const mine=m.by===me();const readers=Object.entries(rd).filter(([n,t])=>n!==m.by&&t>=m.t).map(([n])=>n);
+    return '<div class="bub '+(mine?'me':'')+'"><small>'+esc(m.by||'')+' · '+hm(m.t)+(mine?'<button class="del" data-act="mdel" data-pid="'+esc(SHP)+'" data-mid="'+esc(m.id)+'">지우기</button>':'')+'</small>'+esc(m.x)+(readers.length?'<small style="margin:4px 0 0;color:#1F6B45">✓ 읽음: '+esc(readers.join(', '))+'</small>':'')+'</div>'}).join('')
+    :'<div class="empty" style="text-align:center">아직 전달사항이 없어요.<br>아래에 써서 보내 주세요.</div>';
+  setTimeout(()=>{$('shL').scrollTop=1e6},30);
+}
+async function openSheet(pid,pn){
+  if(!localStorage.getItem('tmapgo_k')){toast('카톡으로 받은 링크로 한 번 열어 주세요');return}
+  SHP=pid;SHN=pn||'거래처';
+  const st=(C.list&&C.list.find(c=>c.id===pid))||S.stops.find(s=>pidOf(s)===pid)||FAV.find(f=>pidOf(f)===pid);
+  if(st){$('shGo').href=tmapHref(st.a!==undefined&&st.l!==undefined?toStop(st):st);$('shGo').style.display='flex'}else $('shGo').style.display='none';
+  renderSheet();$('sheet').classList.add('on');
+  SEEN[pid]=Date.now();localStorage.setItem('tmapgo_seen',JSON.stringify(SEEN));render();
+  if(me())storeCall({op:'merge',key:'msgr',value:{[pid]:{[me()]:Date.now()}},by:me()}).catch(()=>{});
+  msgPull();
+}
+async function msgSend(text){
+  text=String(text||'').trim(); if(!text){toast('내용을 써 주세요');return}
+  if(!me()&&!askName())return;
+  const mid=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  const m={t:Date.now(),by:me(),x:text.slice(0,500),pn:SHN};
+  ((M.msg[SHP]=M.msg[SHP]||{})[mid]=m);renderSheet();$('shIn').value='';
+  try{await storeCall({op:'merge',key:'msg',value:{[SHP]:{[mid]:m}},by:me()});SEEN[SHP]=Date.now();localStorage.setItem('tmapgo_seen',JSON.stringify(SEEN));toast('보냈어요');msgPull()}
+  catch(e){delete M.msg[SHP][mid];renderSheet();toast('못 보냈어요. 인터넷 연결을 확인해 주세요')}
+}
+async function msgDel(pid,mid){if(!confirm('이 전달사항을 지울까요?'))return;try{await storeCall({op:'merge',key:'msg',value:{[pid]:{[mid]:null}},by:me()});if(M.msg[pid])delete M.msg[pid][mid];renderSheet();render();toast('지웠어요')}catch(e){toast('못 지웠어요')}}
+$('shX').addEventListener('click',()=>{$('sheet').classList.remove('on');SHP=null;render()});
+$('sheet').addEventListener('click',e=>{if(e.target.id==='sheet'){$('sheet').classList.remove('on');SHP=null;render()}});
+$('shSend').addEventListener('click',()=>msgSend($('shIn').value));
+$('shName').addEventListener('click',e=>{e.preventDefault();askName();renderSheet()});
+document.querySelectorAll('.qk button').forEach(b=>b.addEventListener('click',()=>msgSend(b.dataset.q)));
+setInterval(()=>{if(!document.hidden)msgPull()},30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)msgPull()});
+
 render();
 setupInstall();
 custLoad();
+msgPull();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>

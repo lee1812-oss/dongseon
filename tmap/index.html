@@ -247,30 +247,30 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v029 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
+  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v030 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
   <div class="notice" id="notice"></div>
   <section class="tab" id="tab1">
     <div class="inst" id="inst"></div>
-    <div id="pToday"></div><div class="prog" id="dayTitle">📦 오늘 배송</div>
+    <div id="pToday"></div><div class="prog" id="dayTitle">오늘 배송</div>
     <div class="rbar" id="rbar"></div>
     <div id="nextCard"></div>
     <div id="list"></div>
-    <div id="tabBtns" class="two"><button class="btn ln" id="eOpen">✏️ 코스 바꾸기</button><button class="btn ln" id="eAdd">＋ 거래처 넣기</button></div>
-    <button class="btn ln" id="loadOpen" style="margin-top:10px">📦 차에 싣는 순서 보기</button>
+    <div id="tabBtns" class="two"><button class="btn ln" id="eOpen">코스 바꾸기</button><button class="btn ln" id="eAdd">＋ 거래처 넣기</button></div>
+    <button class="btn ln" id="loadOpen" style="margin-top:10px">차에 싣는 순서 보기</button>
     <div id="tripEnd"></div>
   </section>
   <section class="tab" id="tab4">
-    <h2 class="sec" style="margin-top:4px">📅 배송 예정 코스</h2>
-    <div class="hint" style="margin:-4px 2px 8px">날짜를 눌러 코스를 미리 등록해 두면, 그날 「🚚 오늘 배송」 맨 위에 「불러오기」가 떠요. 「매주 반복」으로 요일 기본 코스도 만들 수 있어요.</div>
-    <div class="pwk"><button id="pPrev">◀ 지난주</button><b id="pRange"></b><button id="pNext">다음주 ▶</button></div>
+    <h2 class="sec" style="margin-top:4px">배송 예정 코스</h2>
+    <div class="hint" style="margin:-4px 2px 8px">날짜를 눌러 코스를 미리 등록해 두면, 그날 「오늘 배송」 맨 위에 「불러오기」가 떠요. 「매주 반복」으로 요일 기본 코스도 만들 수 있어요.</div>
+    <div class="pwk"><button id="pPrev">지난주</button><b id="pRange"></b><button id="pNext">다음주</button></div>
     <div id="pDays"></div>
   </section>
   <section class="tab" id="tab2">
     <div class="box" id="findBox" style="margin:0 0 6px">
-      <input id="fq" type="search" placeholder="🔍 거래처 이름·지역 (예: 바다백미, 곤지암)" autocomplete="off">
+      <input id="fq" type="search" placeholder="거래처 이름·지역 (예: 바다백미, 곤지암)" autocomplete="off">
       <div class="hint" id="fmsg">2026년 이카운트 판매 거래처에서 찾아요.</div>
       <div id="fpass" style="display:none">
         <label for="fpw">직원 암호 (「내 동선」 앱과 같은 암호)</label>
@@ -279,54 +279,54 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
       </div>
       <div id="fres"></div>
       <div id="manW" style="display:none">
-        <button class="manb" id="manOpen">✍️ 찾는 곳이 없으면 직접 넣기</button>
+        <button class="manb" id="manOpen">찾는 곳이 없으면 직접 넣기</button>
         <div id="manBox" style="display:none">
           <label for="fn">이름</label>
           <input id="fn" placeholder="예) (화성)바다백미">
           <label for="fa">주소</label>
           <input id="fa" placeholder="예) 경기 화성시 서신면 백미길 210-35">
-          <button class="btn br" id="addManual">⭐ 빠른 찾기에 등록</button>
-          <button class="btn ol" id="addManualStop">📦 오늘 배송에 넣기</button>
+          <button class="btn br" id="addManual">빠른 찾기에 등록</button>
+          <button class="btn ol" id="addManualStop">오늘 배송에 넣기</button>
           <div class="hint">주소로 넣은 곳은 티맵이 열리면 검색 결과에서 한 번 더 눌러 주세요.</div>
         </div>
       </div>
     </div>
-    <div id="favWrap"><h2 class="sec">⭐ 자주 가는 곳</h2><div id="favs"></div></div>
+    <div id="favWrap"><h2 class="sec">자주 가는 곳</h2><div id="favs"></div></div>
   </section>
   <section class="tab" id="tab3">
-    <h2 class="sec">🏢 오늘 배송 현황</h2>
+    <h2 class="sec">오늘 배송 현황</h2>
     <div id="tL"></div>
-    <div class="hint" style="margin:-4px 2px 10px">기사님이 「🚚 출발」을 누르면 여기에 자동으로 보여요 · 30초마다 새로 읽어요</div>
-    <h2 class="sec">💬 배송 전달사항 <span class="cnt" id="mcnt"></span></h2>
+    <div class="hint" style="margin:-4px 2px 10px">기사님이 「출발」을 누르면 여기에 자동으로 보여요 · 30초마다 새로 읽어요</div>
+    <h2 class="sec">배송 전달사항 <span class="cnt" id="mcnt"></span></h2>
     <div id="mbox" class="fav"></div>
-    <button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
+    <button class="btn gr" id="share">배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div></div>
-    <div class="ver">v029 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="ver">v030 · 이모티콘 정리 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
-  <div class="sh-h"><b id="shT">전달사항</b><a class="fgo" id="shGo" href="#" data-act="go" style="min-height:44px">🚗 티맵</a><button id="shX">닫기</button></div>
+  <div class="sh-h"><b id="shT">전달사항</b><a class="fgo" id="shGo" href="#" data-act="go" style="min-height:44px">티맵</a><button id="shX">닫기</button></div>
   <div class="sh-l" id="shL"></div>
   <div class="sh-f">
     <div class="hint" style="margin:0 0 6px">보내는 사람: <b id="shMe"></b> <a href="#" id="shName" style="color:var(--br)">이름 바꾸기</a></div>
-    <div class="kind" id="kind"><button data-k="office">🏢 사무실 전달</button><button data-k="cust">🏪 거래처 요청</button><button data-k="driver">🚚 기사 답장</button></div>
+    <div class="kind" id="kind"><button data-k="office">사무실 전달</button><button data-k="cust">거래처 요청</button><button data-k="driver">기사 답장</button></div>
     <textarea id="shIn" placeholder="예) 뒷문으로 하차해 주세요 / 오늘 10시 전까지 도착 부탁드려요"></textarea>
-    <div class="qk"><button data-q="✅ 확인했어요">✅ 확인했어요</button><button data-q="🚚 도착했어요">🚚 도착했어요</button><button data-q="📦 배송 완료했어요">📦 배송 완료</button></div>
+    <div class="qk"><button data-q="확인했어요">확인했어요</button><button data-q="도착했어요">도착했어요</button><button data-q="배송 완료했어요">배송 완료</button></div>
     <button class="btn br" id="shSend">보내기</button>
   </div>
 </div></div>
-<div class="sheet" id="lsheet"><div class="sh"><div class="sh-h"><b style="flex:1">📦 차에 싣는 순서</b><button id="lX">닫기</button></div><div class="sh-l" id="lL"></div></div></div>
+<div class="sheet" id="lsheet"><div class="sh"><div class="sh-h"><b style="flex:1">차에 싣는 순서</b><button id="lX">닫기</button></div><div class="sh-l" id="lL"></div></div></div>
 <div class="sheet" id="rsheet"><div class="sh">
-  <div class="sh-h"><b>🧭 최적 코스 정하기</b><button id="rX">닫기</button></div>
+  <div class="sh-h"><b>최적 코스 정하기</b><button id="rX">닫기</button></div>
   <div class="sh-l" id="rL"></div>
-  <div class="sh-f"><button class="rbtn" id="rCalc">🧭 최적 코스 계산</button><div class="hint" style="margin-top:6px;text-align:center">누를 때만 티맵에 물어봐요 (하루 무료 횟수가 있어요)</div></div>
+  <div class="sh-f"><button class="rbtn" id="rCalc">최적 코스 계산</button><div class="hint" style="margin-top:6px;text-align:center">누를 때만 티맵에 물어봐요 (하루 무료 횟수가 있어요)</div></div>
 </div></div>
 <div class="sheet" id="esheet"><div class="sh">
-  <div class="sh-h"><b style="flex:1">✏️ 코스 바꾸기</b><button id="eX">닫기</button></div>
+  <div class="sh-h"><b style="flex:1">코스 바꾸기</b><button id="eX">닫기</button></div>
   <div class="sh-l" id="eL"></div>
-  <div class="sh-f"><button class="btn br" id="eDone" style="margin-top:0">✔ 다 했어요</button></div>
+  <div class="sh-f"><button class="btn br" id="eDone" style="margin-top:0">다 했어요</button></div>
 </div></div>
-<nav id="tabs"><div class="ti"><button id="tb1" class="on">🚚 오늘 배송</button><button id="tb4">📅 예정 코스</button><button id="tb2">🔍 거래처</button><button id="tb3">🏢 사무실<span class="dot" id="tdot"></span></button></div></nav>
+<nav id="tabs"><div class="ti"><button id="tb1" class="on">오늘 배송</button><button id="tb4">예정 코스</button><button id="tb2">거래처</button><button id="tb3">사무실<span class="dot" id="tdot"></span></button></div></nav>
 <div class="upd" id="upd"></div>
 <div class="toast" id="toast"></div>
 
@@ -375,7 +375,7 @@ function saveFav(){localStorage.setItem(FKEY,JSON.stringify(FAV))}
   if(R&&S.preset!==k){
     if(S.stops.length) localStorage.setItem(KEY+'_prev',JSON.stringify(S));
     S=JSON.parse(JSON.stringify(Object.assign({preset:k},R))); save();
-    note('✅ '+k.slice(0,2)+'/'+k.slice(2)+' 배송지 '+R.stops.length+'곳을 등록했어요.');
+    note(''+k.slice(0,2)+'/'+k.slice(2)+' 배송지 '+R.stops.length+'곳을 등록했어요.');
   }
   const sp=new URLSearchParams(location.search); sp.delete('d'); const qs=sp.toString();
   history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+location.hash);
@@ -387,7 +387,7 @@ function saveFav(){localStorage.setItem(FKEY,JSON.stringify(FAV))}
     const stops=(o.s||[]).map(r=>({n:r[0]||'',a:r[1]||'',y:r[2]?+r[2]:null,x:r[3]?+r[3]:null,m:r[4]||''})).filter(s=>s.n||s.a);
     if(stops.length){
       if(S.stops.length) localStorage.setItem(KEY+'_prev',JSON.stringify(S));
-      S={day:o.d||'',stops}; save(); note('✅ 받은 링크의 거래처 '+stops.length+'곳을 등록했어요.');
+      S={day:o.d||'',stops}; save(); note('받은 링크의 거래처 '+stops.length+'곳을 등록했어요.');
     }
   }catch(e){}
   history.replaceState(null,'',location.pathname+location.search);
@@ -406,30 +406,30 @@ function kakaoHref(s){
 
 // ---- 화면 ----
 const OPEN=new Set();
-const chipOf=s=>s.done?['dn','✔ 완료'+((s.fin||s.arr)?' '+esc(s.fin||s.arr):'')]:s.arr?['ar','📍 도착 '+esc(s.arr)]:s.dep?['mv','🚚 이동 중']:['wt','대기'];
-function msgBtn2(s){const p=pidOf(s),n=msgCount(p),u=unread(p);return '<button class="sb mb2'+(u?' unread':n?' has':'')+'" data-act="msg" data-pid="'+esc(p)+'" data-pn="'+esc(s.n)+'">'+(u?'🔴 새 전달 '+u+'개':n?'💬 전달사항 '+n:'💬 전달사항')+'</button>'}
-function stopBody(s,i){return `<div class="ad">${esc(s.a)}</div>${ctRow(s)}${s.m?`<div class="memo">📝 ${esc(s.m)}</div>`:''}${msgPrev(s)}${tripLine(s)}
-  <a class="go" href="${tmapHref(s)}" data-act="go" data-i="${i}">${s.dep&&!s.done?'🚗 티맵 다시 열기':'🚚 출발 · 티맵 길안내'}</a>
-  <div class="subs"><button class="sb ok${s.done?' undo':''}" data-act="done" data-i="${i}">${s.done?'↩ 완료 취소':'✔ 배송 완료'}</button>${msgBtn2(s)}</div>
+const chipOf=s=>s.done?['dn','완료'+((s.fin||s.arr)?' '+esc(s.fin||s.arr):'')]:s.arr?['ar','도착 '+esc(s.arr)]:s.dep?['mv','이동 중']:['wt','대기'];
+function msgBtn2(s){const p=pidOf(s),n=msgCount(p),u=unread(p);return '<button class="sb mb2'+(u?' unread':n?' has':'')+'" data-act="msg" data-pid="'+esc(p)+'" data-pn="'+esc(s.n)+'">'+(u?'새 전달 '+u+'개':n?'전달사항 '+n:'전달사항')+'</button>'}
+function stopBody(s,i){return `<div class="ad">${esc(s.a)}</div>${ctRow(s)}${s.m?`<div class="memo">${esc(s.m)}</div>`:''}${msgPrev(s)}${tripLine(s)}
+  <a class="go" href="${tmapHref(s)}" data-act="go" data-i="${i}">${s.dep&&!s.done?'티맵 다시 열기':'출발 · 티맵 길안내'}</a>
+  <div class="subs"><button class="sb ok${s.done?' undo':''}" data-act="done" data-i="${i}">${s.done?'완료 취소':'배송 완료'}</button>${msgBtn2(s)}</div>
   <div class="lkrow"><a class="lk" href="${kakaoHref(s)}" target="_blank" rel="noopener">카카오맵</a><button class="lk" data-act="copy" data-i="${i}">주소 복사</button></div>`}
 function nextIdx(){let k=S.stops.findIndex(s=>s.dep&&!s.done);if(k<0)k=S.stops.findIndex(s=>!s.done);return k}
 function render(){
   const n=S.stops.length, dn=S.stops.filter(s=>s.done).length;
   let lab='오늘 배송';if(S.day){const d=new Date(S.day+'T00:00:00');lab=(d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+') 배송'}
-  $('dayTitle').textContent='📦 '+lab+(n?' · '+n+'곳 중 '+dn+'곳 완료':'');
+  $('dayTitle').textContent=''+lab+(n?' · '+n+'곳 중 '+dn+'곳 완료':'');
   const ni=nextIdx(), L=$('list'), N=$('nextCard');
   $('tabBtns').style.display=n?'flex':'none';
-  if(!n){N.innerHTML='<div class="card empty" style="text-align:center;font-size:18px;font-weight:700">오늘 배송할 곳이 없어요</div><button class="btn br" id="emptyFind">🔍 거래처 찾아서 넣기</button>';L.innerHTML='';
+  if(!n){N.innerHTML='<div class="card empty" style="text-align:center;font-size:18px;font-weight:700">오늘 배송할 곳이 없어요</div><button class="btn br" id="emptyFind">거래처 찾아서 넣기</button>';L.innerHTML='';
     const ef=$('emptyFind');if(ef)ef.onclick=()=>{showTab(2);$('fq').focus()}}
   else{
     if(ni>=0){const s=S.stops[ni];
-      N.innerHTML=`<div class="card nx"><div class="nl">${s.dep?'🚚 지금 가는 곳':'👉 다음 갈 곳'}</div>
+      N.innerHTML=`<div class="card nx"><div class="nl">${s.dep?'지금 가는 곳':'다음 갈 곳'}</div>
       <div class="row"><div class="nob"><div class="no">${ni+1}</div>${(s.te||s.eta)&&!s.arr?`<div class="eta">${esc(s.te||s.eta)}<br>도착</div>`:''}</div>
       <div style="flex:1;min-width:0"><div class="nm">${esc(s.n)}${(s.y&&s.x)?'':'<span class="tag">주소로 찾기</span>'}</div></div></div>${stopBody(s,ni)}${typeof nextExtra==='function'?nextExtra(ni):''}</div>`;
-    }else N.innerHTML='<div class="tend">🎉 오늘 배송을 모두 마쳤어요</div>';
+    }else N.innerHTML='<div class="tend">오늘 배송을 모두 마쳤어요</div>';
     const rows=S.stops.map((s,i)=>i===ni?'':(()=>{const k=pidOf(s),op=OPEN.has(k),c=chipOf(s);
       return `<div class="rw${s.done?' dn':''}${op?' open':''}"><div class="rh" data-tg="${esc(k)}"><div class="no" style="${s.done?'background:var(--gr)':''}">${s.done?'✓':i+1}</div><div class="nm">${esc(s.n)}</div><span class="chip ${c[0]}">${c[1]}</span><span class="ar2">${op?'▴':'▾'}</span></div>${op?'<div class="rb">'+stopBody(s,i)+'</div>':''}</div>`})()).join('');
-    L.innerHTML=rows?'<div class="rl">📋 '+(ni>=0?'나머지 곳':'전체 목록')+' (눌러서 펼치기)</div>'+rows:'';
+    L.innerHTML=rows?'<div class="rl">'+(ni>=0?'나머지 곳':'전체 목록')+' (눌러서 펼치기)</div>'+rows:'';
   }
   renderFav();
   if(typeof renderRouteBar==='function')renderRouteBar();
@@ -440,14 +440,14 @@ function render(){
   if(typeof hdrUpd==='function')hdrUpd();
 }
 function renderEdit(){const e=$('esheet');if(!e||!e.classList.contains('on'))return;const sc=$('eL').scrollTop,m=S.stops.length;
-  $('eL').innerHTML='<button class="rbtn" id="eRoute">🧭 최적 코스 자동으로 정하기</button>'+UNDO_BTN()+'<div class="hint" style="text-align:center">아래에서 직접 순서를 바꾸거나 뺄 수도 있어요</div>'
+  $('eL').innerHTML='<button class="rbtn" id="eRoute">최적 코스 자동으로 정하기</button>'+UNDO_BTN()+'<div class="hint" style="text-align:center">아래에서 직접 순서를 바꾸거나 뺄 수도 있어요</div>'
    +(m?S.stops.map((s,i)=>`<div class="er"><div class="eh"><div class="no">${i+1}</div><b>${esc(s.n)}</b></div><div class="eb"><button data-act="up" data-i="${i}" style="${i?'':'opacity:.35'}">▲ 위로</button><button data-act="down" data-i="${i}" style="${i<m-1?'':'opacity:.35'}">▼ 아래로</button><button class="del" data-act="del" data-i="${i}">삭제</button></div></div>`).join(''):'<div class="empty">배송 목록이 비어 있어요.</div>');
   $('eL').scrollTop=sc;const r=$('eRoute');if(r)r.onclick=()=>{if(S.stops.length<2){toast('2곳 이상 있어야 해요');return}$('esheet').classList.remove('on');openRoute()}}
 function renderFav(){
   $('favs').innerHTML=FAV.length?'<div class="fav">'+FAV.map((f,i)=>`<div class="fv"><div class="t"><b>${esc(f.n)}</b><span>${esc(f.a||'주소 미확인 · 티맵에서 이름으로 찾기')}</span></div>
-    <div class="r2">${addBtn(f.id,i)}<a class="fgo" href="${tmapHref(f)}" data-act="go">🚗 티맵</a></div>
-    <div class="lkrow"><button class="lk" data-act="msg" data-pid="${esc(pidOf(f))}" data-pn="${esc(f.n)}">💬 전달사항${msgCount(pidOf(f))?' '+msgCount(pidOf(f)):''}</button><button class="lk" data-act="fdel" data-i="${i}">삭제</button></div></div>`).join('')+'</div>'
-    :'<div class="card empty">아직 등록된 곳이 없어요.<br>거래처를 찾아서 <b>⭐ 빠른 등록</b>을 누르면 여기 들어와요.</div>';
+    <div class="r2">${addBtn(f.id,i)}<a class="fgo" href="${tmapHref(f)}" data-act="go">티맵</a></div>
+    <div class="lkrow"><button class="lk" data-act="msg" data-pid="${esc(pidOf(f))}" data-pn="${esc(f.n)}">전달사항${msgCount(pidOf(f))?' '+msgCount(pidOf(f)):''}</button><button class="lk" data-act="fdel" data-i="${i}">삭제</button></div></div>`).join('')+'</div>'
+    :'<div class="card empty">아직 등록된 곳이 없어요.<br>거래처를 찾아서 <b>빠른 등록</b>을 누르면 여기 들어와요.</div>';
 }
 
 // ---- 거래처 명단 (암호화 파일, 매일 06:30 갱신 · 신규 거래처 자동 추가) ----
@@ -498,7 +498,7 @@ async function custLoad(){
     }
   }
   const pass=getPass();
-  if(!pass){C.state='idle';fmsg(C.list?'저장된 목록으로 찾아요.':'맨 위 「🔑 직원 암호로 열기」에 암호를 넣으면 거래처가 보여요.');renderFind();return}
+  if(!pass){C.state='idle';fmsg(C.list?'저장된 목록으로 찾아요.':'맨 위 「직원 암호로 열기」에 암호를 넣으면 거래처가 보여요.');renderFind();return}
   try{
     const r=await fetch('../delivery.enc.json?t='+Date.now(),{cache:'no-store'});
     if(!r.ok)throw new Error('net');
@@ -515,15 +515,15 @@ function renderFind(){
   $('manW').style.display=q?'block':'none';if(!q)$('manBox').style.display='none';
   $('favWrap').style.display=q?'none':'block';
   if(!q){R.innerHTML='';return}
-  if(!C.list){R.innerHTML='<div class="hint" style="margin-top:10px;color:var(--or)">거래처 목록이 아직 안 열렸어요. 맨 위 「🔑 직원 암호로 열기」에 암호를 넣어 주세요.</div>';return}
+  if(!C.list){R.innerHTML='<div class="hint" style="margin-top:10px;color:var(--or)">거래처 목록이 아직 안 열렸어요. 맨 위 「직원 암호로 열기」에 암호를 넣어 주세요.</div>';return}
   const L=C.list.filter(c=>norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(q)).slice(0,30);
   R.innerHTML=L.length?L.map(c=>{const inF=FAV.some(f=>f.id===c.id), mc=msgCount(c.id);
     return `<div class="fr"><div class="t"><div class="fn">${esc(c.n)}</div>
     <div class="fs">${c.r?esc(c.r)+' · ':''}${c.a?esc(c.a):'<span style="color:var(--or)">주소 미확인</span>'}</div>${ctMini(c)}</div>
-    <button class="star${inF?' in':''}" data-act="fadd" data-id="${c.id}">${inF?'⭐ 등록됨':'⭐ 빠른 등록'}</button>
-    <div class="r2">${addBtn(c.id)}<a class="fgo" href="${tmapHref(toStop(c))}" data-act="go">🚗 티맵</a></div>
-    <div class="lkrow"><button class="lk" data-act="msg" data-pid="${esc(c.id)}" data-pn="${esc(c.n)}">💬 전달사항${mc?' '+mc:''}</button></div></div>`}).join('')
-    :'<div class="hint" style="margin-top:10px">「'+esc($('fq').value)+'」 거래처가 없어요. 아래 「✍️ 직접 넣기」를 눌러 주세요.</div>';
+    <button class="star${inF?' in':''}" data-act="fadd" data-id="${c.id}">${inF?'등록됨':'빠른 등록'}</button>
+    <div class="r2">${addBtn(c.id)}<a class="fgo" href="${tmapHref(toStop(c))}" data-act="go">티맵</a></div>
+    <div class="lkrow"><button class="lk" data-act="msg" data-pid="${esc(c.id)}" data-pn="${esc(c.n)}">전달사항${mc?' '+mc:''}</button></div></div>`}).join('')
+    :'<div class="hint" style="margin-top:10px">「'+esc($('fq').value)+'」 거래처가 없어요. 아래 「직접 넣기」를 눌러 주세요.</div>';
 }
 function applyPending(){
   if(!C.pending||!C.list)return;
@@ -532,7 +532,7 @@ function applyPending(){
   if(!stops.length)return;
   if(S.stops.length)localStorage.setItem(KEY+'_prev',JSON.stringify(S));
   S={day:P.day,stops};save();render();
-  note('✅ 받은 링크의 거래처 '+stops.length+'곳을 등록했어요.');
+  note('받은 링크의 거래처 '+stops.length+'곳을 등록했어요.');
 }
 (function readC(){
   const sp=new URLSearchParams(location.search), c=sp.get('c');
@@ -556,14 +556,14 @@ document.addEventListener('click',e=>{
     if(b.dataset.fi!==undefined){const f=FAV[+b.dataset.fi];if(f)st={id:f.id,n:f.n,a:f.a||f.n,y:f.y||null,x:f.x||null,m:((f.y&&f.x)||f.a)?'':'주소 미확인 · 티맵에서 이름으로 찾아요'}}
     else{const c=C.list&&C.list.find(z=>z.id===id);if(c)st=toStop(c)}
     if(!st)return;
-    S.stops.push(st);delete S.preset;noPlan();save();render();renderFind();toast('📦 「'+st.n+'」을(를) 배송 목록 '+S.stops.length+'번에 넣었어요');return}
+    S.stops.push(st);delete S.preset;noPlan();save();render();renderFind();toast('「'+st.n+'」을(를) 배송 목록 '+S.stops.length+'번에 넣었어요');return}
   if(act==='fadd'){const c=C.list&&C.list.find(z=>z.id===b.dataset.id);if(!c)return;
     {const fx=FAV.findIndex(f=>f.id===c.id);if(fx>=0){if(confirm('「'+c.n+'」을(를) 빠른 찾기에서 뺄까요?')){FAV.splice(fx,1);saveFav();renderFav();renderFind();toast('빠른 찾기에서 뺐어요')}return}}
-    const st=toStop(c);FAV.push({id:st.id,n:st.n,a:c.a,y:st.y,x:st.x});saveFav();renderFav();renderFind();toast('⭐ 「'+c.n+'」을(를) 빠른 찾기에 등록했어요');return}
+    const st=toStop(c);FAV.push({id:st.id,n:st.n,a:c.a,y:st.y,x:st.x});saveFav();renderFav();renderFind();toast('「'+c.n+'」을(를) 빠른 찾기에 등록했어요');return}
   if(act==='fdel'){const f=FAV[i];if(f&&confirm('「'+f.n+'」을(를) 빠른 찾기에서 지울까요?')){FAV.splice(i,1);saveFav();renderFav()}return}
   if(act==='copy'){navigator.clipboard?.writeText(s.a||s.n).then(()=>toast('주소를 복사했어요'),()=>toast(s.a));return}
-  if(act==='done'){if(s.done){if(!confirm('「'+s.n+'」 배송 완료를 취소할까요?'))return;s.done=false;delete s.fin;tripMark();save();render();toast('↩ 배송 완료를 취소했어요. 다시 할 수 있어요');return}
-    s.done=true;if(!s.fin)s.fin=hhmm(new Date());tripMark();save();render();toast('✔ 배송 완료! 잘못 눌렀으면 「↩ 완료 취소」를 눌러 주세요');return}
+  if(act==='done'){if(s.done){if(!confirm('「'+s.n+'」 배송 완료를 취소할까요?'))return;s.done=false;delete s.fin;tripMark();save();render();toast('배송 완료를 취소했어요. 다시 할 수 있어요');return}
+    s.done=true;if(!s.fin)s.fin=hhmm(new Date());tripMark();save();render();toast('배송 완료! 잘못 눌렀으면 「완료 취소」를 눌러 주세요');return}
   if(act==='up'&&i>0){[S.stops[i-1],S.stops[i]]=[S.stops[i],S.stops[i-1]];delete S.preset;noPlan();save();render();return}
   if(act==='down'&&i<S.stops.length-1){[S.stops[i+1],S.stops[i]]=[S.stops[i],S.stops[i+1]];delete S.preset;noPlan();save();render();return}
   if(act==='del'){if(confirm('「'+s.n+'」을(를) 배송 목록에서 지울까요?')){S.stops.splice(i,1);delete S.preset;noPlan();save();render()}return}
@@ -577,9 +577,9 @@ $('manOpen').addEventListener('click',()=>{const b=$('manBox');const on=b.style.
 function manRead(){const n=$('fn').value.trim(), a=$('fa').value.trim();if(!n&&!a){toast('이름이나 주소를 넣어 주세요');return null}return {id:'m'+Date.now(),n:n||a,a:a||n}}
 function manDone(){$('fn').value=$('fa').value='';$('manBox').style.display='none'}
 $('addManual').addEventListener('click',()=>{const m=manRead();if(!m)return;
-  FAV.push({id:m.id,n:m.n,a:m.a,y:null,x:null});saveFav();renderFav();manDone();toast('⭐ 「'+m.n+'」을(를) 빠른 찾기에 등록했어요');});
+  FAV.push({id:m.id,n:m.n,a:m.a,y:null,x:null});saveFav();renderFav();manDone();toast('「'+m.n+'」을(를) 빠른 찾기에 등록했어요');});
 $('addManualStop').addEventListener('click',()=>{const m=manRead();if(!m)return;
-  S.stops.push({id:m.id,n:m.n,a:m.a,y:null,x:null,m:'주소 미확인 · 티맵에서 주소로 찾아요'});delete S.preset;noPlan();save();render();renderFind();manDone();toast('📦 「'+m.n+'」을(를) 배송 목록 '+S.stops.length+'번에 넣었어요');});
+  S.stops.push({id:m.id,n:m.n,a:m.a,y:null,x:null,m:'주소 미확인 · 티맵에서 주소로 찾아요'});delete S.preset;noPlan();save();render();renderFind();manDone();toast('「'+m.n+'」을(를) 배송 목록 '+S.stops.length+'번에 넣었어요');});
 $('share').addEventListener('click',async()=>{
   if(!S.stops.length){toast('보낼 거래처가 없어요');return}
   const base=location.origin+location.pathname, kk=localStorage.getItem('tmapgo_k'), kh=kk?'&k='+kk:'';
@@ -601,31 +601,31 @@ function setupInstall(){
   const kk=localStorage.getItem('tmapgo_k');
   const openUrl=location.origin+location.pathname+(kk?'?k='+kk:'');
   if(inKakao){
-    instShow('<b>📲 휴대폰에 앱으로 설치하기</b><div class="hint">카톡 안에서는 설치가 안 돼요. 아래 버튼으로 '+(isIOS?'사파리':'크롬')+'에서 연 다음 설치해 주세요.</div><button class="btn br" id="openExt">'+(isIOS?'사파리':'크롬')+'에서 열기</button>');
+    instShow('<b>휴대폰에 앱으로 설치하기</b><div class="hint">카톡 안에서는 설치가 안 돼요. 아래 버튼으로 '+(isIOS?'사파리':'크롬')+'에서 연 다음 설치해 주세요.</div><button class="btn br" id="openExt">'+(isIOS?'사파리':'크롬')+'에서 열기</button>');
     $('openExt').onclick=()=>{location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(openUrl)};
     return;
   }
   if(isIOS){
-    instShow('<b>📲 홈 화면에 앱으로 설치하기</b><div class="hint">사파리 아래쪽 <b>공유 버튼(□↑)</b> → <b>「홈 화면에 추가」</b>를 누르면 앱처럼 쓸 수 있어요.</div>');
+    instShow('<b>홈 화면에 앱으로 설치하기</b><div class="hint">사파리 아래쪽 <b>공유 버튼(□↑)</b> → <b>「홈 화면에 추가」</b>를 누르면 앱처럼 쓸 수 있어요.</div>');
     return;
   }
-  setTimeout(()=>{if(!deferredPrompt&&!isStandalone()&&isAndroid)instShow('<b>📲 홈 화면에 앱으로 설치하기</b><div class="hint">크롬 오른쪽 위 <b>⋮ 메뉴</b> → <b>「홈 화면에 추가」</b> 또는 <b>「앱 설치」</b>를 눌러 주세요.</div>')},3500);
+  setTimeout(()=>{if(!deferredPrompt&&!isStandalone()&&isAndroid)instShow('<b>홈 화면에 앱으로 설치하기</b><div class="hint">크롬 오른쪽 위 <b>⋮ 메뉴</b> → <b>「홈 화면에 추가」</b> 또는 <b>「앱 설치」</b>를 눌러 주세요.</div>')},3500);
 }
 window.addEventListener('beforeinstallprompt',e=>{
   e.preventDefault();deferredPrompt=e;
-  instShow('<b>📲 홈 화면에 앱으로 설치하기</b><div class="hint">한 번 설치하면 아이콘을 눌러 바로 열 수 있어요.</div><button class="btn br" id="doInst">앱 설치</button>');
+  instShow('<b>홈 화면에 앱으로 설치하기</b><div class="hint">한 번 설치하면 아이콘을 눌러 바로 열 수 있어요.</div><button class="btn br" id="doInst">앱 설치</button>');
   $('doInst').onclick=async()=>{deferredPrompt.prompt();const r=await deferredPrompt.userChoice;deferredPrompt=null;if(r.outcome==='accepted'){$('inst').style.display='none';toast('설치했어요. 홈 화면 아이콘으로 열어 주세요')}};
 });
 window.addEventListener('appinstalled',()=>{$('inst').style.display='none'});
 
 
-// ===== 💬 배송 전달사항 (사무실 ↔ 기사, 공유 저장소의 msg·msgr 키만 쓰는 전용 열쇠) =====
+// ===== 배송 전달사항 (사무실 기사, 공유 저장소의 msg·msgr 키만 쓰는 전용 열쇠) =====
 const STORE_URL='https://script.google.com/macros/s/AKfycbyicz3BGmhiCkS17yozBKvsy4jMaGjazpMiymhmF0DQPb2fhLLII5VMwvWrrkqHd14J/exec';
 let M=(()=>{try{const j=JSON.parse(localStorage.getItem('tmapgo_msg'));if(j&&j.msg)return j}catch(e){}return {msg:{},msgr:{}}})();
 let SEEN=(()=>{try{return JSON.parse(localStorage.getItem('tmapgo_seen'))||{}}catch(e){return {}}})();
 let MT=null, SHP=null, SHN='';
 const me=()=>localStorage.getItem('tmapgo_name')||'';
-const KN={office:'🏢 사무실 전달',cust:'🏪 거래처 요청',driver:'🚚 기사 답장'};
+const KN={office:'사무실 전달',cust:'거래처 요청',driver:'기사 답장'};
 const kOf=m=>KN[m.k]?m.k:'office';
 const kl=k=>'<span class="kl k-'+k+'">'+KN[k]+'</span>';
 let KSEL=localStorage.getItem('tmapgo_kind')||'office';
@@ -642,24 +642,24 @@ function msgPrev(s){const L=msgsOf(pidOf(s));if(!L.length)return '';
   const pick=[];['office','cust'].forEach(k=>{const f=L.filter(m=>kOf(m)===k);if(f.length)pick.push(f[f.length-1])});
   if(!pick.length)pick.push(L[L.length-1]);
   return pick.sort((a,b)=>b.t-a.t).map(m=>'<div class="mprev k-'+kOf(m)+'-box"><small>'+kl(kOf(m))+esc(m.by||'')+' · '+hm(m.t)+'</small>'+esc(m.x)+'</div>').join('')}
-function msgBtn(s){const p=pidOf(s),n=msgCount(p),u=unread(p);return '<button class="mbtn '+(u?'unread':n?'has':'')+'" data-act="msg" data-pid="'+esc(p)+'" data-pn="'+esc(s.n)+'">'+(u?'🔴 새 전달사항 '+u+'개 보기':n?'💬 전달사항 '+n+'개 보기·답하기':'💬 전달사항 남기기')+'</button>'}
+function msgBtn(s){const p=pidOf(s),n=msgCount(p),u=unread(p);return '<button class="mbtn '+(u?'unread':n?'has':'')+'" data-act="msg" data-pid="'+esc(p)+'" data-pn="'+esc(s.n)+'">'+(u?'새 전달사항 '+u+'개 보기':n?'전달사항 '+n+'개 보기·답하기':'전달사항 남기기')+'</button>'}
 function renderMsgs(){
   const box=$('mbox'); const from=Date.now()-30*864e5;
   const T=Object.keys(M.msg||{}).map(pid=>{const L=msgsOf(pid).filter(m=>m.t>=from);return L.length?{pid,L,last:L[L.length-1]}:null}).filter(Boolean).sort((a,b)=>b.last.t-a.last.t);
   const nu=T.reduce((a,x)=>a+unread(x.pid),0);
   $('tdot').style.display=nu?'block':'none';$('mcnt').innerHTML=nu?'<span class="new">새 글 '+nu+'</span>':'';
-  if(!localStorage.getItem('tmapgo_k')){box.innerHTML='<div class="empty">맨 위 「🔑 직원 암호로 열기」에 암호를 넣으면 전달사항을 보고 쓸 수 있어요.</div>';return}
+  if(!localStorage.getItem('tmapgo_k')){box.innerHTML='<div class="empty">맨 위 「직원 암호로 열기」에 암호를 넣으면 전달사항을 보고 쓸 수 있어요.</div>';return}
   box.innerHTML=T.length?T.slice(0,8).map(x=>{const u=unread(x.pid);return '<div class="mt" data-act="msg" data-pid="'+esc(x.pid)+'" data-pn="'+esc(x.last.pn||'')+'"><div class="t"><b>'+esc(x.last.pn||'거래처')+'</b>'+(u?'<span class="new">새 글 '+u+'</span>':'')+'<div class="p">'+kl(kOf(x.last))+esc(x.last.x)+'</div><div class="w">'+esc(x.last.by||'')+' · '+hm(x.last.t)+' · '+x.L.length+'개</div></div></div>'}).join('')
-    :'<div class="empty">아직 전달사항이 없어요.<br>거래처 옆 <b>💬</b>를 누르면 배송 전달사항을 남길 수 있어요.</div>';
+    :'<div class="empty">아직 전달사항이 없어요.<br>거래처 옆 <b>전달사항</b> 버튼을 누르면 배송 전달사항을 남길 수 있어요.</div>';
 }
 let MW=0;
 async function msgPull(){const st=Date.now();try{const j=await storeCall({op:'get',keys:'msg,msgr'});if(st<MW)return;M={msg:(j.data.msg||{}).value||{},msgr:(j.data.msgr||{}).value||{}};localStorage.setItem('tmapgo_msg',JSON.stringify(M));render();renderFind();if(SHP)renderSheet()}catch(e){renderMsgs()}}
 function askName(){let n=prompt('이름을 알려 주세요 (예: 사무실 이혜영, 기사 김OO)',me()||'');if(n===null)return false;n=n.trim().slice(0,20);if(!n){toast('이름을 넣어 주세요');return false}localStorage.setItem('tmapgo_name',n);$('shMe').textContent=n;if(typeof nameShow==='function')nameShow();return true}
 function renderSheet(){
   const L=msgsOf(SHP); const rd=(M.msgr||{})[SHP]||{};
-  $('shT').textContent='💬 '+SHN; $('shMe').textContent=me()||'(이름 없음)';
+  $('shT').textContent=''+SHN; $('shMe').textContent=me()||'(이름 없음)';
   $('shL').innerHTML=L.length?L.map(m=>{const mine=m.by===me();const readers=Object.entries(rd).filter(([n,t])=>n!==m.by&&t>=m.t).map(([n])=>n);
-    return '<div class="bub '+(mine?'me':'')+'" style="border-left:4px solid '+({office:'#1F4FBF',cust:'#C26A0A',driver:'#1F6B45'}[kOf(m)])+'"><small>'+kl(kOf(m))+esc(m.by||'')+' · '+hm(m.t)+(mine?'<button class="del" data-act="mdel" data-pid="'+esc(SHP)+'" data-mid="'+esc(m.id)+'">지우기</button>':'')+'</small>'+esc(m.x)+(readers.length?'<small style="margin:4px 0 0;color:#1F6B45">✓ 읽음: '+esc(readers.join(', '))+'</small>':'')+'</div>'}).join('')
+    return '<div class="bub '+(mine?'me':'')+'" style="border-left:4px solid '+({office:'#1F4FBF',cust:'#C26A0A',driver:'#1F6B45'}[kOf(m)])+'"><small>'+kl(kOf(m))+esc(m.by||'')+' · '+hm(m.t)+(mine?'<button class="del" data-act="mdel" data-pid="'+esc(SHP)+'" data-mid="'+esc(m.id)+'">지우기</button>':'')+'</small>'+esc(m.x)+(readers.length?'<small style="margin:4px 0 0;color:#1F6B45">읽음: '+esc(readers.join(', '))+'</small>':'')+'</div>'}).join('')
     :'<div class="empty" style="text-align:center">아직 전달사항이 없어요.<br>아래에 써서 보내 주세요.</div>';
   setTimeout(()=>{$('shL').scrollTop=1e6},30);
 }
@@ -692,7 +692,7 @@ document.querySelectorAll('.qk button').forEach(b=>b.addEventListener('click',()
 setInterval(()=>{if(!document.hidden)msgPull()},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)msgPull()});
 
-// ===== 🧭 최적 코스 (v016): 「최적 코스 계산」을 누를 때만 TMAP에 물어봄 (열쇠는 기기에만, 코드에 없음) =====
+// ===== 최적 코스 (v016): 「최적 코스 계산」을 누를 때만 TMAP에 물어봄 (열쇠는 기기에만, 코드에 없음) =====
 const CO={n:'빵을그리다(주) 곤지암',y:37.369855,x:127.40655};
 const OKEY='tmapgo_opt', TKEY='tmapgo_tkey';
 // o: 경유지 최적화 searchOption, q: 다중 경유지(순서 고정) searchOption ('' = 지원 안 해서 추천(0)으로)
@@ -723,7 +723,7 @@ function startAt(){const now=new Date();if(O.when==='now'||!/^\d\d:\d\d$/.test(O
   const [h,m]=O.when.split(':').map(Number);const fut=!!(S.day&&S.day>ymd(now));const d=fut?new Date(S.day+'T00:00:00'):new Date(now);d.setHours(h,m,0,0);
   if(!fut&&now-d>3*3600e3)d.setDate(d.getDate()+1);return d}
 function addBtn(id,fi){const inL=S.stops.some(s=>s.id&&s.id===id);
-  return '<button class="addb'+(inL?' in':'')+'" data-act="sadd" data-id="'+esc(id)+'"'+(fi!==undefined?' data-fi="'+fi+'"':'')+'>'+(inL?'✓ 배송 목록에 있음':'📦 오늘 배송에 넣기')+'</button>'}
+  return '<button class="addb'+(inL?' in':'')+'" data-act="sadd" data-id="'+esc(id)+'"'+(fi!==undefined?' data-fi="'+fi+'"':'')+'>'+(inL?'배송 목록에 있음':'오늘 배송에 넣기')+'</button>'}
 function renderRouteBar(){const b=$('rbar');if(!b)return;
   b.innerHTML=(S.plan&&S.stops.some(s=>s.eta))?'<div class="hint" style="text-align:center;color:#1F3FBF;margin:0 0 10px">'+esc(S.plan.txt||'')+'</div>'+UNDO_BTN():(S.plan?UNDO_BTN():'')}
 function openRoute(){RS.res=RS.alt=null;RS.err='';RS.keyAsk=false;renderRoute();$('rsheet').classList.add('on');$('rL').scrollTop=0}
@@ -731,53 +731,53 @@ function closeRoute(){$('rsheet').classList.remove('on')}
 function segB(r,v,t,on){return '<button data-r="'+r+'" data-v="'+v+'" class="'+(on?'on':'')+'">'+t+'</button>'}
 function renderRoute(){
   const L=$('rL'), key=tKey(); let h='';
-  if(!key||RS.keyBad||RS.keyAsk) h+='<div class="kbox"><b>🔑 '+(RS.keyBad?'티맵 열쇠가 맞지 않아요':key?'새 티맵 열쇠 넣기':'티맵 열쇠가 필요해요')+'</b><div class="hint">최적 코스 계산은 티맵에 물어봐야 해서 열쇠가 있어야 해요.<br><b>사무실(이혜영)에게 열쇠를 받아 한 번만 넣어 주세요.</b> 이 휴대폰에만 저장돼요. (열쇠가 없어도 다른 기능은 그대로 써요)</div><input class="rin" id="rKey" type="text" style="-webkit-text-security:disc" data-lpignore="true" data-1p-ignore="true" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="여기에 열쇠 붙여넣기"><button class="btn br" data-r="key" style="min-height:54px">열쇠 저장</button></div>';
-  h+='<div class="rq">① 어디서 출발해요?</div><div class="seg">'+segB('from','co','🏭 회사(빵을그리다)',O.from==='co')+segB('from','gps','📍 현재 위치',O.from==='gps')+'</div>';
+  if(!key||RS.keyBad||RS.keyAsk) h+='<div class="kbox"><b>'+(RS.keyBad?'티맵 열쇠가 맞지 않아요':key?'새 티맵 열쇠 넣기':'티맵 열쇠가 필요해요')+'</b><div class="hint">최적 코스 계산은 티맵에 물어봐야 해서 열쇠가 있어야 해요.<br><b>사무실(이혜영)에게 열쇠를 받아 한 번만 넣어 주세요.</b> 이 휴대폰에만 저장돼요. (열쇠가 없어도 다른 기능은 그대로 써요)</div><input class="rin" id="rKey" type="text" style="-webkit-text-security:disc" data-lpignore="true" data-1p-ignore="true" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="여기에 열쇠 붙여넣기"><button class="btn br" data-r="key" style="min-height:54px">열쇠 저장</button></div>';
+  h+='<div class="rq">① 어디서 출발해요?</div><div class="seg">'+segB('from','co','회사(빵을그리다)',O.from==='co')+segB('from','gps','현재 위치',O.from==='gps')+'</div>';
   const tm=O.when!=='now';
-  h+='<div class="rq">② 언제 출발해요?</div><div class="seg">'+segB('when','now','⏱ 지금 출발',!tm)+segB('when','set','🕘 시간 정하기',tm)+'</div>'+(tm?'<input class="rin" type="time" data-r="whent" value="'+esc(O.when)+'" aria-label="출발 시각">'+(S.day&&S.day>ymd(new Date())?'<div class="hint">'+md(new Date(S.day+'T00:00:00'))+' 배송 날짜 기준이에요.</div>':''):'');
-  h+='<div class="rq">③ 어디서 끝나요?</div><div class="seg">'+segB('end','co','🏭 회사로 복귀',O.end==='co')+segB('end','last','🏁 마지막 거래처에서 끝',O.end==='last')+'</div>';
+  h+='<div class="rq">② 언제 출발해요?</div><div class="seg">'+segB('when','now','지금 출발',!tm)+segB('when','set','시간 정하기',tm)+'</div>'+(tm?'<input class="rin" type="time" data-r="whent" value="'+esc(O.when)+'" aria-label="출발 시각">'+(S.day&&S.day>ymd(new Date())?'<div class="hint">'+md(new Date(S.day+'T00:00:00'))+' 배송 날짜 기준이에요.</div>':''):'');
+  h+='<div class="rq">③ 어디서 끝나요?</div><div class="seg">'+segB('end','co','회사로 복귀',O.end==='co')+segB('end','last','마지막 거래처에서 끝',O.end==='last')+'</div>';
   h+='<div class="rq">④ 어떤 길로 갈까요?</div><div class="seg">'+Object.entries(ROPT).map(([k,v])=>segB('opt',k,v.t,O.opt===k)).join('')+'</div>';
   const nC=S.stops.filter(s=>{const c=per(pidOf(s));return c.pin||c.frz||c.until||c.stay}).length;
-  h+='<button class="rmore" data-r="more">'+(O.more?'⚙️ 조건 접기 ▴':'⚙️ 조건 더 보기 ▾')+(nC?' · 정해 둔 곳 '+nC+'곳':'')+'</button>';
+  h+='<button class="rmore" data-r="more">'+(O.more?'조건 접기 ▴':'조건 더 보기 ▾')+(nC?' · 정해 둔 곳 '+nC+'곳':'')+'</button>';
   if(O.more){
-    h+='<div class="hint">📌 <b>먼저 가기</b>: 누른 순서대로 맨 앞에 가요. ❄️ <b>냉동 먼저</b>: 먼저 가기 다음, 나머지보다 앞에 가요. <b>몇 시까지</b>를 넣으면 늦을 때 빨갛게 알려 드려요.</div>';
+    h+='<div class="hint"><b>먼저 가기</b>: 누른 순서대로 맨 앞에 가요. <b>냉동 먼저</b>: 먼저 가기 다음, 나머지보다 앞에 가요. <b>몇 시까지</b>를 넣으면 늦을 때 빨갛게 알려 드려요.</div>';
     const pins=pinRank();
     h+=S.stops.map((s,i)=>{const p=esc(pidOf(s)),c=per(pidOf(s)),st=stayOf(s);
       return '<div class="pc"><b>'+(i+1)+'. '+esc(s.n)+(hasLoc(s)?'':' <span class="tag">위치 없음 — 맨 뒤</span>')+(s.done?' <span class="tag">배송 완료 · 계산 안 함</span>':'')+'</b><div class="seg">'
-      +'<button data-r="pin" data-p="'+p+'" class="'+(c.pin?'on':'')+'">'+(c.pin?'📌 '+pins[pidOf(s)]+'번째로 먼저':'📌 먼저 가기')+'</button>'
-      +'<button data-r="frz" data-p="'+p+'" class="'+(c.frz?'on':'')+'">'+(c.frz?'❄️ 냉동 ✓':'❄️ 냉동 먼저')+'</button></div>'
+      +'<button data-r="pin" data-p="'+p+'" class="'+(c.pin?'on':'')+'">'+(c.pin?''+pins[pidOf(s)]+'번째로 먼저':'먼저 가기')+'</button>'
+      +'<button data-r="frz" data-p="'+p+'" class="'+(c.frz?'on':'')+'">'+(c.frz?'냉동 ✓':'냉동 먼저')+'</button></div>'
       +'<div class="pl"><span>몇 시까지</span><input type="time" data-r="until" data-p="'+p+'" value="'+esc(c.until||'')+'" aria-label="받는 시간">'+(c.until?'<button data-r="untilx" data-p="'+p+'">지우기</button>':'')+'</div>'
       +'<div class="pl"><span>하차 시간</span><select data-r="stay" data-p="'+p+'" aria-label="하차 시간">'+[5,10,15,20,30,45,60].map(m=>'<option value="'+m+'"'+(m===st?' selected':'')+'>'+m+'분'+(m===10?' (기본)':'')+'</option>').join('')+'</select></div></div>'}).join('');
   }
   h+='<div id="rres" class="rres">'+resHtml()+'</div>';
-  if(key&&!RS.keyBad&&!RS.keyAsk&&localStorage.getItem(TKEY))h+='<div class="hint" style="text-align:center;margin-top:14px"><a href="#" data-r="keyx" style="color:var(--mu)">🔑 티맵 열쇠 바꾸기</a></div>';
+  if(key&&!RS.keyBad&&!RS.keyAsk&&localStorage.getItem(TKEY))h+='<div class="hint" style="text-align:center;margin-top:14px"><a href="#" data-r="keyx" style="color:var(--mu)">티맵 열쇠 바꾸기</a></div>';
   L.innerHTML=h;
-  const cb=$('rCalc');cb.textContent=RS.busy?'⏳ 계산 중이에요…':RS.res?'🔄 조건 바꿔서 다시 계산':'🧭 최적 코스 계산';cb.disabled=RS.busy;
+  const cb=$('rCalc');cb.textContent=RS.busy?'계산 중이에요…':RS.res?'조건 바꿔서 다시 계산':'최적 코스 계산';cb.disabled=RS.busy;
 }
 function resHtml(){let h='';
-  if(RS.busy)h+='<div class="rinfo">⏳ 티맵에 물어보는 중이에요… (몇 초 걸려요)</div>';
-  if(RS.err)h+='<div class="rerr">⚠️ '+RS.err+'</div>';
+  if(RS.busy)h+='<div class="rinfo">티맵에 물어보는 중이에요… (몇 초 걸려요)</div>';
+  if(RS.err)h+='<div class="rerr">'+RS.err+'</div>';
   if(RS.res)h+=resCard(RS.res,'res');
   if(RS.alt)h+=resCard(RS.alt,'alt');
   return h}
 function resCard(R,which){
   const late=R.rows.filter(r=>r.late);
-  let h='<div class="rc"><h4>'+(which==='alt'?'⏰ 대안 코스 (시간 맞춰야 하는 곳 먼저)':'🧭 티맵이 정한 코스')+'</h4>';
+  let h='<div class="rc"><h4>'+(which==='alt'?'대안 코스 (시간 맞춰야 하는 곳 먼저)':'티맵이 정한 코스')+'</h4>';
   h+='<div class="rsum">'+dayLbl(R.t0)+' <b>'+hhmm(R.t0)+'</b> '+esc(R.orgN)+' 출발 · '+esc(R.optT)+'<br>총 <b>'+dur(R.tt)+'</b> · <b>'+km(R.td)+'</b>'+(R.endCo?(R.back?' · 회사 도착 <b>'+hhmm(R.back)+'</b>':' · 회사로 복귀'):' · 마지막 거래처에서 끝')+'</div>';
   h+=R.rows.map((r,i)=>'<div class="ro"><div class="no">'+(i+1)+'</div><div class="t"><b>'+esc(r.n)+'</b><div class="tm">'+(r.eta?r.eta+' 도착 예정':'도착 시간 모름')+' <span>· 하차 '+r.stay+'분</span></div>'
-    +(r.pin?'<span class="tg pin">📌 '+r.pin+'번째로 먼저 가기 반영</span>':'')+(r.frz?'<span class="tg frz">❄️ 냉동 먼저 반영</span>':'')+(r.until&&!r.late?'<span class="tg ok">✓ '+r.until+'까지 맞춰요</span>':'')
-    +(r.late?'<div class="late">⚠️ '+r.until+'까지인데 '+r.eta+' 도착 예정 ('+dur(r.late*60)+' 늦어요)</div>':'')+'</div></div>').join('');
-  if(R.noLoc.length)h+='<div class="rinfo">📍 <b>위치 없음 — 맨 뒤</b>: '+R.noLoc.map(s=>esc(s.n)).join(', ')+'<br>주소가 확인 안 된 곳이라 계산에서 빼고 맨 뒤에 둘게요.</div>';
-  if(late.length)h+='<div class="rwarn">⚠️ 받는 시간을 넘기는 곳이 <b>'+late.length+'곳</b> 있어요.'+(which==='res'&&!RS.alt?'<br>아래 버튼으로 그곳을 먼저 가는 코스도 계산해 볼 수 있어요.':'')+'</div>';
-  R.notes.forEach(n=>h+='<div class="rinfo">ℹ️ '+esc(n)+'</div>');
-  if(which==='res'&&late.length&&!RS.alt)h+='<button class="btn ol" data-r="alt" style="min-height:54px">⏰ 늦는 곳 먼저 가는 코스도 계산</button>';
-  h+='<button class="rbtn" data-r="apply" data-v="'+which+'" style="margin-top:12px">✅ 이 순서로 정하기</button></div>';
+    +(r.pin?'<span class="tg pin">'+r.pin+'번째로 먼저 가기 반영</span>':'')+(r.frz?'<span class="tg frz">냉동 먼저 반영</span>':'')+(r.until&&!r.late?'<span class="tg ok">'+r.until+'까지 맞춰요</span>':'')
+    +(r.late?'<div class="late">'+r.until+'까지인데 '+r.eta+' 도착 예정 ('+dur(r.late*60)+' 늦어요)</div>':'')+'</div></div>').join('');
+  if(R.noLoc.length)h+='<div class="rinfo"><b>위치 없음 — 맨 뒤</b>: '+R.noLoc.map(s=>esc(s.n)).join(', ')+'<br>주소가 확인 안 된 곳이라 계산에서 빼고 맨 뒤에 둘게요.</div>';
+  if(late.length)h+='<div class="rwarn">받는 시간을 넘기는 곳이 <b>'+late.length+'곳</b> 있어요.'+(which==='res'&&!RS.alt?'<br>아래 버튼으로 그곳을 먼저 가는 코스도 계산해 볼 수 있어요.':'')+'</div>';
+  R.notes.forEach(n=>h+='<div class="rinfo">'+esc(n)+'</div>');
+  if(which==='res'&&late.length&&!RS.alt)h+='<button class="btn ol" data-r="alt" style="min-height:54px">늦는 곳 먼저 가는 코스도 계산</button>';
+  h+='<button class="rbtn" data-r="apply" data-v="'+which+'" style="margin-top:12px">이 순서로 정하기</button></div>';
   return h}
 function scrollRes(){setTimeout(()=>{const r=$('rres');if(r&&r.firstChild)r.scrollIntoView({behavior:'smooth',block:'start'})},60)}
 function myPos(){return new Promise((ok,no)=>{
-  if(!navigator.geolocation)return no({kind:'gps',msg:'이 휴대폰에서는 현재 위치를 쓸 수 없어요. 「🏭 회사(빵을그리다)」 출발로 바꿔 주세요.'});
+  if(!navigator.geolocation)return no({kind:'gps',msg:'이 휴대폰에서는 현재 위치를 쓸 수 없어요. 「회사(빵을그리다)」 출발로 바꿔 주세요.'});
   navigator.geolocation.getCurrentPosition(p=>ok({n:'현재 위치',y:p.coords.latitude,x:p.coords.longitude}),
-    er=>no({kind:'gps',msg:er&&er.code===1?'위치 권한이 꺼져 있어요. 주소창 왼쪽 자물쇠(또는 ⓘ) → 「위치」를 허용하거나, 「🏭 회사(빵을그리다)」 출발로 바꿔 주세요.':'현재 위치를 못 찾았어요. 잠시 뒤 다시 누르거나 「🏭 회사(빵을그리다)」 출발로 바꿔 주세요.'}),
+    er=>no({kind:'gps',msg:er&&er.code===1?'위치 권한이 꺼져 있어요. 주소창 왼쪽 자물쇠(또는 ⓘ) → 「위치」를 허용하거나, 「회사(빵을그리다)」 출발로 바꿔 주세요.':'현재 위치를 못 찾았어요. 잠시 뒤 다시 누르거나 「회사(빵을그리다)」 출발로 바꿔 주세요.'}),
     {enableHighAccuracy:true,timeout:15000,maximumAge:120000})})}
 const nm=s=>String(s||'').slice(0,30);
 const vid=s=>'v'+S.stops.indexOf(s);
@@ -830,7 +830,7 @@ async function calcRoute(alt){
     const pinned=A.filter(s=>pins[pidOf(s)]).sort((a,b)=>pins[pidOf(a)]-pins[pidOf(b)]);
     let lateS=[];
     if(alt&&RS.res){const ids=RS.res.rows.filter(r=>r.late).map(r=>r.pid);lateS=A.filter(s=>!pins[pidOf(s)]&&ids.includes(pidOf(s))).sort((a,b)=>(per(pidOf(a)).until||'99').localeCompare(per(pidOf(b)).until||'99'));
-      if(lateS.some(s=>per(pidOf(s)).frz)||A.some(s=>per(pidOf(s)).frz))notes.push('대안 코스는 시간 맞춰야 하는 곳을 📌 먼저 가기 바로 다음, ❄️ 냉동보다 앞에 두었어요.')}
+      if(lateS.some(s=>per(pidOf(s)).frz)||A.some(s=>per(pidOf(s)).frz))notes.push('대안 코스는 시간 맞춰야 하는 곳을 먼저 가기 바로 다음, 냉동보다 앞에 두었어요.')}
     const F=[...pinned,...lateS,...A.filter(s=>!pins[pidOf(s)]&&!lateS.includes(s)&&per(pidOf(s)).frz)];
     const R=A.filter(s=>!F.includes(s));
     let order=null,j=null;
@@ -859,7 +859,7 @@ function errText(e){
   if(e.kind==='nokey'){RS.keyAsk=true;return '티맵 열쇠가 없어요. 위 칸에 열쇠를 넣어 주세요.'}
   if(e.kind==='parse')return '티맵 답을 읽지 못했어요. 다시 한 번 눌러 주세요.';
   if(e.kind==='api'){const c=(e.code+' '+e.msg).toLowerCase(), tag='<br><small style="color:var(--mu)">(오류 번호 '+esc(e.status+(e.code?'·'+e.code:''))+')</small>';
-    if(e.status===429||/quota|limit|exceed|초과|한도/.test(c))return '오늘 쓸 수 있는 무료 계산 횟수를 다 썼어요. 내일 다시 눌러 주세요.<br>그동안은 지금 순서대로 「🚗 티맵 길안내 시작」을 쓰면 돼요.'+tag;
+    if(e.status===429||/quota|limit|exceed|초과|한도/.test(c))return '오늘 쓸 수 있는 무료 계산 횟수를 다 썼어요. 내일 다시 눌러 주세요.<br>그동안은 지금 순서대로 「티맵 길안내 시작」을 쓰면 돼요.'+tag;
     if(e.status===401||e.status===403||/appkey|app key|invalid.?key|unauthori|forbidden/.test(c)){RS.keyBad=true;return '티맵 열쇠가 맞지 않아요. 사무실(이혜영)에게 열쇠를 다시 받아 위 칸에 넣어 주세요.'+tag}
     if(e.status>=500)return '티맵이 잠시 답을 안 해요. 몇 분 뒤에 다시 눌러 주세요.'+tag;
     return '티맵이 이 코스를 계산하지 못했어요. 거래처 위치·출발 시각을 확인하고 다시 눌러 주세요.'+tag}
@@ -873,10 +873,10 @@ function applyRes(which){const R=RS[which];if(!R)return;
   R.order.forEach((s,i)=>{const r=R.rows[i];if(r&&r.eta)s.eta=r.eta});
   S.stops=[...done,...R.order,...R.noLoc.filter(s=>S.stops.includes(s)),...rest];
   delete S.preset;
-  S.plan={t:Date.now(),txt:'🧭 '+md(R.t0)+' '+hhmm(R.t0)+' '+R.orgN+' 출발 · '+R.optT+' 기준으로 정한 순서예요. 번호 아래 시간 = 도착 예정'};
+  S.plan={t:Date.now(),txt:''+md(R.t0)+' '+hhmm(R.t0)+' '+R.orgN+' 출발 · '+R.optT+' 기준으로 정한 순서예요. 번호 아래 시간 = 도착 예정'};
   save();closeRoute();render();renderFind();
   window.scrollTo({top:Math.max(0,$('dayTitle').offsetTop-8),behavior:'smooth'});
-  toast('✅ 순서를 정했어요. 1번 「티맵 길안내 시작」을 누르면 바로 출발해요');
+  toast('순서를 정했어요. 1번 「티맵 길안내 시작」을 누르면 바로 출발해요');
 }
 $('rCalc').addEventListener('click',()=>calcRoute(false));
 $('rX').addEventListener('click',closeRoute);
@@ -884,7 +884,7 @@ $('rsheet').addEventListener('click',e=>{if(e.target.id==='rsheet')closeRoute()}
 $('rL').addEventListener('click',e=>{
   const b=e.target.closest('[data-r]');if(!b||b.tagName==='INPUT'||b.tagName==='SELECT')return;
   const r=b.dataset.r,v=b.dataset.v,p=b.dataset.p;
-  if(r==='key'){const k=(($('rKey')||{}).value||'').trim();if(k.length<10){toast('열쇠를 붙여넣어 주세요');return}localStorage.setItem(TKEY,k);RS.keyBad=false;RS.keyAsk=false;RS.err='';toast('🔑 열쇠를 저장했어요');renderRoute();return}
+  if(r==='key'){const k=(($('rKey')||{}).value||'').trim();if(k.length<10){toast('열쇠를 붙여넣어 주세요');return}localStorage.setItem(TKEY,k);RS.keyBad=false;RS.keyAsk=false;RS.err='';toast('열쇠를 저장했어요');renderRoute();return}
   if(r==='keyx'){e.preventDefault();RS.keyAsk=true;renderRoute();$('rL').scrollTop=0;return}
   if(r==='apply'){applyRes(v);return}
   if(r==='alt'){calcRoute(true);return}
@@ -911,9 +911,9 @@ const DEV=(()=>{let d=localStorage.getItem('tmapgo_dev');if(!d){d='d'+Math.rando
 const LATE_MIN=30;
 (function tripDayReset(){if(S.tday&&S.tday!==TODAY()){S.stops.forEach(s=>{delete s.dep;delete s.arr;delete s.te;delete s.teR;delete s.fin});delete S.tday;delete S.tend;localStorage.setItem(KEY,JSON.stringify(S))}})();
 function tripLine(s){
-  if(s.done)return '<div class="tk dn">✔ 배송 완료'+(s.arr?' · '+esc(s.arr)+' 도착':s.fin?' · '+esc(s.fin)+' 완료':'')+'</div>';
-  if(s.arr)return '<div class="tk ar">📍 '+esc(s.arr)+' 도착했어요</div>';
-  if(s.dep){const late=tripLate(s.te);return '<div class="tk '+(late?'lt':'mv')+'">🚚 '+esc(s.dep)+' 출발'+(s.te?' · '+(s.teR?'약 ':'')+esc(s.te)+' 도착 예정':'')+'</div>'}
+  if(s.done)return '<div class="tk dn">배송 완료'+(s.arr?' · '+esc(s.arr)+' 도착':s.fin?' · '+esc(s.fin)+' 완료':'')+'</div>';
+  if(s.arr)return '<div class="tk ar">'+esc(s.arr)+' 도착했어요</div>';
+  if(s.dep){const late=tripLate(s.te);return '<div class="tk '+(late?'lt':'mv')+'">'+esc(s.dep)+' 출발'+(s.te?' · '+(s.teR?'약 ':'')+esc(s.te)+' 도착 예정':'')+'</div>'}
   return '';
 }
 function tripLate(te){if(!te||!/^\d\d:\d\d$/.test(te))return false;const [h,m]=te.split(':').map(Number);const d=new Date();d.setHours(h,m,0,0);return Date.now()-d>LATE_MIN*60e3}
@@ -938,14 +938,14 @@ async function tripArrCheck(){
   try{if(navigator.permissions){const p=await navigator.permissions.query({name:'geolocation'});if(p.state==='denied')return}}catch(e){}
   navigator.geolocation.getCurrentPosition(p=>{
     const d=hav({y:p.coords.latitude,x:p.coords.longitude},s);
-    if(d<=0.5&&!s.arr&&!s.done){s.arr=hhmm(new Date());save();render();tripPush(true);toast('📍 「'+s.n+'」 도착 시각을 기록했어요')}
+    if(d<=0.5&&!s.arr&&!s.done){s.arr=hhmm(new Date());save();render();tripPush(true);toast('「'+s.n+'」 도착 시각을 기록했어요')}
   },()=>{},{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
 }
 function tripEndBar(){const b=$('tripEnd');if(!b)return;
   if(S.tday!==TODAY()||!S.stops.some(s=>s.dep)){b.innerHTML='';return}
-  b.innerHTML=S.tend?'<div class="tend">🏠 '+esc(S.tend)+' 오늘 배송 끝 · 수고하셨어요<button class="ub" id="tEndU">↩ 배송 끝 취소</button></div>':'<button class="btn ol" id="tEndB">🏠 오늘 배송 끝</button>';
-  const u=$('tEndU');if(u)u.onclick=()=>{if(!confirm('「오늘 배송 끝」을 취소할까요?\n(배송 완료 표시는 그대로예요. 필요한 곳만 「↩ 완료 취소」를 눌러 주세요)'))return;delete S.tend;save();render();tripPush(true);toast('↩ 배송 끝을 취소했어요')};
-  const e=$('tEndB');if(e)e.onclick=()=>{if(!confirm('오늘 배송을 모두 마쳤나요?\n출발한 곳은 모두 「배송 완료」로 바뀌어요.'))return;const t=hhmm(new Date());S.stops.forEach(s=>{if(s.dep&&!s.done){s.done=true;if(!s.fin)s.fin=t}});S.tend=t;save();render();tripPush(true);toast('🏠 오늘 배송 끝을 사무실에 알렸어요')};
+  b.innerHTML=S.tend?'<div class="tend">'+esc(S.tend)+' 오늘 배송 끝 · 수고하셨어요<button class="ub" id="tEndU">배송 끝 취소</button></div>':'<button class="btn ol" id="tEndB">오늘 배송 끝</button>';
+  const u=$('tEndU');if(u)u.onclick=()=>{if(!confirm('「오늘 배송 끝」을 취소할까요?\n(배송 완료 표시는 그대로예요. 필요한 곳만 「완료 취소」를 눌러 주세요)'))return;delete S.tend;save();render();tripPush(true);toast('배송 끝을 취소했어요')};
+  const e=$('tEndB');if(e)e.onclick=()=>{if(!confirm('오늘 배송을 모두 마쳤나요?\n출발한 곳은 모두 「배송 완료」로 바뀌어요.'))return;const t=hhmm(new Date());S.stops.forEach(s=>{if(s.dep&&!s.done){s.done=true;if(!s.fin)s.fin=t}});S.tend=t;save();render();tripPush(true);toast('오늘 배송 끝을 사무실에 알렸어요')};
 }
 let TPT=null;
 function tripSoon(){clearTimeout(TPT);TPT=setTimeout(()=>tripPush(false),2500)}
@@ -967,24 +967,24 @@ function nameShow(){$('myName').textContent=me()||'(아직 없어요)'}
 function showTab(t){TAB=t;for(let k=1;k<=4;k++){$('tab'+k).style.display=k===t?'block':'none';$('tb'+k).classList.toggle('on',k===t)}
   clearInterval(TPI);TPI=null;
   if(t===3){nameShow();renderMsgs();
-    if(!localStorage.getItem('tmapgo_k')){$('tL').innerHTML='<div class="card empty">「오늘 배송」 탭 맨 위 「🔑 직원 암호로 열기」에 암호를 넣으면 현황이 보여요.</div>'}
+    if(!localStorage.getItem('tmapgo_k')){$('tL').innerHTML='<div class="card empty">「오늘 배송」 탭 맨 위 「직원 암호로 열기」에 암호를 넣으면 현황이 보여요.</div>'}
     else{$('tL').innerHTML='<div class="hint">불러오는 중…</div>';tripPull();msgPull();TPI=setInterval(()=>{if(!document.hidden&&TAB===3)tripPull()},30000)}}
   if(t===2&&!C.list&&C.state!=='loading')custLoad();
   window.scrollTo(0,0)}
 async function tripPull(){
   try{const j=await storeCall({op:'get',keys:'trip:'+TODAY()});const all=((j.data['trip:'+TODAY()]||{}).value)||{};
     const ps=Object.values(all).filter(p=>p&&p.list&&p.list.length).sort((a,b)=>b.at-a.at);
-    $('tL').innerHTML=ps.length?ps.map(tripCard).join(''):'<div class="card empty">아직 오늘 기록이 없어요.<br>기사님이 「🚚 출발」을 누르면 여기에 보여요.</div>';
+    $('tL').innerHTML=ps.length?ps.map(tripCard).join(''):'<div class="card empty">아직 오늘 기록이 없어요.<br>기사님이 「출발」을 누르면 여기에 보여요.</div>';
   }catch(e){$('tL').innerHTML='<div class="card empty">현황을 못 불러왔어요. 인터넷 연결을 확인하고 잠시 뒤 다시 열어 주세요.</div>'}
 }
 function tripCard(p){
   const at=new Date(p.at);
   const rows=p.list.map((s,i)=>{let c='wt',t='대기';
-    if(s.done){c='dn';t='✔ 완료'+(s.arr?' · '+s.arr+' 도착':s.fin?' · '+s.fin+' 완료':'')}
-    else if(s.arr){c='ar';t='📍 '+s.arr+' 도착'}
-    else if(s.dep){const l=tripLate(s.te);c=l?'lt':'mv';t=l?'⚠ 확인 필요 · '+(s.r?'약 ':'')+s.te+' 도착 예정이었어요':'🚚 이동 중 · '+(s.te?(s.r?'약 ':'')+s.te+' 도착 예정':s.dep+' 출발')}
+    if(s.done){c='dn';t='완료'+(s.arr?' · '+s.arr+' 도착':s.fin?' · '+s.fin+' 완료':'')}
+    else if(s.arr){c='ar';t=''+s.arr+' 도착'}
+    else if(s.dep){const l=tripLate(s.te);c=l?'lt':'mv';t=l?'확인 필요 · '+(s.r?'약 ':'')+s.te+' 도착 예정이었어요':'이동 중 · '+(s.te?(s.r?'약 ':'')+s.te+' 도착 예정':s.dep+' 출발')}
     return '<div class="tr"><b>'+(i+1)+'. '+esc(s.n)+'</b><i class="'+c+'">'+esc(t)+'</i></div>'}).join('');
-  return '<div class="tp"><h4>🚚 '+esc(p.who)+'<span>마지막 소식 '+hhmm(at)+'</span></h4>'+rows+(p.end?'<div class="tend" style="margin:8px 0 0">🏠 '+esc(p.end)+' 오늘 배송 끝</div>':'')+'</div>';
+  return '<div class="tp"><h4>'+esc(p.who)+'<span>마지막 소식 '+hhmm(at)+'</span></h4>'+rows+(p.end?'<div class="tend" style="margin:8px 0 0">'+esc(p.end)+' 오늘 배송 끝</div>':'')+'</div>';
 }
 for(let k=1;k<=4;k++)$('tb'+k).addEventListener('click',()=>{showTab(k);if(k===4)pcLoad()});
 $('eOpen').addEventListener('click',()=>{$('esheet').classList.add('on');renderEdit()});
@@ -1006,19 +1006,19 @@ function undoPlan(){if(!S.plan)return;const pv=Array.isArray(S.planPrev)?S.planP
   if(!confirm('정한 코스를 취소할까요?\n'+(pv.length?'순서가 코스 정하기 전으로 돌아가고 ':'')+'도착 예정 시간이 지워져요.\n(배송 완료·출발 기록은 그대로예요)'))return;
   if(pv.length){const ix=s=>{const k=pv.indexOf(pidOf(s));return k<0?1e9:k};S.stops=S.stops.map((s,i)=>[s,i]).sort((a,b)=>(ix(a[0])-ix(b[0]))||(a[1]-b[1])).map(a=>a[0])}
   noPlan();save();render();if(typeof renderFind==='function')renderFind();if(typeof renderEdit==='function'&&$('esheet')&&$('esheet').classList.contains('on'))renderEdit();
-  toast('↩ 정한 코스를 취소했어요'+(pv.length?'. 전 순서로 돌아갔어요':''))}
-function UNDO_BTN(){return S.plan?'<button class="btn ol" data-undo="1" style="min-height:54px;width:100%;margin:6px 0 10px;color:#C26A0A;border-color:#C26A0A;font-weight:700">↩ 정한 코스 취소 (전 순서로)</button>':''}
+  toast('정한 코스를 취소했어요'+(pv.length?'. 전 순서로 돌아갔어요':''))}
+function UNDO_BTN(){return S.plan?'<button class="btn ol" data-undo="1" style="min-height:54px;width:100%;margin:6px 0 10px;color:#C26A0A;border-color:#C26A0A;font-weight:700">정한 코스 취소 (전 순서로)</button>':''}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-undo]');if(b){e.preventDefault();undoPlan()}});
 
 // ===== v022: 인기 내비·배송 앱 기능 중 기사님께 맞는 것만 (사용자 요청 10/24) =====
-// 1) ⏭ 나중에 가기(Circuit·Routific의 건너뛰기/재방문) 2) 📲 도착 시간 알리기(카카오내비 도착시간 공유) 3) 📦 싣는 순서(Circuit 적재 순서)
-// 4) 🔊 음성 안내(티맵·카카오내비 음성) 5) 화면 켜짐 유지(내비 공통)
+// 1) 나중에 가기(Circuit·Routific의 건너뛰기/재방문) 2) 도착 시간 알리기(카카오내비 도착시간 공유) 3) 싣는 순서(Circuit 적재 순서)
+// 4) 음성 안내(티맵·카카오내비 음성) 5) 화면 켜짐 유지(내비 공통)
 const TTS_ON=()=>localStorage.getItem('tmapgo_tts')!=='0';
 function say(t){try{if(!TTS_ON()||!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ko-KR';u.rate=0.95;speechSynthesis.speak(u)}catch(e){}}
-function ttsRow(){const r=$('ttsRow');if(!r)return;r.innerHTML='🔊 음성 안내: <b>'+(TTS_ON()?'켜짐':'꺼짐')+'</b><button id="ttsBtn">'+(TTS_ON()?'끄기':'켜기')+'</button>';
+function ttsRow(){const r=$('ttsRow');if(!r)return;r.innerHTML='음성 안내: <b>'+(TTS_ON()?'켜짐':'꺼짐')+'</b><button id="ttsBtn">'+(TTS_ON()?'끄기':'켜기')+'</button>';
   $('ttsBtn').onclick=()=>{localStorage.setItem('tmapgo_tts',TTS_ON()?'0':'1');ttsRow();if(TTS_ON())say('음성 안내를 켰어요')}}
 function nextExtra(ni){const s=S.stops[ni];if(!s)return '';const more=S.stops.some((z,k)=>k!==ni&&!z.done);
-  return '<div class="two">'+(more?'<button class="btn ln" data-x="later" data-i="'+ni+'">⏭ 나중에 가기</button>':'')+'<button class="btn ln" data-x="eta" data-i="'+ni+'">📲 도착 알리기</button></div>'}
+  return '<div class="two">'+(more?'<button class="btn ln" data-x="later" data-i="'+ni+'">나중에 가기</button>':'')+'<button class="btn ln" data-x="eta" data-i="'+ni+'">도착 알리기</button></div>'}
 function etaOf(s){const t=s.te||s.eta;if(t&&/^\d\d:\d\d$/.test(t))return t;return ''}
 // v025: PC는 카카오 공식 「카카오톡 공유」 창(JS SDK)으로 방·친구를 골라 보냄. JavaScript 키는 웹용 공개 키(등록된 주소에서만 동작)
 const KAKAO_JS='54e2b68a09b153563617958627d985cf';let kakaoP=null;
@@ -1029,29 +1029,29 @@ async function shareEta(s){const t=etaOf(s);
   const txt='안녕하세요, 빵을그리다 배송입니다. '+s.n+'에 '+(t?t+'쯤':'곧')+' 도착할 예정입니다. 감사합니다.';
   let b=$('asheet');if(!b){b=document.createElement('div');b.className='sheet';b.id='asheet';document.body.appendChild(b);b.addEventListener('click',e=>{if(e.target.id==='asheet')b.classList.remove('on')})}
   const isA=/Android/i.test(navigator.userAgent),isI=/iPhone|iPad|iPod/i.test(navigator.userAgent),pc=!isA&&!isI;
-  b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">📲 도착 알리기</b><button id="aX">닫기</button></div><div class="sh-l">'
+  b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">도착 알리기</b><button id="aX">닫기</button></div><div class="sh-l">'
    +'<div class="hint" style="margin:0 0 6px">보낼 글 (고쳐도 돼요)</div><textarea id="aTx" style="width:100%;min-height:96px;font-size:17px;padding:10px;border:1.5px solid var(--ln);border-radius:10px;box-sizing:border-box">'+esc(txt)+'</textarea>'
-   +'<button class="btn" id="aKa" style="background:#FEE500;color:#191919;font-weight:800;margin-top:10px">💬 카카오톡으로 보내기</button>'
+   +'<button class="btn" id="aKa" style="background:#FEE500;color:#191919;font-weight:800;margin-top:10px">카카오톡으로 보내기</button>'
    +(pc?'<div class="hint" id="aPc" style="margin-top:6px">PC에서는 <b>카카오톡 공유 창</b>이 열려요. 보낼 방(사람)을 고르고 「보내기」를 누르면 돼요. (처음 한 번은 카카오 로그인)</div>':'<div class="hint" style="margin-top:6px">카톡이 열리면 보낼 방(사람)을 고르면 돼요</div>')
-   +(!pc?'<button class="btn ln" id="aSm" style="margin-top:8px">✉️ 문자로 보내기</button>':'')
-   +'<button class="btn ln" id="aCp" style="margin-top:8px">📋 글만 복사</button></div></div>';
+   +(!pc?'<button class="btn ln" id="aSm" style="margin-top:8px">문자로 보내기</button>':'')
+   +'<button class="btn ln" id="aCp" style="margin-top:8px">글만 복사</button></div></div>';
   b.classList.add('on');if(pc)kakaoLoad();
   const cur=()=>$('aTx').value.trim(), copy=async()=>{try{await navigator.clipboard.writeText(cur());return true}catch(e){const a=$('aTx');a.select();try{return document.execCommand('copy')}catch(_){return false}}};
   $('aX').onclick=()=>b.classList.remove('on');
-  $('aCp').onclick=async()=>{toast(await copy()?'📋 복사했어요. 원하는 곳에 붙여 넣어 주세요':'글을 길게 눌러 복사해 주세요')};
-  const sm=$('aSm');if(sm){const cp=ctPhones(pidOf(s))[0];if(cp)sm.textContent='✉️ '+(cp.t||'담당자')+'께 문자로 보내기';sm.onclick=()=>{location.href='sms:'+(cp?cp.p.replace(/[^0-9]/g,''):'')+(isI?'&':'?')+'body='+encodeURIComponent(cur())}}
+  $('aCp').onclick=async()=>{toast(await copy()?'복사했어요. 원하는 곳에 붙여 넣어 주세요':'글을 길게 눌러 복사해 주세요')};
+  const sm=$('aSm');if(sm){const cp=ctPhones(pidOf(s))[0];if(cp)sm.textContent=''+(cp.t||'담당자')+'께 문자로 보내기';sm.onclick=()=>{location.href='sms:'+(cp?cp.p.replace(/[^0-9]/g,''):'')+(isI?'&':'?')+'body='+encodeURIComponent(cur())}}
   $('aKa').onclick=async()=>{const x=cur();
     if(pc&&window.Kakao&&Kakao.isInitialized&&Kakao.isInitialized()){try{const u='https://lee1812-oss.github.io/dongseon/tmap/';
       Kakao.Share.sendDefault({objectType:'text',text:x.length>200?x.slice(0,199)+'…':x,link:{webUrl:u,mobileWebUrl:u},buttons:[]});copy();
-      toast('💬 카카오톡 공유 창이 열렸어요. 보낼 방을 골라 주세요');return}catch(e){console.warn('kakao share',e)}}
+      toast('카카오톡 공유 창이 열렸어요. 보낼 방을 골라 주세요');return}catch(e){console.warn('kakao share',e)}}
     if(isA){await copy();location.href='intent:#Intent;action=android.intent.action.SEND;type=text/plain;S.android.intent.extra.TEXT='+encodeURIComponent(x)+';package=com.kakao.talk;S.browser_fallback_url='+encodeURIComponent('https://play.google.com/store/apps/details?id=com.kakao.talk')+';end';return}
     if(isI&&navigator.share){try{await navigator.share({text:x});return}catch(e){if(e&&e.name==='AbortError')return}}
-    const ok=await copy();toast(ok?'📋 복사했어요. 카톡에서 보낼 방을 열고 붙여 넣기(Ctrl+V) 해 주세요':'글을 복사하지 못했어요. 글을 길게 눌러 복사해 주세요');
+    const ok=await copy();toast(ok?'복사했어요. 카톡에서 보낼 방을 열고 붙여 넣기(Ctrl+V) 해 주세요':'글을 복사하지 못했어요. 글을 길게 눌러 복사해 주세요');
     if(isI)location.href='kakaotalk://'}}
 function laterStop(i){const s=S.stops[i];if(!s)return;
   if(!confirm('「'+s.n+'」은(는) 맨 뒤로 보내고\n다음 곳으로 먼저 갈까요?'))return;
   S.stops.splice(i,1);delete s.dep;delete s.te;delete s.teR;delete s.arr;S.stops.push(s);delete S.preset;noPlan();save();render();
-  const n=S.stops[nextIdx()];toast('⏭ 「'+s.n+'」은(는) 맨 뒤로 보냈어요');if(n&&n!==s)say('다음 갈 곳은 '+n.n+'입니다')}
+  const n=S.stops[nextIdx()];toast('「'+s.n+'」은(는) 맨 뒤로 보냈어요');if(n&&n!==s)say('다음 갈 곳은 '+n.n+'입니다')}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-x]');if(b){const i=+b.dataset.i;
     if(b.dataset.x==='later')laterStop(i);else if(b.dataset.x==='eta'&&S.stops[i])shareEta(S.stops[i]);return}
   const d=e.target.closest&&e.target.closest('[data-act="done"]');if(d){const s=S.stops[+d.dataset.i];setTimeout(()=>{if(s&&s.done){const n=S.stops[nextIdx()];say('배송 완료. '+(n?'다음 갈 곳은 '+n.n+'입니다':'오늘 배송을 모두 마쳤어요. 수고하셨어요'))}},50)}});
@@ -1073,7 +1073,7 @@ setTimeout(()=>{ttsRow();wake();const lo=$('loadOpen');if(lo)lo.onclick=openLoad
 // k.enc.json = 링크 열쇠를 직원 암호(PBKDF2 20만 회 + AES-GCM)로 잠근 파일. 암호를 바꾸면 이 파일도 다시 만들어야 함.
 function keyBox(){const b=$('keyBox');if(!b)return;if(localStorage.getItem('tmapgo_k')){b.innerHTML='';b.style.display='none';return}
   b.style.display='block';
-  b.innerHTML='<div class="kb"><b>🔑 직원 암호로 열기</b><div class="hint">처음 한 번만 넣으면 거래처 찾기·전달사항·사무실 현황이 열려요</div>'
+  b.innerHTML='<div class="kb"><b>직원 암호로 열기</b><div class="hint">처음 한 번만 넣으면 거래처 찾기·전달사항·사무실 현황이 열려요</div>'
    +'<div class="kr"><input id="kbIn" type="text" style="-webkit-text-security:disc" data-lpignore="true" data-1p-ignore="true" inputmode="numeric" maxlength="12" placeholder="직원 암호" autocomplete="off"><button id="kbGo">열기</button></div><div id="kbMsg" class="hint"></div></div>';
   const go=()=>keyUnlock($('kbIn').value.trim());$('kbGo').onclick=go;$('kbIn').onkeydown=e=>{if(e.key==='Enter')go()}}
 async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 넣어 주세요';return}
@@ -1083,15 +1083,15 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:d(j.s),iterations:j.it||200000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
     const k=new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:d(j.iv)},key,d(j.ct)));
     if(!/^[A-Za-z0-9_-]{16,}$/.test(k))throw new Error('bad');
-    localStorage.setItem('tmapgo_k',k);m.textContent='✅ 열렸어요';setTimeout(()=>location.reload(),400)}
+    localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v029';
+const APP_VER='v030';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){
       const last=sessionStorage.getItem('tmapgo_upd');
-      if(last===v){const u=$('upd');u.textContent='🔄 새 버전('+v+')이 있어요. 눌러서 업데이트';u.style.display='block';u.onclick=()=>location.reload();return}
+      if(last===v){const u=$('upd');u.textContent='새 버전('+v+')이 있어요. 눌러서 업데이트';u.style.display='block';u.onclick=()=>location.reload();return}
       sessionStorage.setItem('tmapgo_upd',v);
       if(navigator.serviceWorker){const rg=await navigator.serviceWorker.getRegistration();if(rg)await rg.update().catch(()=>{})}
       if(!document.querySelector('.sheet.on'))location.reload();
@@ -1106,19 +1106,19 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)verCheck()
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 
-// ===== v025 거래처 담당자 연락처 (이카운트 판매 인쇄 「☎ 담당1 / 담당2」 자동 + 앱에서 고치기, 공유 저장 cinfo) =====
+// ===== v025 거래처 담당자 연락처 (이카운트 판매 인쇄 「담당1 / 담당2」 자동 + 앱에서 고치기, 공유 저장 cinfo) =====
 var CI=(()=>{try{return JSON.parse(localStorage.getItem('tmapgo_cinfo'))||{}}catch(e){return {}}})();
 function ctBase(pid){const c=C.list&&C.list.find(x=>x.id===pid);return (c&&Array.isArray(c.ct))?c.ct:[]}
 function ctOf(pid){const o=(CI||{})[pid];if(o&&Array.isArray(o.ct))return {ct:o.ct,ed:o};return {ct:ctBase(pid),ed:null}}
 function ctPhones(pid){return ctOf(pid).ct.filter(o=>o&&o.p)}
 function telOf(p){return String(p||'').replace(/[^0-9]/g,'')}
 function ctLines(pid,pn){const {ct,ed}=ctOf(pid);
-  if(!ct.length)return '<div class="ctnone"><span>👤 담당자 연락처가 없어요</span><button data-ct="edit" data-pid="'+esc(pid)+'" data-pn="'+esc(pn||'')+'">✏️ 넣기</button></div>';
-  return ct.map(o=>'<div class="ctl"><div class="ctn">👤 <b>'+esc(o.t||'담당자')+'</b>'+(o.p?'<span>'+esc(o.p)+'</span>':'')+'</div>'
-    +(o.p?'<div class="ctbt"><a class="ctc" href="tel:'+telOf(o.p)+'">📞 전화</a><a class="cts" href="sms:'+telOf(o.p)+'">💬 문자</a></div>':'')+'</div>').join('')
-    +'<div class="ctf"><span>'+(ed?'앱에서 고침 · '+esc(ed.by||'')+' '+(ed.at?hm(ed.at):''):'이카운트 거래처 담당')+'</span><button data-ct="edit" data-pid="'+esc(pid)+'" data-pn="'+esc(pn||'')+'">✏️ 고치기</button></div>'}
+  if(!ct.length)return '<div class="ctnone"><span>담당자 연락처가 없어요</span><button data-ct="edit" data-pid="'+esc(pid)+'" data-pn="'+esc(pn||'')+'">넣기</button></div>';
+  return ct.map(o=>'<div class="ctl"><div class="ctn"><b>'+esc(o.t||'담당자')+'</b>'+(o.p?'<span>'+esc(o.p)+'</span>':'')+'</div>'
+    +(o.p?'<div class="ctbt"><a class="ctc" href="tel:'+telOf(o.p)+'">전화</a><a class="cts" href="sms:'+telOf(o.p)+'">문자</a></div>':'')+'</div>').join('')
+    +'<div class="ctf"><span>'+(ed?'앱에서 고침 · '+esc(ed.by||'')+' '+(ed.at?hm(ed.at):''):'이카운트 거래처 담당')+'</span><button data-ct="edit" data-pid="'+esc(pid)+'" data-pn="'+esc(pn||'')+'">고치기</button></div>'}
 function ctRow(s){return '<div class="ctb">'+ctLines(pidOf(s),s.n)+'</div>'}
-function ctMini(c){const p=ctPhones(c.id)[0];return p?'<div class="fs ctm">👤 '+esc(p.t||'담당자')+' · <a href="tel:'+telOf(p.p)+'">📞 '+esc(p.p)+'</a></div>':''}
+function ctMini(c){const p=ctPhones(c.id)[0];return p?'<div class="fs ctm">'+esc(p.t||'담당자')+' · <a href="tel:'+telOf(p.p)+'">'+esc(p.p)+'</a></div>':''}
 function ctSheet(){let d=$('shCt');if(!d){d=document.createElement('div');d.id='shCt';const g=$('shGo');g.parentNode.insertBefore(d,g.nextSibling)}
   if(!SHP){d.innerHTML='';return}d.className='ctb';d.style.margin='8px 14px';d.innerHTML=ctLines(SHP,SHN)}
 var CTW=0;
@@ -1128,13 +1128,13 @@ function ctEdit(pid,pn){
   let b=$('ctsheet');if(!b){b=document.createElement('div');b.className='sheet';b.id='ctsheet';document.body.appendChild(b);b.addEventListener('click',e=>{if(e.target.id==='ctsheet')b.classList.remove('on')})}
   const {ct,ed}=ctOf(pid), base=ctBase(pid);
   const rows=(ct.length?ct:[{t:'',p:''}]).map(o=>({t:o.t||'',p:o.p||''}));
-  const draw=()=>{b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">✏️ '+esc(pn||'거래처')+' 담당자</b><button id="ctX">닫기</button></div><div class="sh-l">'
+  const draw=()=>{b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">'+esc(pn||'거래처')+' 담당자</b><button id="ctX">닫기</button></div><div class="sh-l">'
     +'<div class="hint" style="margin:0 0 4px">이름·직책과 전화번호를 고치면 모든 직원 휴대폰에 같이 바뀌어요. (이카운트에는 안 바뀌어요)</div>'
     +rows.map((o,k)=>'<div class="cted"><input data-k="'+k+'" data-f="t" placeholder="이름·직책 (예: 홍길동 실장님)" value="'+esc(o.t)+'"><input data-k="'+k+'" data-f="p" inputmode="tel" placeholder="전화번호 (예: 010-1234-5678)" value="'+esc(o.p)+'">'
       +(rows.length>1?'<button class="lk" data-k="'+k+'" data-rm="1" style="align-self:flex-end">이 사람 빼기</button>':'')+'</div>').join('')
     +(rows.length<3?'<button class="btn ln" id="ctAdd" style="margin-top:6px">＋ 한 사람 더</button>':'')
-    +'<button class="btn br" id="ctSave" style="margin-top:10px">💾 저장</button>'
-    +(ed&&base.length?'<button class="btn ln" id="ctBack" style="margin-top:8px">↩ 이카운트 원래 연락처로 되돌리기</button><div class="hint">이카운트: '+esc(base.map(o=>(o.t||'담당자')+(o.p?' '+o.p:'')).join(' / '))+'</div>':'')
+    +'<button class="btn br" id="ctSave" style="margin-top:10px">저장</button>'
+    +(ed&&base.length?'<button class="btn ln" id="ctBack" style="margin-top:8px">이카운트 원래 연락처로 되돌리기</button><div class="hint">이카운트: '+esc(base.map(o=>(o.t||'담당자')+(o.p?' '+o.p:'')).join(' / '))+'</div>':'')
     +'</div></div>';
     b.querySelectorAll('input').forEach(x=>x.addEventListener('input',()=>{rows[+x.dataset.k][x.dataset.f]=x.value}));
     b.querySelectorAll('[data-rm]').forEach(x=>x.onclick=()=>{rows.splice(+x.dataset.k,1);draw()});
@@ -1148,14 +1148,14 @@ function ctEdit(pid,pn){
   draw();b.classList.add('on');
 }
 async function ctSave(pid,v,b){CTW=Date.now();const old=CI[pid];if(v)CI[pid]=v;else delete CI[pid];
-  try{await storeCall({op:'merge',key:'cinfo',value:{[pid]:v},by:me()||''});localStorage.setItem('tmapgo_cinfo',JSON.stringify(CI));b.classList.remove('on');render();renderFind();if(SHP)ctSheet();toast(v?'💾 저장했어요':'↩ 이카운트 연락처로 되돌렸어요')}
+  try{await storeCall({op:'merge',key:'cinfo',value:{[pid]:v},by:me()||''});localStorage.setItem('tmapgo_cinfo',JSON.stringify(CI));b.classList.remove('on');render();renderFind();if(SHP)ctSheet();toast(v?'저장했어요':'이카운트 연락처로 되돌렸어요')}
   catch(e){if(old)CI[pid]=old;else delete CI[pid];toast('저장하지 못했어요. 인터넷 연결을 확인해 주세요')}}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-ct]');if(!b)return;e.preventDefault();e.stopPropagation();ctEdit(b.dataset.pid,b.dataset.pn)},true);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)ctPull()});
 setInterval(()=>{if(!document.hidden)ctPull()},300000);
 setTimeout(ctPull,1200);
 
-// ===== v027 상단 정보 + 📅 요일별 배송 예정 코스 (공유 저장 plan:날짜 / wk:요일, backend v6) =====
+// ===== v027 상단 정보 + 요일별 배송 예정 코스 (공유 저장 plan:날짜 / wk:요일, backend v6) =====
 var APP_DATE='10/24';
 function hdrUpd(){const e=$('hdrInfo');if(!e)return;const d=new Date();const n=(typeof C!=='undefined'&&C&&C.list)?C.list.length:0;
   e.textContent='오늘 '+(d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')'+(n?' · 거래처 '+n+'곳':'')}
@@ -1174,27 +1174,27 @@ async function pcLoad(force){if(!localStorage.getItem('tmapgo_k')){pcRender();re
   pcRender();pcTodayBar()}
 function pcRender(){const box=$('pDays');if(!box||!PC||!PC.data)return;const W=pWeek();
   $('pRange').textContent=pLbl(W[0])+' ~ '+pLbl(W[6]);
-  if(!localStorage.getItem('tmapgo_k')){box.innerHTML='<div class="empty">맨 위 「🔑 직원 암호로 열기」를 먼저 해 주세요.</div>';return}
+  if(!localStorage.getItem('tmapgo_k')){box.innerHTML='<div class="empty">맨 위 「직원 암호로 열기」를 먼저 해 주세요.</div>';return}
   const t=pYmd(new Date());
   box.innerHTML=W.map(d=>{const ds=pYmd(d);const E=pEff(ds);const past=ds<t;
     const runs=E.own.map(r=>({r,wk:0})).concat(E.wkr.map(r=>({r,wk:1})));
     return '<div class="pday'+(ds===t?' today':'')+(past?' past':'')+'"><div class="ph"><b>'+pLbl(d)+(ds===t?'<span class="tg">오늘</span>':'')+'</b></div>'
-      +(runs.length?runs.map(({r,wk})=>'<button class="prun'+(wk?' wk':'')+'" data-pe="'+ds+'" data-wk="'+wk+'" data-rid="'+esc(r.rid)+'"><b>'+(wk?'🔁 ':'')+esc(r.n||'코스')+'</b> · '+r.ids.length+'곳'+(wk?' (매주 '+WD[d.getDay()]+'요일)':'')+'<small>'+esc(r.ids.map(id=>pName(id,r)).join(' → '))+'</small></button>').join('')
-        :'<div class="pnone">'+(E.off?'🚫 이 날은 배송 없음 (매주 코스 뺌)':'등록된 코스가 없어요')+'</div>')
+      +(runs.length?runs.map(({r,wk})=>'<button class="prun'+(wk?' wk':'')+'" data-pe="'+ds+'" data-wk="'+wk+'" data-rid="'+esc(r.rid)+'"><b>'+(wk?'':'')+esc(r.n||'코스')+'</b> · '+r.ids.length+'곳'+(wk?' (매주 '+WD[d.getDay()]+'요일)':'')+'<small>'+esc(r.ids.map(id=>pName(id,r)).join(' → '))+'</small></button>').join('')
+        :'<div class="pnone">'+(E.off?'이 날은 배송 없음 (매주 코스 뺌)':'등록된 코스가 없어요')+'</div>')
       +(past?'':'<button class="padd" data-pe="'+ds+'" data-wk="0" data-rid="">＋ 코스 등록</button>')+'</div>'}).join('');
 }
 function pcTodayBar(){const b=$('pToday');if(!b||!PC||!PC.data)return;if(!localStorage.getItem('tmapgo_k')){b.innerHTML='';return}
   const ds=pYmd(new Date());const E=pEff(ds);const runs=E.own.concat(E.wkr);
   const todo=runs.filter(r=>S.pfrom!==ds+'|'+r.rid);
   if(!todo.length){b.innerHTML='';return}
-  b.innerHTML='<div class="ptoday"><b>📅 오늘 예정 코스가 있어요</b>'+todo.map(r=>'<button class="btn br" data-pl="'+esc(r.rid)+'">「'+esc(r.n||'코스')+'」 '+r.ids.length+'곳 불러오기</button>').join('')+'</div>';
+  b.innerHTML='<div class="ptoday"><b>오늘 예정 코스가 있어요</b>'+todo.map(r=>'<button class="btn br" data-pl="'+esc(r.rid)+'">「'+esc(r.n||'코스')+'」 '+r.ids.length+'곳 불러오기</button>').join('')+'</div>';
   b.querySelectorAll('[data-pl]').forEach(x=>x.onclick=()=>pcApply(ds,runs.find(r=>r.rid===x.dataset.pl)));
 }
 function pcApply(ds,r){if(!r)return;
   if(S.stops.length&&!confirm('지금 배송 목록('+S.stops.length+'곳)을 「'+(r.n||'코스')+'」 '+r.ids.length+'곳으로 바꿀까요?'))return;
   const st=r.ids.map(id=>{const c=C.list&&C.list.find(x=>x.id===id);return c?toStop(c):{id,n:pName(id,r),a:pName(id,r),y:null,x:null,m:'주소 미확인 · 티맵에서 이름으로 찾아요'}});
   if(S.stops.length)localStorage.setItem(KEY+'_prev',JSON.stringify(S));
-  S={stops:st,day:ds,pfrom:ds+'|'+r.rid};save();OPEN.clear();render();showTab(1);toast('📅 「'+(r.n||'코스')+'」 '+st.length+'곳을 불러왔어요')}
+  S={stops:st,day:ds,pfrom:ds+'|'+r.rid};save();OPEN.clear();render();showTab(1);toast('「'+(r.n||'코스')+'」 '+st.length+'곳을 불러왔어요')}
 var PE=null;
 function pcEdit(ds,wk,rid){const d=new Date(ds+'T00:00:00');const key=wk?'wk:'+d.getDay():'plan:'+ds;
   const r=rid?pRuns(key).find(x=>x.rid===rid):null;
@@ -1206,17 +1206,17 @@ function pcResDraw(){const box=$('pRes');if(!box)return;const q=norm(PE.q||'');
   box.innerHTML=res.map(c=>'<button data-pa="'+esc(c.id)+'">＋ <b>'+esc(c.n)+'</b> <span style="color:#666;font-size:14px">'+esc(c.r||'')+'</span></button>').join('')+(q&&!C.list?'<div class="pnone">거래처 목록이 아직 안 열렸어요</div>':'')+(q&&C.list&&!res.length?'<div class="pnone">찾는 거래처가 없어요</div>':'');
   box.querySelectorAll('[data-pa]').forEach(x=>x.onclick=()=>{PE.ids.push(x.dataset.pa);PE.q='';pcEditDraw();toast('넣었어요 ('+PE.ids.length+'번)')})}
 function pcEditDraw(){const b=$('psheet');const d=new Date(PE.ds+'T00:00:00');const q=norm(PE.q||'');
-  b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">📅 '+pLbl(d)+' 코스</b><button id="pX">닫기</button></div><div class="sh-l" id="pL">'
+  b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">'+pLbl(d)+' 코스</b><button id="pX">닫기</button></div><div class="sh-l" id="pL">'
    +'<label class="hint" style="margin:0">코스 이름</label><input class="rin" id="pN" value="'+esc(PE.n)+'" placeholder="예) 오전 코스, 화성 코스">'
    +'<div class="qk" style="margin-top:6px"><button data-pn="오전 코스">오전 코스</button><button data-pn="오후 코스">오후 코스</button></div>'
    +'<div class="rq">배송 순서 ('+PE.ids.length+'곳)</div>'
    +(PE.ids.length?PE.ids.map((id,i)=>'<div class="pst"><div class="no">'+(i+1)+'</div><b>'+esc(pName(id))+'</b><button data-pm="up" data-i="'+i+'">▲</button><button data-pm="down" data-i="'+i+'">▼</button><button data-pm="del" data-i="'+i+'" style="color:var(--rd)">빼기</button></div>').join(''):'<div class="pnone">아래에서 거래처를 찾아 넣어 주세요</div>')
-   +'<div class="rq">＋ 거래처 넣기</div><input class="rin" id="pQ" type="search" placeholder="🔍 거래처 이름·지역" value="'+esc(PE.q||'')+'" autocomplete="off">'
+   +'<div class="rq">＋ 거래처 넣기</div><input class="rin" id="pQ" type="search" placeholder="거래처 이름·지역" value="'+esc(PE.q||'')+'" autocomplete="off">'
    +'<div class="pres" id="pRes"></div>'
-   +'<label class="pchk"><input type="checkbox" id="pRep"'+(PE.rep?' checked':'')+'> 🔁 매주 '+WD[d.getDay()]+'요일마다 반복</label>'
-   +'<button class="btn br" id="pSave" style="margin-top:12px">💾 저장</button>'
-   +(!PE.isNew?'<button class="btn ln" id="pDel" style="margin-top:8px;color:var(--rd)">🗑 이 코스 지우기'+(PE.wk?' (매주 반복 전체)':'')+'</button>':'')
-   +(!PE.isNew&&PE.wk&&PE.ds>=pYmd(new Date())?'<button class="btn ln" id="pSkip" style="margin-top:8px">🚫 '+pLbl(d)+' 하루만 빼기</button>':'')
+   +'<label class="pchk"><input type="checkbox" id="pRep"'+(PE.rep?' checked':'')+'> 매주 '+WD[d.getDay()]+'요일마다 반복</label>'
+   +'<button class="btn br" id="pSave" style="margin-top:12px">저장</button>'
+   +(!PE.isNew?'<button class="btn ln" id="pDel" style="margin-top:8px;color:var(--rd)">이 코스 지우기'+(PE.wk?' (매주 반복 전체)':'')+'</button>':'')
+   +(!PE.isNew&&PE.wk&&PE.ds>=pYmd(new Date())?'<button class="btn ln" id="pSkip" style="margin-top:8px">'+pLbl(d)+' 하루만 빼기</button>':'')
    +'</div></div>';
   $('pX').onclick=()=>b.classList.remove('on');
   $('pN').oninput=e=>{PE.n=e.target.value};
@@ -1233,7 +1233,7 @@ function pcEditDraw(){const b=$('psheet');const d=new Date(PE.ds+'T00:00:00');co
   const sk=$('pSkip');if(sk)sk.onclick=()=>{if(confirm(pLbl(d)+' 하루만 이 매주 코스를 뺄까요?'))pcPut('plan:'+PE.ds,{skip:{[PE.rid]:1}},'그날만 뺐어요')};
 }
 async function pcPut(key,val,msg,also){if(!me()&&!askName())return;
-  try{await storeCall({op:'merge',key,value:val,by:me()});if(also)await storeCall({op:'merge',key:also[0],value:also[1],by:me()});$('psheet').classList.remove('on');toast('📅 '+msg);await pcLoad()}
+  try{await storeCall({op:'merge',key,value:val,by:me()});if(also)await storeCall({op:'merge',key:also[0],value:also[1],by:me()});$('psheet').classList.remove('on');toast(''+msg);await pcLoad()}
   catch(e){toast('저장하지 못했어요. 인터넷 연결을 확인해 주세요')}}
 function pcSave(){PE.n=($('pN').value||'').trim().slice(0,20)||'코스';
   if(!PE.ids.length){toast('거래처를 한 곳 이상 넣어 주세요');return}
@@ -1241,7 +1241,7 @@ function pcSave(){PE.n=($('pN').value||'').trim().slice(0,20)||'코스';
   const run={n:PE.n,ids:PE.ids,nm,by:me()||'',at:Date.now()};
   const target=PE.rep?'wk:'+d.getDay():'plan:'+PE.ds;
   let also=null;
-  if(target!==PE.key&&!PE.isNew)also=[PE.key,{runs:{[PE.rid]:null}}]; // 이 날만 ↔ 매주 바꾸면 원래 자리에서 빼기
+  if(target!==PE.key&&!PE.isNew)also=[PE.key,{runs:{[PE.rid]:null}}]; // 이 날만 매주 바꾸면 원래 자리에서 빼기
   pcPut(target,{runs:{[PE.rid]:run}},PE.rep?'매주 '+WD[d.getDay()]+'요일 코스로 저장했어요':pLbl(d)+' 코스를 저장했어요',also)}
 document.addEventListener('click',e=>{const x=e.target.closest('[data-pe]');if(!x)return;e.preventDefault();pcEdit(x.dataset.pe,x.dataset.wk==='1',x.dataset.rid)});
 (()=>{const pv=$('pPrev'),nx=$('pNext');if(pv)pv.onclick=()=>{PC.off--;pcLoad()};if(nx)nx.onclick=()=>{PC.off++;pcLoad()}})();

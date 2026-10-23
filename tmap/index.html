@@ -63,11 +63,14 @@ body.editing .fdel{display:block}
 .box input{width:100%;font-size:17px;padding:12px;border:1px solid #c9c9ce;border-radius:10px;font-family:inherit}
 #fq{font-size:18px;padding:14px;border:2px solid var(--br);border-radius:12px}
 .fr{border-top:1px solid #ececf0;padding:11px 0;display:flex;gap:10px;align-items:center}
+#fres .fr:first-child{margin-top:6px}
 .fr:first-child{border-top:0}
 .fr .t{flex:1;min-width:0}
 .fr .fn{font-size:18px;font-weight:800}
 .fr .fs{font-size:14.5px;color:var(--mu);margin-top:2px;line-height:1.4}
 .fr button{flex:0 0 auto;min-height:52px;padding:0 14px;border-radius:10px;font-size:16.5px;font-weight:800;background:#fff;color:var(--br);border:1.5px solid var(--br)}
+.fr .fbtns{display:flex;flex-direction:column;gap:6px;flex:0 0 auto}
+.fr .fbtns .fgo{min-height:50px;justify-content:center}
 .fr button.in{background:var(--br2);color:#8a7a6a;border-color:#d8cbbd}
 .inst{background:#fff8e6;border:1px solid #f1d48a;border-radius:14px;padding:12px 14px;margin-bottom:12px;display:none}
 .inst b{font-size:17px}
@@ -86,6 +89,17 @@ body.editing .fdel{display:block}
 <main>
   <div class="inst" id="inst"></div>
   <div class="notice" id="notice"></div>
+  <div class="box" id="findBox" style="margin:0 0 6px">
+    <h3>🔍 거래처 찾기</h3>
+    <input id="fq" type="search" placeholder="거래처 이름·지역 (예: 바다백미, 곤지암)" autocomplete="off">
+    <div class="hint" id="fmsg">최근 6개월 이카운트 판매 거래처에서 찾아요.</div>
+    <div id="fpass" style="display:none">
+      <label for="fpw">직원 암호 (「내 동선」 앱과 같은 암호)</label>
+      <input id="fpw" type="password" inputmode="numeric" autocomplete="off">
+      <button class="btn br" id="fpwok">확인</button>
+    </div>
+    <div id="fres"></div>
+  </div>
 
   <h2 class="sec" id="dayTitle">📦 배송 목록</h2>
   <div id="list"></div>
@@ -96,28 +110,18 @@ body.editing .fdel{display:block}
 
   <div class="box" id="reg" style="display:none">
     <h3>⭐ 빠른 찾기 등록 <button id="regClose">닫기 ✕</button></h3>
-    <input id="fq" type="search" placeholder="거래처 이름·지역 (예: 바다백미, 곤지암)" autocomplete="off">
-    <div class="hint" id="fmsg">최근 6개월 이카운트 판매 거래처에서 찾아요.</div>
-    <div id="fpass" style="display:none">
-      <label for="fpw">직원 암호 (「내 동선」 앱과 같은 암호)</label>
-      <input id="fpw" type="password" inputmode="numeric" autocomplete="off">
-      <button class="btn br" id="fpwok">확인</button>
-    </div>
-    <div id="fres"></div>
-    <details style="margin-top:12px">
-      <summary style="font-size:16px;color:var(--br);font-weight:700;cursor:pointer;min-height:40px">목록에 없나요? 직접 입력</summary>
-      <label for="fn">이름</label>
-      <input id="fn" placeholder="예) (화성)바다백미">
-      <label for="fa">주소</label>
-      <input id="fa" placeholder="예) 경기 화성시 서신면 백미길 210-35">
-      <button class="btn br" id="addManual">빠른 찾기에 등록</button>
-      <div class="hint">주소로 등록한 곳은 티맵이 열리면 검색 결과에서 한 번 더 눌러 주세요.</div>
-    </details>
+    <div class="hint" style="margin-top:0">맨 위 「🔍 거래처 찾기」에서 찾은 뒤 <b>⭐ 등록</b>을 누르면 여기 들어와요. 목록에 없는 곳은 아래에 직접 넣어 주세요.</div>
+    <label for="fn">이름</label>
+    <input id="fn" placeholder="예) (화성)바다백미">
+    <label for="fa">주소</label>
+    <input id="fa" placeholder="예) 경기 화성시 서신면 백미길 210-35">
+    <button class="btn br" id="addManual">빠른 찾기에 등록</button>
+    <div class="hint">주소로 등록한 곳은 티맵이 열리면 검색 결과에서 한 번 더 눌러 주세요.</div>
   </div>
 
   <button class="btn gr" id="share" style="margin-top:22px">📨 배송 목록 링크 보내기 (카톡·문자)</button>
   <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v007 · 이 휴대폰에만 저장돼요</div>
+  <div class="ver">v008 · 이 휴대폰에만 저장돼요</div>
 </main>
 <div class="toast" id="toast"></div>
 
@@ -295,7 +299,7 @@ function renderFind(){
   R.innerHTML=L.length?L.map(c=>{const inF=FAV.some(f=>f.id===c.id);
     return `<div class="fr"><div class="t"><div class="fn">${esc(c.n)}</div>
     <div class="fs">${c.r?esc(c.r)+' · ':''}${c.a?esc(c.a):'<span style="color:var(--or)">주소 미확인</span>'}</div></div>
-    <button data-act="fadd" data-id="${c.id}" class="${inF?'in':''}">${inF?'✓ 등록됨':'⭐ 등록'}</button></div>`}).join('')
+    <div class="fbtns"><a class="fgo" href="${tmapHref(toStop(c))}" data-act="go">🚗 티맵</a><button data-act="fadd" data-id="${c.id}" class="${inF?'in':''}">${inF?'✓ 등록됨':'⭐ 등록'}</button></div></div>`}).join('')
     :'<div class="hint" style="margin-top:10px">「'+esc($('fq').value)+'」 거래처가 없어요. 아래 「직접 입력」으로 등록해 주세요.</div>';
 }
 function applyPending(){
@@ -331,9 +335,10 @@ document.addEventListener('click',e=>{
   if(act==='down'&&i<S.stops.length-1){[S.stops[i+1],S.stops[i]]=[S.stops[i],S.stops[i+1]];delete S.preset;save();render();return}
   if(act==='del'){if(confirm('「'+s.n+'」을(를) 배송 목록에서 지울까요?')){S.stops.splice(i,1);delete S.preset;save();render()}return}
 });
-$('regOpen').addEventListener('click',()=>{$('reg').style.display='block';$('regOpen').style.display='none';$('fq').focus();if(!C.list||C.state==='idle')custLoad()});
-$('regClose').addEventListener('click',()=>{$('reg').style.display='none';$('regOpen').style.display='flex';$('fq').value='';renderFind()});
+$('regOpen').addEventListener('click',()=>{$('reg').style.display='block';$('regOpen').style.display='none'});
+$('regClose').addEventListener('click',()=>{$('reg').style.display='none';$('regOpen').style.display='flex'});
 $('fq').addEventListener('input',renderFind);
+$('fq').addEventListener('focus',()=>{if(!C.list&&C.state!=='loading')custLoad()});
 $('fpwok').addEventListener('click',()=>{const v=$('fpw').value.trim();if(!v){toast('암호를 넣어 주세요');return}localStorage.setItem(PKEY,v);C.badPass=false;$('fpw').value='';custLoad()});
 $('addManual').addEventListener('click',()=>{
   const n=$('fn').value.trim(), a=$('fa').value.trim();

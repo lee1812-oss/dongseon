@@ -1,5 +1,5 @@
-// 티맵 바로가기 서비스워커 v007: 인터넷 우선, 안 되면 저장본
-const CN='tmapgo-v7';
+// 티맵 바로가기 서비스워커 v008: 인터넷 우선, 안 되면 저장본
+const CN='tmapgo-v8';
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CN).then(c=>c.addAll(['./','index.html','manifest.webmanifest','icon_192.png','icon_512.png'])).catch(()=>{}))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('tmapgo-')&&k!==CN).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{

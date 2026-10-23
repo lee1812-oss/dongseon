@@ -92,7 +92,7 @@ body.editing .fdel{display:block}
   <div class="box" id="findBox" style="margin:0 0 6px">
     <h3>🔍 거래처 찾기</h3>
     <input id="fq" type="search" placeholder="거래처 이름·지역 (예: 바다백미, 곤지암)" autocomplete="off">
-    <div class="hint" id="fmsg">최근 6개월 이카운트 판매 거래처에서 찾아요.</div>
+    <div class="hint" id="fmsg">2026년 이카운트 판매 거래처에서 찾아요.</div>
     <div id="fpass" style="display:none">
       <label for="fpw">직원 암호 (「내 동선」 앱과 같은 암호)</label>
       <input id="fpw" type="password" inputmode="numeric" autocomplete="off">
@@ -121,7 +121,7 @@ body.editing .fdel{display:block}
 
   <button class="btn gr" id="share" style="margin-top:22px">📨 배송 목록 링크 보내기 (카톡·문자)</button>
   <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v008 · 이 휴대폰에만 저장돼요</div>
+  <div class="ver">v009 · 이 휴대폰에만 저장돼요</div>
 </main>
 <div class="toast" id="toast"></div>
 
@@ -244,7 +244,7 @@ async function decData(enc,pass){
   return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64u(enc.iv)},key,b64u(enc.ct))));
 }
 function buildList(D){
-  const now=new Date(), t=ymd(now), from=ymd(new Date(now.getTime()-183*864e5));
+  const now=new Date(), t=ymd(now), from='2026-01-01';
   const lastBy={};
   for(const [d,m] of Object.entries(D.slips||{})){if(d>t)continue;for(const c of Object.keys(m)){const id=(D.custMap||{})[c];if(id&&(!lastBy[id]||d>lastBy[id]))lastBy[id]=d}}
   return (D.places||[]).filter(p=>!p.depot).map(p=>{
@@ -258,7 +258,7 @@ function showPass(on){$('fpass').style.display=on?'block':'none'}
 function loaded(D,list){
   C.list=list;C.at=D.updated||'';
   localStorage.setItem(CKEY,JSON.stringify({at:C.at,list:C.list}));showPass(false);
-  fmsg('최근 6개월 이카운트 판매 거래처 '+C.list.length+'곳'+(C.at?' · '+C.at+' 기준':''));
+  fmsg('2026년 이카운트 판매 거래처 '+C.list.length+'곳'+(C.at?' · '+C.at+' 기준':''));
 }
 async function custLoad(){
   if(C.state==='loading')return;
@@ -270,7 +270,7 @@ async function custLoad(){
       const r=await fetch('../tmap_cust.enc.json?t='+Date.now(),{cache:'no-store'});
       if(!r.ok)throw new Error('net');
       const D=await decData(await r.json(),lk);
-      const from=ymd(new Date(Date.now()-183*864e5));
+      const from=D.from||'2026-01-01';
       loaded(D,(D.list||[]).filter(c=>c.l&&c.l>=from).sort((a,b)=>a.n.localeCompare(b.n,'ko')));
       C.state='idle';renderFind();applyPending();return;
     }catch(e){

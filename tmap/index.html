@@ -218,25 +218,55 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .ctm{color:#1F6B45!important}.ctm a{color:#1F6B45;font-weight:800;text-decoration:none;white-space:nowrap}
 .cted{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid #ececf0}.cted:first-child{border-top:0}
 .cted input{width:100%;min-height:52px;font-size:18px;padding:8px 12px;border:1.5px solid #c9c9ce;border-radius:10px;box-sizing:border-box;font-family:inherit}
+
+/* v027 상단 정보 + 예정 코스 캘린더 */
+.hinfo{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.hinfo span{background:rgba(255,255,255,.95);color:#1d1d63;border-radius:8px;padding:3px 9px;font-size:14.5px;font-weight:900;white-space:nowrap}
+.hinfo .hv{background:#FFE07A;color:#3a2a00}
+#tabs button{font-size:15.5px}
+.pwk{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 10px}.pwk b{font-size:17px}
+.pwk button{min-height:46px;padding:0 12px;border-radius:10px;border:1.5px solid var(--ln);background:#fff;font-size:16px;font-weight:800;font-family:inherit}
+.pday{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:10px 12px;margin-top:8px}
+.pday.today{border:2px solid #2B3BCF}.pday.past{opacity:.6}
+.pday .ph{display:flex;align-items:center;justify-content:space-between;gap:8px}.pday .ph b{font-size:18px}
+.pday .ph .tg{font-size:13px;font-weight:800;color:#fff;background:#2B3BCF;border-radius:6px;padding:2px 7px;margin-left:6px}
+.prun{display:block;width:100%;text-align:left;margin-top:8px;padding:10px 12px;border-radius:10px;border:1.5px solid #c4d6ff;background:#EEF3FF;font-family:inherit;font-size:16.5px;color:#173c8a;line-height:1.4}
+.prun.wk{border-color:#e3d3b5;background:#FBF6F0;color:#6b4a1a}
+.prun small{display:block;color:#555;font-size:14px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.padd{margin-top:8px;width:100%;min-height:48px;border-radius:10px;border:1.5px dashed #b9b9c2;background:#fff;font-size:16px;font-weight:800;font-family:inherit;color:#333}
+.pnone{color:#8a8a90;font-size:15.5px;margin-top:6px}
+.pst{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid #ececf0}.pst:first-child{border-top:0}
+.pst .no{flex:0 0 34px;width:34px;height:34px;min-width:34px;font-size:16px;display:flex;align-items:center;justify-content:center;border-radius:50%}.pst b{flex:1;min-width:0;font-size:16.5px}
+.pst button{min-height:42px;min-width:44px;border-radius:9px;border:1px solid var(--ln);background:#fff;font-size:15px;font-weight:800;font-family:inherit}
+.pres button{display:block;width:100%;text-align:left;min-height:48px;margin-top:6px;padding:8px 12px;border-radius:10px;border:1px solid #cfe3d5;background:#F3F8F4;font-size:16px;font-family:inherit}
+.pchk{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:17px;font-weight:700}.pchk input{width:24px;height:24px}
+.ptoday{background:#FFF8E6;border:2px solid #f1c24a;border-radius:14px;padding:12px;margin-bottom:12px}
+.ptoday b{font-size:17.5px}.ptoday .btn{margin-top:8px}
 </style>
 </head>
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div></div>
+  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v027 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
   <div class="notice" id="notice"></div>
   <section class="tab" id="tab1">
     <div class="inst" id="inst"></div>
-    <div class="prog" id="dayTitle">📦 오늘 배송</div>
+    <div id="pToday"></div><div class="prog" id="dayTitle">📦 오늘 배송</div>
     <div class="rbar" id="rbar"></div>
     <div id="nextCard"></div>
     <div id="list"></div>
     <div id="tabBtns" class="two"><button class="btn ln" id="eOpen">✏️ 코스 바꾸기</button><button class="btn ln" id="eAdd">＋ 거래처 넣기</button></div>
     <button class="btn ln" id="loadOpen" style="margin-top:10px">📦 차에 싣는 순서 보기</button>
     <div id="tripEnd"></div>
+  </section>
+  <section class="tab" id="tab4">
+    <h2 class="sec" style="margin-top:4px">📅 배송 예정 코스</h2>
+    <div class="hint" style="margin:-4px 2px 8px">날짜를 눌러 코스를 미리 등록해 두면, 그날 「🚚 오늘 배송」 맨 위에 「불러오기」가 떠요. 「매주 반복」으로 요일 기본 코스도 만들 수 있어요.</div>
+    <div class="pwk"><button id="pPrev">◀ 지난주</button><b id="pRange"></b><button id="pNext">다음주 ▶</button></div>
+    <div id="pDays"></div>
   </section>
   <section class="tab" id="tab2">
     <div class="box" id="findBox" style="margin:0 0 6px">
@@ -271,7 +301,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div></div>
-    <div class="ver">v026 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="ver">v027 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
@@ -296,7 +326,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
   <div class="sh-l" id="eL"></div>
   <div class="sh-f"><button class="btn br" id="eDone" style="margin-top:0">✔ 다 했어요</button></div>
 </div></div>
-<nav id="tabs"><div class="ti"><button id="tb1" class="on">🚚 오늘 배송</button><button id="tb2">🔍 거래처</button><button id="tb3">🏢 사무실<span class="dot" id="tdot"></span></button></div></nav>
+<nav id="tabs"><div class="ti"><button id="tb1" class="on">🚚 오늘 배송</button><button id="tb4">📅 예정 코스</button><button id="tb2">🔍 거래처</button><button id="tb3">🏢 사무실<span class="dot" id="tdot"></span></button></div></nav>
 <div class="upd" id="upd"></div>
 <div class="toast" id="toast"></div>
 
@@ -406,6 +436,8 @@ function render(){
   if(typeof renderMsgs==='function')renderMsgs();
   if(typeof tripEndBar==='function')tripEndBar();
   if(typeof renderEdit==='function')renderEdit();
+  if(typeof pcTodayBar==='function')pcTodayBar();
+  if(typeof hdrUpd==='function')hdrUpd();
 }
 function renderEdit(){const e=$('esheet');if(!e||!e.classList.contains('on'))return;const sc=$('eL').scrollTop,m=S.stops.length;
   $('eL').innerHTML='<button class="rbtn" id="eRoute">🧭 최적 코스 자동으로 정하기</button>'+UNDO_BTN()+'<div class="hint" style="text-align:center">아래에서 직접 순서를 바꾸거나 뺄 수도 있어요</div>'
@@ -932,7 +964,7 @@ async function tripPush(now){
 let TPI=null;
 let TAB=1;
 function nameShow(){$('myName').textContent=me()||'(아직 없어요)'}
-function showTab(t){TAB=t;for(let k=1;k<=3;k++){$('tab'+k).style.display=k===t?'block':'none';$('tb'+k).classList.toggle('on',k===t)}
+function showTab(t){TAB=t;for(let k=1;k<=4;k++){$('tab'+k).style.display=k===t?'block':'none';$('tb'+k).classList.toggle('on',k===t)}
   clearInterval(TPI);TPI=null;
   if(t===3){nameShow();renderMsgs();
     if(!localStorage.getItem('tmapgo_k')){$('tL').innerHTML='<div class="card empty">「오늘 배송」 탭 맨 위 「🔑 직원 암호로 열기」에 암호를 넣으면 현황이 보여요.</div>'}
@@ -954,7 +986,7 @@ function tripCard(p){
     return '<div class="tr"><b>'+(i+1)+'. '+esc(s.n)+'</b><i class="'+c+'">'+esc(t)+'</i></div>'}).join('');
   return '<div class="tp"><h4>🚚 '+esc(p.who)+'<span>마지막 소식 '+hhmm(at)+'</span></h4>'+rows+(p.end?'<div class="tend" style="margin:8px 0 0">🏠 '+esc(p.end)+' 오늘 배송 끝</div>':'')+'</div>';
 }
-for(let k=1;k<=3;k++)$('tb'+k).addEventListener('click',()=>showTab(k));
+for(let k=1;k<=4;k++)$('tb'+k).addEventListener('click',()=>{showTab(k);if(k===4)pcLoad()});
 $('eOpen').addEventListener('click',()=>{$('esheet').classList.add('on');renderEdit()});
 function closeEdit(){$('esheet').classList.remove('on')}
 $('eX').addEventListener('click',closeEdit);$('eDone').addEventListener('click',closeEdit);
@@ -1054,7 +1086,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='✅ 열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v026';
+const APP_VER='v027';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){
@@ -1122,6 +1154,95 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-ct]');if(!
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)ctPull()});
 setInterval(()=>{if(!document.hidden)ctPull()},300000);
 setTimeout(ctPull,1200);
+
+// ===== v027 상단 정보 + 📅 요일별 배송 예정 코스 (공유 저장 plan:날짜 / wk:요일, backend v6) =====
+var APP_DATE='10/24';
+function hdrUpd(){const e=$('hdrInfo');if(!e)return;const d=new Date();const n=(typeof C!=='undefined'&&C&&C.list)?C.list.length:0;
+  e.textContent='오늘 '+(d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')'+(n?' · 거래처 '+n+'곳':'')}
+var PC={off:0,data:{},at:0};
+function pYmd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function pWeek(){const d=new Date();d.setHours(0,0,0,0);const dw=(d.getDay()+6)%7;d.setDate(d.getDate()-dw+PC.off*7);return [...Array(7)].map((_,k)=>{const x=new Date(d);x.setDate(d.getDate()+k);return x})}
+function pLbl(d){return (d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')'}
+function pRuns(key){const v=(PC.data[key]||{});return Object.entries(v.runs||{}).filter(([k,r])=>r&&Array.isArray(r.ids)).map(([k,r])=>Object.assign({rid:k},r)).sort((a,b)=>(a.o||0)-(b.o||0)||(a.at||0)-(b.at||0))}
+function pEff(ds){const d=new Date(ds+'T00:00:00');const pk='plan:'+ds,wk='wk:'+d.getDay();const p=PC.data[pk]||{};
+  const own=pRuns(pk);const wkr=p.off?[]:pRuns(wk).filter(r=>!(p.skip||{})[r.rid]);return {own,wkr,off:!!p.off}}
+function pName(id,r){const c=C.list&&C.list.find(x=>x.id===id);return c?c.n:((r&&r.nm&&r.nm[id])||'거래처')}
+async function pcLoad(force){if(!localStorage.getItem('tmapgo_k')){pcRender();return}
+  const W=pWeek();const today=new Date();const keys=new Set(W.map(d=>'plan:'+pYmd(d)));keys.add('plan:'+pYmd(today));for(let k=0;k<7;k++)keys.add('wk:'+k);
+  try{const j=await storeCall({op:'get',keys:[...keys].join(',')});const D=j.data||{};[...keys].forEach(k=>{PC.data[k]=(D[k]||{}).value||{}});PC.at=Date.now();
+    localStorage.setItem('tmapgo_plan',JSON.stringify(PC.data))}catch(e){try{PC.data=Object.assign(JSON.parse(localStorage.getItem('tmapgo_plan'))||{},PC.data)}catch(_){}}
+  pcRender();pcTodayBar()}
+function pcRender(){const box=$('pDays');if(!box||!PC||!PC.data)return;const W=pWeek();
+  $('pRange').textContent=pLbl(W[0])+' ~ '+pLbl(W[6]);
+  if(!localStorage.getItem('tmapgo_k')){box.innerHTML='<div class="empty">맨 위 「🔑 직원 암호로 열기」를 먼저 해 주세요.</div>';return}
+  const t=pYmd(new Date());
+  box.innerHTML=W.map(d=>{const ds=pYmd(d);const E=pEff(ds);const past=ds<t;
+    const runs=E.own.map(r=>({r,wk:0})).concat(E.wkr.map(r=>({r,wk:1})));
+    return '<div class="pday'+(ds===t?' today':'')+(past?' past':'')+'"><div class="ph"><b>'+pLbl(d)+(ds===t?'<span class="tg">오늘</span>':'')+'</b></div>'
+      +(runs.length?runs.map(({r,wk})=>'<button class="prun'+(wk?' wk':'')+'" data-pe="'+ds+'" data-wk="'+wk+'" data-rid="'+esc(r.rid)+'"><b>'+(wk?'🔁 ':'')+esc(r.n||'코스')+'</b> · '+r.ids.length+'곳'+(wk?' (매주 '+WD[d.getDay()]+'요일)':'')+'<small>'+esc(r.ids.map(id=>pName(id,r)).join(' → '))+'</small></button>').join('')
+        :'<div class="pnone">'+(E.off?'🚫 이 날은 배송 없음 (매주 코스 뺌)':'등록된 코스가 없어요')+'</div>')
+      +(past?'':'<button class="padd" data-pe="'+ds+'" data-wk="0" data-rid="">＋ 코스 등록</button>')+'</div>'}).join('');
+}
+function pcTodayBar(){const b=$('pToday');if(!b||!PC||!PC.data)return;if(!localStorage.getItem('tmapgo_k')){b.innerHTML='';return}
+  const ds=pYmd(new Date());const E=pEff(ds);const runs=E.own.concat(E.wkr);
+  const todo=runs.filter(r=>S.pfrom!==ds+'|'+r.rid);
+  if(!todo.length){b.innerHTML='';return}
+  b.innerHTML='<div class="ptoday"><b>📅 오늘 예정 코스가 있어요</b>'+todo.map(r=>'<button class="btn br" data-pl="'+esc(r.rid)+'">「'+esc(r.n||'코스')+'」 '+r.ids.length+'곳 불러오기</button>').join('')+'</div>';
+  b.querySelectorAll('[data-pl]').forEach(x=>x.onclick=()=>pcApply(ds,runs.find(r=>r.rid===x.dataset.pl)));
+}
+function pcApply(ds,r){if(!r)return;
+  if(S.stops.length&&!confirm('지금 배송 목록('+S.stops.length+'곳)을 「'+(r.n||'코스')+'」 '+r.ids.length+'곳으로 바꿀까요?'))return;
+  const st=r.ids.map(id=>{const c=C.list&&C.list.find(x=>x.id===id);return c?toStop(c):{id,n:pName(id,r),a:pName(id,r),y:null,x:null,m:'주소 미확인 · 티맵에서 이름으로 찾아요'}});
+  if(S.stops.length)localStorage.setItem(KEY+'_prev',JSON.stringify(S));
+  S={stops:st,day:ds,pfrom:ds+'|'+r.rid};save();OPEN.clear();render();showTab(1);toast('📅 「'+(r.n||'코스')+'」 '+st.length+'곳을 불러왔어요')}
+var PE=null;
+function pcEdit(ds,wk,rid){const d=new Date(ds+'T00:00:00');const key=wk?'wk:'+d.getDay():'plan:'+ds;
+  const r=rid?pRuns(key).find(x=>x.rid===rid):null;
+  PE={ds,key,wk:!!wk,rid:rid||('r'+Date.now().toString(36)),n:r?r.n:(pEff(ds).own.length?'코스 '+(pEff(ds).own.length+1):'코스 1'),ids:r?r.ids.slice():[],rep:!!wk,isNew:!r,q:''};
+  let b=$('psheet');if(!b){b=document.createElement('div');b.className='sheet';b.id='psheet';document.body.appendChild(b);b.addEventListener('click',e=>{if(e.target.id==='psheet')b.classList.remove('on')})}
+  pcEditDraw();b.classList.add('on')}
+function pcEditDraw(){const b=$('psheet');const d=new Date(PE.ds+'T00:00:00');const q=norm(PE.q||'');
+  const res=q&&C.list?C.list.filter(c=>!PE.ids.includes(c.id)&&norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(q)).slice(0,12):[];
+  b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">📅 '+pLbl(d)+' 코스</b><button id="pX">닫기</button></div><div class="sh-l" id="pL">'
+   +'<label class="hint" style="margin:0">코스 이름</label><input class="rin" id="pN" value="'+esc(PE.n)+'" placeholder="예) 오전 코스, 화성 코스">'
+   +'<div class="qk" style="margin-top:6px"><button data-pn="오전 코스">오전 코스</button><button data-pn="오후 코스">오후 코스</button></div>'
+   +'<div class="rq">배송 순서 ('+PE.ids.length+'곳)</div>'
+   +(PE.ids.length?PE.ids.map((id,i)=>'<div class="pst"><div class="no">'+(i+1)+'</div><b>'+esc(pName(id))+'</b><button data-pm="up" data-i="'+i+'">▲</button><button data-pm="down" data-i="'+i+'">▼</button><button data-pm="del" data-i="'+i+'" style="color:var(--rd)">빼기</button></div>').join(''):'<div class="pnone">아래에서 거래처를 찾아 넣어 주세요</div>')
+   +'<div class="rq">＋ 거래처 넣기</div><input class="rin" id="pQ" type="search" placeholder="🔍 거래처 이름·지역" value="'+esc(PE.q||'')+'" autocomplete="off">'
+   +'<div class="pres">'+res.map(c=>'<button data-pa="'+esc(c.id)+'">＋ <b>'+esc(c.n)+'</b> <span style="color:#666;font-size:14px">'+esc(c.r||'')+'</span></button>').join('')+(q&&!C.list?'<div class="pnone">거래처 목록이 아직 안 열렸어요</div>':'')+(q&&C.list&&!res.length?'<div class="pnone">찾는 거래처가 없어요</div>':'')+'</div>'
+   +'<label class="pchk"><input type="checkbox" id="pRep"'+(PE.rep?' checked':'')+'> 🔁 매주 '+WD[d.getDay()]+'요일마다 반복</label>'
+   +'<button class="btn br" id="pSave" style="margin-top:12px">💾 저장</button>'
+   +(!PE.isNew?'<button class="btn ln" id="pDel" style="margin-top:8px;color:var(--rd)">🗑 이 코스 지우기'+(PE.wk?' (매주 반복 전체)':'')+'</button>':'')
+   +(!PE.isNew&&PE.wk&&PE.ds>=pYmd(new Date())?'<button class="btn ln" id="pSkip" style="margin-top:8px">🚫 '+pLbl(d)+' 하루만 빼기</button>':'')
+   +'</div></div>';
+  $('pX').onclick=()=>b.classList.remove('on');
+  $('pN').oninput=e=>{PE.n=e.target.value};
+  b.querySelectorAll('[data-pn]').forEach(x=>x.onclick=()=>{PE.n=x.dataset.pn;$('pN').value=PE.n});
+  $('pRep').onchange=e=>{PE.rep=e.target.checked};
+  const qi=$('pQ');qi.oninput=e=>{PE.q=e.target.value;const p=qi.selectionStart;pcEditDraw();const n=$('pQ');n.focus();try{n.setSelectionRange(p,p)}catch(_){}};
+  b.querySelectorAll('[data-pa]').forEach(x=>x.onclick=()=>{PE.ids.push(x.dataset.pa);PE.q='';pcEditDraw();toast('넣었어요 ('+PE.ids.length+'번)')});
+  b.querySelectorAll('[data-pm]').forEach(x=>x.onclick=()=>{const i=+x.dataset.i,a=PE.ids;
+    if(x.dataset.pm==='up'&&i>0)[a[i-1],a[i]]=[a[i],a[i-1]];if(x.dataset.pm==='down'&&i<a.length-1)[a[i+1],a[i]]=[a[i],a[i+1]];if(x.dataset.pm==='del')a.splice(i,1);pcEditDraw()});
+  $('pSave').onclick=pcSave;
+  const dl=$('pDel');if(dl)dl.onclick=()=>{if(confirm('「'+PE.n+'」 코스를 지울까요?'+(PE.wk?' (매주 반복이 모두 없어져요)':'')))pcPut(PE.key,{runs:{[PE.rid]:null}},'지웠어요')};
+  const sk=$('pSkip');if(sk)sk.onclick=()=>{if(confirm(pLbl(d)+' 하루만 이 매주 코스를 뺄까요?'))pcPut('plan:'+PE.ds,{skip:{[PE.rid]:1}},'그날만 뺐어요')};
+}
+async function pcPut(key,val,msg,also){if(!me()&&!askName())return;
+  try{await storeCall({op:'merge',key,value:val,by:me()});if(also)await storeCall({op:'merge',key:also[0],value:also[1],by:me()});$('psheet').classList.remove('on');toast('📅 '+msg);await pcLoad()}
+  catch(e){toast('저장하지 못했어요. 인터넷 연결을 확인해 주세요')}}
+function pcSave(){PE.n=($('pN').value||'').trim().slice(0,20)||'코스';
+  if(!PE.ids.length){toast('거래처를 한 곳 이상 넣어 주세요');return}
+  const d=new Date(PE.ds+'T00:00:00');const nm={};PE.ids.forEach(id=>nm[id]=pName(id));
+  const run={n:PE.n,ids:PE.ids,nm,by:me()||'',at:Date.now()};
+  const target=PE.rep?'wk:'+d.getDay():'plan:'+PE.ds;
+  let also=null;
+  if(target!==PE.key&&!PE.isNew)also=[PE.key,{runs:{[PE.rid]:null}}]; // 이 날만 ↔ 매주 바꾸면 원래 자리에서 빼기
+  pcPut(target,{runs:{[PE.rid]:run}},PE.rep?'매주 '+WD[d.getDay()]+'요일 코스로 저장했어요':pLbl(d)+' 코스를 저장했어요',also)}
+document.addEventListener('click',e=>{const x=e.target.closest('[data-pe]');if(!x)return;e.preventDefault();pcEdit(x.dataset.pe,x.dataset.wk==='1',x.dataset.rid)});
+(()=>{const pv=$('pPrev'),nx=$('pNext');if(pv)pv.onclick=()=>{PC.off--;pcLoad()};if(nx)nx.onclick=()=>{PC.off++;pcLoad()}})();
+try{PC.data=JSON.parse(localStorage.getItem('tmapgo_plan'))||{}}catch(e){}
+hdrUpd();setTimeout(()=>pcLoad(),1500);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-PC.at>60000)pcLoad()});
 </script>
 </body>
 </html>

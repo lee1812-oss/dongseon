@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>배송 관리 · 사무실</title>
+<link rel="icon" href="icon_192.png">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{--br:#7A4A23;--br2:#A86B3C;--brl:#F6EEE6;--bg:#F3F2F0;--ln:#E2DED9;--tx:#1C1C1E;--sub:#55524E;
+--gr:#1F7A4A;--grl:#E6F4EC;--bl:#1F4FBF;--bll:#E8EEFB;--rd:#C0392B;--rdl:#FCEAEA;--or:#C26A0A;--orl:#FFF2E2;--gy:#77736E;--gyl:#EFEDEA}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.5 "Pretendard","Malgun Gothic","맑은 고딕",sans-serif;word-break:keep-all;overflow-wrap:break-word}
+button{font:inherit;cursor:pointer}
+.nw{white-space:nowrap}
+#app{display:none;min-height:100vh}
+#app.on{display:flex}
+/* 왼쪽 메뉴 */
+.side{width:250px;flex:none;background:#fff;border-right:1px solid var(--ln);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.logo{padding:22px 20px 16px;border-bottom:1px solid var(--ln)}
+.logo b{display:block;font-size:21px;color:var(--br)}
+.logo span{font-size:15px;color:var(--sub)}
+.logo .ver{display:inline-block;margin-top:6px;background:var(--br);color:#fff;font-weight:800;font-size:14px;padding:2px 9px;border-radius:6px}
+.nav{padding:12px 10px;flex:1}
+.nav button{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:54px;margin:3px 0;padding:0 14px;border:0;border-radius:10px;background:none;text-align:left;font-size:18px;font-weight:600;color:var(--tx)}
+.nav button:hover{background:var(--gyl)}
+.nav button.on{background:var(--brl);color:var(--br);font-weight:800}
+.nav .cnt{min-width:26px;padding:1px 8px;border-radius:13px;background:var(--rd);color:#fff;font-size:14px;text-align:center}
+.sfoot{padding:14px 16px;border-top:1px solid var(--ln);font-size:14.5px;color:var(--sub)}
+.sfoot a{color:var(--br);font-weight:700}
+.sfoot button{width:100%;min-height:48px;margin:8px 0;border:1px solid var(--br);background:#fff;color:var(--br);border-radius:10px;font-weight:700}
+/* 본문 */
+main{flex:1;min-width:0;padding:22px 28px 60px}
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:16px}
+.top h1{margin:0;font-size:28px;text-wrap:balance}
+.top .info{font-size:16px;color:var(--sub);text-align:right}
+.sec{display:none}.sec.on{display:block}
+.card{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:18px 20px;margin-bottom:16px}
+.card h2{margin:0 0 12px;font-size:20px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card h2 small{font-size:15px;color:var(--sub);font-weight:500}
+.hint{font-size:15.5px;color:var(--sub)}
+.empty{padding:22px;text-align:center;color:var(--sub)}
+/* 큰 숫자 */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:16px}
+.kpi{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:16px 18px;text-align:left;border-top:5px solid var(--gy)}
+.kpi .l{font-size:16px;color:var(--sub);font-weight:600}
+.kpi .n{font-size:40px;font-weight:800;line-height:1.15;margin-top:4px}
+.kpi .n small{font-size:18px;font-weight:600;color:var(--sub);margin-left:3px}
+.kpi .s{font-size:14.5px;color:var(--sub)}
+.kpi.br{border-top-color:var(--br)}.kpi.gr{border-top-color:var(--gr)}.kpi.bl{border-top-color:var(--bl)}.kpi.rd{border-top-color:var(--rd)}.kpi.or{border-top-color:var(--or)}
+.kpi.rd .n{color:var(--rd)}.kpi.gr .n{color:var(--gr)}.kpi.bl .n{color:var(--bl)}.kpi.or .n{color:var(--or)}
+button.kpi{cursor:pointer;font:inherit;color:inherit}
+button.kpi:hover{box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:stretch}
+.grid2>.card{margin-bottom:16px;display:flex;flex-direction:column}
+#map{flex:1;min-height:440px;border-radius:10px;border:1px solid var(--ln)}
+/* 상태 표시 */
+.st{display:inline-block;padding:2px 10px;border-radius:7px;font-size:15px;font-weight:700;white-space:nowrap}
+.st.dn{background:var(--grl);color:var(--gr)}.st.mv{background:var(--bll);color:var(--bl)}.st.ar{background:var(--bll);color:var(--bl)}
+.st.lt{background:var(--rdl);color:var(--rd)}.st.wt{background:var(--gyl);color:var(--gy)}.st.no{background:var(--orl);color:var(--or)}
+/* 기사별 진행 */
+.drv{border:1px solid var(--ln);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.drv h3{margin:0 0 6px;font-size:19px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.drv h3 span{font-size:15px;color:var(--sub);font-weight:500}
+.bar{height:12px;background:var(--gyl);border-radius:6px;overflow:hidden;margin:6px 0 10px}
+.bar i{display:block;height:100%;background:var(--gr)}
+.rows .r{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--gyl)}
+.rows .r b{font-weight:600}
+.rows .r em{font-style:normal;font-size:15px;color:var(--sub)}
+.endl{margin-top:8px;padding:8px 12px;border-radius:8px;background:var(--grl);color:var(--gr);font-weight:700}
+/* 표 */
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px 10px;border-bottom:1px solid var(--gyl);text-align:left;vertical-align:top}
+th{font-size:15px;color:var(--sub);font-weight:700;background:#FAF9F7;position:sticky;top:0}
+tr.ck{cursor:pointer}tr.ck:hover td{background:#FBF8F4}
+td.num,th.num{text-align:right;white-space:nowrap}
+.items{font-size:15px;color:var(--sub)}
+/* 알림 상자 */
+.alerts .a{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;border-radius:10px;margin-bottom:8px;font-size:16.5px}
+.alerts .a .tg{flex:none;font-weight:800;font-size:14.5px;padding:2px 9px;border-radius:6px;color:#fff}
+.a.rd{background:var(--rdl)}.a.rd .tg{background:var(--rd)}
+.a.or{background:var(--orl)}.a.or .tg{background:var(--or)}
+.a.gr{background:var(--grl)}.a.gr .tg{background:var(--gr)}
+.a.bl{background:var(--bll)}.a.bl .tg{background:var(--bl)}
+/* 버튼·칩 */
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.chip{white-space:nowrap;min-height:46px;padding:0 16px;border:1px solid var(--ln);background:#fff;border-radius:23px;font-weight:600;color:var(--tx)}
+.chip.on{background:var(--br);border-color:var(--br);color:#fff}
+.btn{min-height:54px;padding:0 20px;border:0;border-radius:10px;background:var(--br);color:#fff;font-weight:700}
+.btn.ol{background:#fff;border:1px solid var(--br);color:var(--br)}
+input.q{min-height:52px;width:340px;max-width:100%;padding:0 14px;border:1px solid #C9C4BE;border-radius:10px;font:inherit}
+/* 주간 */
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+.day{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:12px;text-align:left;min-height:170px;display:flex;flex-direction:column;gap:6px;font:inherit;color:inherit}
+.day:hover{border-color:var(--br2)}
+.day.on{border:2px solid var(--br);background:var(--brl)}
+.day.td .dl{color:var(--br)}
+.day .dl{font-weight:800;font-size:18px}
+.day .big{font-size:30px;font-weight:800;line-height:1.1}
+.day .big small{font-size:15px;font-weight:600;color:var(--sub)}
+.day .ln{font-size:14.5px;color:var(--sub)}
+.day .tag{font-size:14px;font-weight:700;padding:2px 8px;border-radius:6px;display:inline-block}
+/* 오른쪽 상세 창 */
+#drawer{position:fixed;top:0;right:0;width:560px;max-width:96vw;height:100vh;background:#fff;box-shadow:-6px 0 24px rgba(0,0,0,.15);transform:translateX(105%);transition:transform .2s;z-index:1000;display:flex;flex-direction:column}
+#drawer.on{transform:none}
+#dHead{padding:18px 20px;border-bottom:1px solid var(--ln);display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+#dHead h2{margin:0;font-size:23px}
+#dHead button{min-height:48px;min-width:80px;border:1px solid var(--ln);background:#fff;border-radius:10px;font-weight:700}
+#dBody{padding:16px 20px 40px;overflow:auto;flex:1}
+#dBody h4{margin:18px 0 8px;font-size:17.5px;color:var(--br)}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;font-size:16.5px}
+.kv dt{color:var(--sub)}.kv dd{margin:0}
+.msg{border-left:4px solid var(--bl);background:#FAF9F7;border-radius:8px;padding:9px 12px;margin-bottom:8px}
+.msg small{display:block;color:var(--sub);font-size:14.5px}
+.msg.cust{border-left-color:var(--or)}.msg.driver{border-left-color:var(--gr)}
+textarea{width:100%;min-height:90px;padding:10px 12px;border:1px solid #C9C4BE;border-radius:10px;font:inherit}
+#toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#222;color:#fff;padding:12px 22px;border-radius:24px;font-weight:600;display:none;z-index:2000}
+/* 잠금 화면 */
+#lock{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px}
+#lock.on{display:flex}
+#lock .box{background:#fff;border:1px solid var(--ln);border-radius:16px;padding:32px 34px;width:440px;max-width:100%}
+#lock h1{margin:0 0 6px;font-size:25px;color:var(--br)}
+#lock input{width:100%;min-height:56px;margin:16px 0 10px;padding:0 14px;border:1px solid #C9C4BE;border-radius:10px;font-size:20px}
+#lock .btn{width:100%}
+#narrow{display:none;background:var(--orl);color:var(--or);font-weight:700;padding:12px 16px;border-radius:10px;margin-bottom:14px}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:1fr}.week{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:820px){#narrow{display:block}.side{display:none}main{padding:14px}}
+#viewer{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;z-index:1500;align-items:center;justify-content:center}
+#viewer.on{display:flex}
+.vbox{background:#fff;border-radius:14px;width:min(1100px,94vw);max-height:92vh;overflow:auto;padding:16px 20px}
+.vh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:19px}
+.vh button{min-height:48px;min-width:80px;border:1px solid var(--ln);background:#fff;border-radius:10px;font-weight:700}
+.sgw{display:flex;flex-wrap:wrap;gap:12px}
+.sgf{margin:0;width:300px}
+#viewer .sgf{width:480px}
+.sgf img{width:100%;border-radius:8px;border:1px solid var(--ln);background:var(--gyl);min-height:120px;cursor:zoom-in}
+.sgf figcaption{font-size:14.5px;color:var(--sub)}
+.leaflet-tooltip.lb{font:600 13px "Malgun Gothic",sans-serif;padding:1px 6px;border-radius:5px;box-shadow:none;border:1px solid #bbb}
+</style>
+</head>
+<body>
+
+<div id="lock"><div class="box">
+  <h1>배송 관리 (사무실 PC)</h1>
+  <div class="hint">배송 앱과 같은 <b>직원 암호</b>를 처음 한 번만 넣어 주세요. 이 PC에 기억돼 다음부터는 바로 열려요.</div>
+  <input id="lkIn" type="text" style="-webkit-text-security:disc" inputmode="numeric" maxlength="12" placeholder="직원 암호" autocomplete="off" data-lpignore="true" data-1p-ignore="true">
+  <button class="btn" id="lkGo">열기</button>
+  <div id="lkMsg" class="hint" style="margin-top:10px"></div>
+</div></div>
+
+<div id="app">
+  <aside class="side">
+    <div class="logo"><b>빵을그리다 배송 관리</b><span>사무실 PC 전용 화면</span><br><span class="ver" id="verTag"></span></div>
+    <nav class="nav" id="nav">
+      <button data-p="today" class="on">오늘 한눈에</button>
+      <button data-p="week">날짜별 출고·코스</button>
+      <button data-p="hist">지난 배송 기록</button>
+      <button data-p="cust">거래처 현황</button>
+      <button data-p="msgs">전달사항 <span class="cnt" id="msgCnt" style="display:none"></span></button>
+    </nav>
+    <div class="sfoot">
+      <div id="srcInfo">자료 불러오는 중…</div>
+      <button id="reload">지금 새로 불러오기</button>
+      <a href="./" target="_blank">기사용 배송 앱 열기</a>
+    </div>
+  </aside>
+  <main>
+    <div id="narrow">사무실 PC용 화면이에요. 휴대폰에서는 기사용 배송 앱을 써 주세요.</div>
+    <div class="top"><h1 id="pTitle">오늘 한눈에</h1><div class="info" id="topInfo"></div></div>
+
+    <!-- 1. 오늘 한눈에 -->
+    <section class="sec on" id="s-today">
+      <div class="kpis" id="kpis"></div>
+      <div class="card alerts" id="alerts"></div>
+      <div class="grid2">
+        <div class="card"><h2>기사별 진행 <small id="drvAt"></small></h2><div id="drivers"></div></div>
+        <div class="card"><h2>오늘 배송 지도 <small>색: 완료 초록 · 이동 중 파랑 · 확인 필요 빨강 · 대기 회색</small></h2><div id="map"></div></div>
+      </div>
+      <div class="card"><h2>오늘 출고 거래처 <small id="todaySrc"></small></h2><div id="todayTbl"></div></div>
+    </section>
+
+    <!-- 2. 날짜별 출고·코스 -->
+    <section class="sec" id="s-week">
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="btns"><button class="chip" data-w="-1">지난주</button><button class="chip on" data-w="0">이번 주</button><button class="chip" data-w="1">다음 주</button><button class="chip" data-w="2">다다음 주</button></div>
+        <div class="hint">날짜를 누르면 아래에 출고 품목과 예정 코스가 나와요</div>
+      </div>
+      <div class="week" id="weekGrid"></div>
+      <div id="dayDetail" style="margin-top:16px"></div>
+    </section>
+
+    <!-- 3. 지난 배송 기록 -->
+    <section class="sec" id="s-hist">
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="btns"><button class="chip on" data-h="7">최근 7일</button><button class="chip" data-h="14">최근 14일</button><button class="chip" data-h="28">최근 28일</button></div>
+        <button class="btn ol" id="csvBtn">엑셀(CSV)로 받기</button>
+      </div>
+      <div class="kpis" id="hKpis"></div>
+      <div class="card"><h2>날짜·기사별 기록 <small>줄을 누르면 거래처별 시간이 펼쳐져요</small></h2><div id="hTbl"></div></div>
+      <div class="card"><h2>자주 가는 거래처 <small>배송 앱 기록 기준</small></h2><div id="hTop"></div></div>
+    </section>
+
+    <!-- 4. 거래처 현황 -->
+    <section class="sec" id="s-cust">
+      <div class="card">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <input class="q" id="cq" placeholder="거래처 이름·지역·주소로 찾기" autocomplete="off">
+          <div class="btns" id="cf">
+            <button class="chip on" data-f="all">전체</button>
+            <button class="chip" data-f="noct">연락처 없음</button>
+            <button class="chip" data-f="noaddr">주소 확인 필요</button>
+            <button class="chip" data-f="old">30일 넘게 거래 없음</button>
+            <button class="chip" data-f="edit">앱에서 연락처 고침</button>
+            <button class="chip" data-f="msg">전달사항 있음</button>
+          </div>
+        </div>
+      </div>
+      <div class="card"><h2 id="cCount">거래처</h2><div id="cTbl" style="max-height:calc(100vh - 290px);overflow:auto"></div></div>
+    </section>
+
+    <!-- 5. 전달사항 -->
+    <section class="sec" id="s-msgs">
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="btns" id="mf"><button class="chip on" data-k="all">전체</button><button class="chip" data-k="cust">거래처 요청</button><button class="chip" data-k="driver">기사 답장</button><button class="chip" data-k="office">사무실 전달</button></div>
+        <div class="hint">최근 60일 · 줄을 누르면 그 거래처 창에서 답할 수 있어요</div>
+      </div>
+      <div class="card"><div id="mList"></div></div>
+    </section>
+  </main>
+</div>
+
+<div id="drawer"><div id="dHead"><div><h2 id="dTitle"></h2><div class="hint" id="dSub"></div></div><button id="dX">닫기</button></div><div id="dBody"></div></div>
+<div id="viewer"><div class="vbox"><div class="vh"><b id="vT"></b><button id="vX">닫기</button></div><div id="vB" class="sgw"></div></div></div>
+<div id="toast"></div>
+
+<script>
+// 빵을그리다 배송 관리 (사무실 PC 전용) - 2026-10-24
+// 기사용 앱(index.html)과 같은 자료를 읽기만 한다: tmap_cust.enc.json(거래처, 링크 열쇠), delivery.enc.json(이카운트 판매, 직원 암호),
+// 공유 저장소 trip:날짜(배송 기록) / plan:날짜·wk:요일(예정 코스) / msg·msgr(전달사항) / cinfo(앱에서 고친 연락처). 쓰기는 전달사항 보내기만.
+const VER='v001', VER_DATE='10/24';
+const STORE_URL='https://script.google.com/macros/s/AKfycbyicz3BGmhiCkS17yozBKvsy4jMaGjazpMiymhmF0DQPb2fhLLII5VMwvWrrkqHd14J/exec';
+const CO={n:'빵을그리다(주) 곤지암',y:37.369855,x:127.40655};
+const WD=['일','월','화','수','목','금','토'];
+const KN={office:'사무실 전달',cust:'거래처 요청',driver:'기사 답장'};
+const LATE_MIN=30;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const p2=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+const hhmm=d=>p2(d.getHours())+':'+p2(d.getMinutes());
+const TODAY=()=>ymd(new Date());
+const lbl=ds=>{const d=new Date(ds+'T00:00:00');return (d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')'};
+const norm=s=>String(s||'').toLowerCase().replace(/[\s()（）\[\]_\-·.,/]/g,'');
+const mins=t=>/^\d\d:\d\d$/.test(t||'')?(+t.slice(0,2))*60+(+t.slice(3)):null;
+const m2t=m=>m==null?'':p2(Math.floor(m/60))+':'+p2(Math.round(m%60));
+const telOf=p=>String(p||'').replace(/[^0-9]/g,'');
+const me=()=>localStorage.getItem('tmapgo_name')||'';
+function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',2600)}
+function ago(t){const d=new Date(t),n=new Date();return (d.toDateString()===n.toDateString()?'오늘 ':(d.getMonth()+1)+'/'+d.getDate()+' ')+hhmm(d)}
+
+// ---------- 열쇠·복호화 ----------
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function aesKey(pass,salt,it){const e=new TextEncoder();const base=await crypto.subtle.importKey('raw',e.encode(pass),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:it||200000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt'])}
+async function decEnc(enc,pass){const k=await aesKey(pass,b64(enc.salt));return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(enc.iv)},k,b64(enc.ct))))}
+function getPass(){const p=localStorage.getItem('tmapgo_pass');if(p)return p;try{const d=JSON.parse(localStorage.getItem('dongseon_v1'));if(d&&d.dv&&d.dv.pass)return d.dv.pass}catch(e){}return ''}
+let MT=null;
+async function msgTok(){if(MT)return MT;const k=localStorage.getItem('tmapgo_k');if(!k)return null;const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('tmapmsg|'+k));MT=[...new Uint8Array(b)].map(v=>v.toString(16).padStart(2,'0')).join('');return MT}
+async function storeCall(o){const t=await msgTok();if(!t)throw new Error('nokey');const r=await fetch(STORE_URL,{method:'POST',body:JSON.stringify(Object.assign({token:t},o))});const j=await r.json();if(!j.ok)throw new Error(j.err||'fail');return j}
+async function sget(keys){const j=await storeCall({op:'get',keys:keys.join(',')});const o={};keys.forEach(k=>{o[k]=((j.data||{})[k]||{}).value});return o}
+
+async function unlock(p){const m=$('lkMsg');if(!p){m.textContent='암호를 넣어 주세요';return}
+  m.textContent='여는 중이에요…';$('lkGo').disabled=true;
+  try{
+    if(!localStorage.getItem('tmapgo_k')){const j=await (await fetch('k.enc.json?t='+Date.now(),{cache:'no-store'})).json();
+      const k=await aesKey(p,b64(j.s),j.it);const v=new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(j.iv)},k,b64(j.ct)));
+      if(!/^[A-Za-z0-9_-]{16,}$/.test(v))throw new Error('bad');localStorage.setItem('tmapgo_k',v)}
+    try{const e=await (await fetch('../delivery.enc.json?t='+Date.now(),{cache:'no-store'})).json();await decEnc(e,p);localStorage.setItem('tmapgo_pass',p)}catch(e){}
+    m.textContent='열렸어요';setTimeout(()=>location.reload(),300);
+  }catch(e){m.innerHTML='<span style="color:var(--rd);font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('lkGo').disabled=false;$('lkIn').select()}}
+
+// ---------- 자료 ----------
+const D={sign:{},img:{},cust:[],custAt:'',byId:{},nameIx:{},dv:null,ci:{},msg:{},msgr:{},trip:{},plan:{},hist:{}};
+function addIx(name,id){const k=norm(name);if(k&&!D.nameIx[k])D.nameIx[k]=id}
+function idOfName(n){const k=norm(n);if(D.nameIx[k])return D.nameIx[k];
+  // 이름 일부가 겹치는 거래처 (예: 「달콤제빵소 화성」 ↔ 「(화성)달콤제빵소」)
+  for(const c of D.cust){const a=norm(c.n);if(a&&k&&(a.includes(k)||k.includes(a)))return c.id}return null}
+function custOf(id){return D.byId[id]||null}
+function nameOf(id,fb){const c=custOf(id);return c?c.n:(fb||'거래처')}
+function ctOf(id){const o=D.ci[id];if(o&&Array.isArray(o.ct))return {ct:o.ct,ed:o};const c=custOf(id);return {ct:(c&&c.ct)||[],ed:null}}
+function slipsOf(ds){const s=(D.dv&&D.dv.slips||{})[ds]||{};const out={};
+  for(const [cn,items] of Object.entries(s)){const id=(D.dv.custMap||{})[cn]||idOfName(cn)||('x:'+cn);if(id==='depot')continue;(out[id]=out[id]||{id,ecount:cn,items:[]}).items.push(...items)}
+  return Object.values(out)}
+function itemsTxt(items){const m={};items.forEach(([it,q])=>{const k=String(it||'').replace(/^D[Bb]\./,'').trim();m[k]=(m[k]||0)+(+q||0)});
+  return Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([k,q])=>esc(k)+' <b class="nw">'+(Math.round(q*10)/10)+'</b>').join(', ')}
+const qtySum=items=>Math.round(items.reduce((a,[,q])=>a+(+q||0),0)*10)/10;
+
+async function loadCust(){const k=localStorage.getItem('tmapgo_k');const r=await fetch('../tmap_cust.enc.json?t='+Date.now(),{cache:'no-store'});
+  const j=await decEnc(await r.json(),k);D.cust=(j.list||[]);D.custAt=j.updated||'';D.byId={};D.nameIx={};
+  D.cust.forEach(c=>{D.byId[c.id]=c;addIx(c.n,c.id);addIx(c.e,c.id);String(c.al||'').split(' ').forEach(a=>a.length>1&&addIx(a,c.id))})}
+async function loadDv(){const p=getPass();if(!p){D.dv=null;return}
+  try{const r=await fetch('../delivery.enc.json?t='+Date.now(),{cache:'no-store'});D.dv=await decEnc(await r.json(),p);
+    (D.dv.places||[]).forEach(pl=>{if(pl.depot)return;if(!D.byId[pl.id]){const c={id:pl.id,n:pl.short||pl.ecount,e:pl.ecount||'',r:pl.region||'',a:pl.addr||'',y:pl.lat,x:pl.lon,k:pl.n||0,l:(pl.last||'').replace(/\//g,'-')};D.byId[pl.id]=c}
+      addIx(pl.short,pl.id);addIx(pl.ecount,pl.id);(pl.alias||[]).forEach(a=>a.length>1&&addIx(a,pl.id))})}
+  catch(e){D.dv=null;if(e&&e.name==='OperationError')localStorage.removeItem('tmapgo_pass')}}
+async function loadToday(){const t=TODAY(),dw=new Date().getDay();
+  const v=await sget(['trip:'+t,'msg','msgr','cinfo','plan:'+t,'wk:'+dw,'sign:'+t]);D.sign[t]=v['sign:'+t]||{};
+  D.trip=v['trip:'+t]||{};D.msg=v.msg||{};D.msgr=v.msgr||{};D.ci=v.cinfo||{};D.plan['plan:'+t]=v['plan:'+t]||{};D.plan['wk:'+dw]=v['wk:'+dw]||{};D.hist[t]=D.trip;D.at=Date.now()}
+
+// ---------- 배송 상태 ----------
+function lateNow(te){const m=mins(te);if(m==null)return false;const n=new Date();return n.getHours()*60+n.getMinutes()-m>LATE_MIN}
+function stOf(s,today){
+  if(s.done)return {c:'dn',t:'완료',d:s.arr?s.arr+' 도착':s.fin?s.fin+' 완료':''};
+  if(s.arr)return {c:'ar',t:'도착',d:s.arr+' 도착'};
+  if(s.dep){const l=today?lateNow(s.te):false;return l?{c:'lt',t:'확인 필요',d:(s.r?'약 ':'')+s.te+' 도착 예정이었어요'}:{c:'mv',t:'이동 중',d:s.dep+' 출발'+(s.te?' · '+(s.r?'약 ':'')+s.te+' 도착 예정':'')}}
+  return {c:'wt',t:'대기',d:''}}
+function drivers(trip){return Object.entries(trip||{}).map(([dev,p])=>Object.assign({dev},p)).filter(p=>p&&p.list&&p.list.length).sort((a,b)=>(b.at||0)-(a.at||0))}
+function tripStops(trip,today){const out=[];drivers(trip).forEach(p=>p.list.forEach((s,i)=>out.push(Object.assign({who:p.who,i,id:(s.p&&custOf(s.p))?s.p:idOfName(s.n),st:stOf(s,today)},s))));return out}
+
+// ---------- 거래명세표 사인 사진 (공유 저장 sign:날짜, backend v7 op 'img') ----------
+function signsOf(ds,id){const o=((D.sign[ds]||{})[id])||{};return Object.values(o).filter(x=>x&&x.id).sort((a,b)=>(a.t||0)-(b.t||0))}
+function signBtn(ds,id){const n=signsOf(ds,id).length;return n?'<button class="chip" data-sg="'+esc(ds)+'|'+esc(id)+'">사진 '+n+'장 보기</button>':'<span class="hint">없음</span>'}
+async function imgData(fid){if(D.img[fid])return D.img[fid];const j=await storeCall({op:'img',id:fid});D.img[fid]='data:'+(j.mime||'image/jpeg')+';base64,'+j.data;return D.img[fid]}
+async function fillImgs(root){for(const im of root.querySelectorAll('img[data-fid]')){try{im.src=await imgData(im.dataset.fid)}catch(e){im.alt='사진을 못 불러왔어요'}}}
+function signHtml(ds,id){return signsOf(ds,id).map(x=>'<figure class="sgf"><img data-fid="'+esc(x.id)+'" data-big="1" alt="불러오는 중…"><figcaption>'+lbl(ds)+' '+(x.t?hhmm(new Date(x.t)):'')+' · '+esc(x.by||'')+(x.src==='lib'?' · 사진 불러오기':'')+'</figcaption></figure>').join('')}
+function showSigns(ds,id){const v=$('viewer');$('vT').textContent=nameOf(id)+' · '+lbl(ds)+' 거래명세표 사인 사진';$('vB').innerHTML=signHtml(ds,id)||'<div class="empty">사진이 없어요</div>';v.classList.add('on');fillImgs($('vB'))}
+async function loadSignDays(days){const need=days.filter(d=>d<=TODAY()&&D.sign[d]===undefined);if(!need.length)return;try{const v=await sget(need.map(d=>'sign:'+d));need.forEach(d=>D.sign[d]=v['sign:'+d]||{})}catch(e){need.forEach(d=>D.sign[d]=D.sign[d]||{})}}
+
+// ---------- 1. 오늘 한눈에 ----------
+let MAP=null,MAPL=null;
+function renderToday(){
+  const t=TODAY(),sl=slipsOf(t),stops=tripStops(D.trip,true),drv=drivers(D.trip);
+  const done=stops.filter(s=>s.st.c==='dn').length,mv=stops.filter(s=>s.st.c==='mv'||s.st.c==='ar').length,late=stops.filter(s=>s.st.c==='lt');
+  const inApp=new Set(stops.map(s=>s.id).filter(Boolean));
+  const miss=D.dv?sl.filter(x=>!inApp.has(x.id)):[];
+  const slIds=new Set(sl.map(x=>x.id));
+  const extra=D.dv?stops.filter(s=>s.id&&!slIds.has(s.id)):[];
+  const kp=(cls,l,n,u,s,go)=>'<'+(go?'button data-go="'+go+'"':'div')+' class="kpi '+cls+'"><div class="l">'+l+'</div><div class="n">'+n+'<small>'+u+'</small></div><div class="s">'+s+'</div></'+(go?'button':'div')+'>';
+  $('kpis').innerHTML=
+    kp('br','오늘 출고 (이카운트)',D.dv?sl.length:'-','곳',D.dv?'판매 전표 기준':'직원 암호 필요','tbl')+
+    kp('','배송 앱 목록',stops.length,'곳',drv.length?'기사 '+drv.length+'명':'아직 출발 전','drv')+
+    kp('gr','배송 완료',done,'곳',stops.length?Math.round(done/stops.length*100)+'% 진행':'','drv')+
+    kp('bl','이동 중',mv,'곳','출발했고 아직 완료 전','drv')+
+    kp(late.length?'rd':'gr','확인 필요',late.length,'곳',late.length?'도착 예정보다 '+LATE_MIN+'분 넘게 늦음':'늦은 곳 없음','alerts');
+  // 알림
+  const A=[];
+  late.forEach(s=>A.push(['rd','늦음','<b>'+esc(s.n)+'</b> ('+esc(s.who)+') '+esc(s.st.d)+'. 기사님께 전화로 확인해 보세요.']));
+  if(miss.length)A.push(['or','앱 목록에 없음','이카운트 오늘 출고인데 배송 앱 목록에 없는 곳 <b>'+miss.length+'곳</b>: '+miss.map(x=>esc(nameOf(x.id,x.ecount))).join(', ')+(stops.length?'':' (아직 아무도 출발 전이에요)')]);
+  if(extra.length)A.push(['bl','참고','배송 앱 목록에는 있는데 오늘 출고 전표가 없는 곳: '+[...new Set(extra.map(s=>s.n))].map(esc).join(', ')]);
+  const noAddr=sl.filter(x=>{const c=custOf(x.id);return !c||!c.y});
+  if(noAddr.length)A.push(['or','주소 확인','오늘 출고 거래처 중 지도 위치가 없는 곳: '+noAddr.map(x=>esc(nameOf(x.id,x.ecount))).join(', ')]);
+  const nos=[...new Map(stops.filter(s=>s.st.c==='dn'&&s.id&&!signsOf(t,s.id).length).map(s=>[s.id,s])).values()];
+  if(nos.length)A.push(['bl','사인 사진','배송 완료했는데 거래명세표 사인 사진이 아직 없는 곳 '+nos.length+'곳: '+nos.map(s=>esc(s.n)).join(', ')]);
+  const nm=newMsgs(1);if(nm.length)A.push(['bl','전달사항','최근 24시간 새 전달사항 <b>'+nm.length+'개</b> (거래처 요청 '+nm.filter(m=>m.k==='cust').length+'개). 왼쪽 「전달사항」에서 확인하세요.']);
+  drv.filter(p=>p.end).forEach(p=>A.push(['gr','배송 끝',esc(p.who)+' '+esc(p.end)+' 오늘 배송을 마쳤어요.']));
+  if(!D.dv)A.push(['or','직원 암호','이카운트 출고 자료를 보려면 직원 암호가 필요해요. <button class="chip" id="askPass">암호 넣기</button>']);
+  $('alerts').innerHTML='<h2>지금 확인할 것</h2>'+(A.length?A.map(a=>'<div class="a '+a[0]+'"><span class="tg">'+a[1]+'</span><div>'+a[2]+'</div></div>').join(''):'<div class="a gr"><span class="tg">이상 없음</span><div>지금 따로 확인할 일이 없어요.</div></div>');
+  const ap=$('askPass');if(ap)ap.onclick=()=>{const p=prompt('직원 암호');if(p){localStorage.setItem('tmapgo_pass',p.trim());loadDv().then(()=>{if(!D.dv)toast('암호가 맞지 않아요');renderAll()})}};
+  // 기사별
+  $('drvAt').textContent=D.at?hhmm(new Date(D.at))+' 기준 · 30초마다 새로 봐요':'';
+  $('drivers').innerHTML=drv.length?drv.map(p=>{const n=p.list.length,dn=p.list.filter(s=>s.done).length;
+    return '<div class="drv"><h3>'+esc(p.who||'이름 없음')+'<span>완료 '+dn+' / '+n+'곳 · 마지막 소식 '+(p.at?hhmm(new Date(p.at)):'-')+'</span></h3><div class="bar"><i style="width:'+(n?dn/n*100:0)+'%"></i></div><div class="rows">'+
+      p.list.map((s,i)=>{const st=stOf(s,true);return '<div class="r"><span class="hint">'+(i+1)+'</span><div><b>'+esc(s.n)+'</b>'+(st.d?'<br><em>'+esc(st.d)+'</em>':'')+'</div><span class="st '+st.c+'">'+st.t+'</span></div>'}).join('')+'</div>'+
+      (p.end?'<div class="endl">'+esc(p.end)+' 오늘 배송 끝</div>':'')+'</div>'}).join('')
+    :'<div class="empty">아직 오늘 출발 기록이 없어요.<br>기사님이 배송 앱에서 「출발」을 누르면 여기에 바로 보여요.</div>';
+  // 표
+  $('todaySrc').textContent=D.dv?'이카운트 판매 전표 · '+(D.dv.updated||'')+' 기준':'';
+  $('todayTbl').innerHTML=!D.dv?'<div class="empty">직원 암호를 넣으면 이카운트 출고 자료가 보여요.</div>':sl.length?slipTable(sl,stops):'<div class="empty">오늘('+lbl(t)+') 이카운트 판매 전표가 없어요.</div>';
+  drawMap(sl,stops);
+}
+function slipTable(sl,stops,ds){ds=ds||TODAY();const sg=ds<=TODAY();
+  const sm={};(stops||[]).forEach(s=>{if(s.id)sm[s.id]=s});
+  return '<table><thead><tr><th style="width:24%">거래처</th><th>품목 · 수량</th><th class="num">합계</th>'+(stops?'<th>배송 상태</th>':'')+(sg?'<th>사인 사진</th>':'')+'<th>담당자</th></tr></thead><tbody>'+
+    sl.sort((a,b)=>nameOf(a.id,a.ecount).localeCompare(nameOf(b.id,b.ecount),'ko')).map(x=>{const c=custOf(x.id),s=sm[x.id],ct=ctOf(x.id).ct[0];
+      return '<tr class="ck" data-cid="'+esc(x.id)+'"><td><b>'+esc(nameOf(x.id,x.ecount))+'</b><div class="hint">'+esc(c&&c.r||'')+'</div></td><td class="items">'+itemsTxt(x.items)+'</td><td class="num">'+qtySum(x.items)+'</td>'+
+      (stops?'<td>'+(s?'<span class="st '+s.st.c+'">'+s.st.t+'</span><div class="hint">'+esc(s.st.d)+'</div>':'<span class="st no">앱 목록에 없음</span>')+'</td>':'')+(sg?'<td>'+signBtn(ds,x.id)+'</td>':'')+
+      '<td class="hint">'+(ct?esc(ct.t||'담당자')+(ct.p?'<br><span class="nw">'+esc(ct.p)+'</span>':''):'-')+'</td></tr>'}).join('')+'</tbody></table>'}
+function drawMap(sl,stops){
+  if(typeof L==='undefined'){$('map').innerHTML='<div class="empty">지도를 못 불러왔어요 (인터넷 확인)</div>';return}
+  if(!MAP){MAP=L.map('map',{scrollWheelZoom:true});L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap'}).addTo(MAP);MAPL=L.layerGroup().addTo(MAP)}
+  MAPL.clearLayers();const col={dn:'#1F7A4A',mv:'#1F4FBF',ar:'#1F4FBF',lt:'#C0392B',wt:'#8C8782',no:'#C26A0A'};const pts=[[CO.y,CO.x]];
+  L.circleMarker([CO.y,CO.x],{radius:10,color:'#fff',weight:2,fillColor:'#7A4A23',fillOpacity:1}).bindTooltip('빵을그리다',{permanent:true,direction:'right',className:'lb'}).addTo(MAPL);
+  const seen=new Set();
+  stops.forEach(s=>{const c=custOf(s.id);if(!c||!c.y||seen.has(s.id))return;seen.add(s.id);pts.push([c.y,c.x]);
+    L.circleMarker([c.y,c.x],{radius:9,color:'#fff',weight:2,fillColor:col[s.st.c],fillOpacity:1}).bindTooltip(esc(s.n)+' · '+s.st.t,{permanent:true,direction:'right',className:'lb'}).addTo(MAPL)});
+  sl.forEach(x=>{const c=custOf(x.id);if(!c||!c.y||seen.has(x.id))return;seen.add(x.id);pts.push([c.y,c.x]);
+    L.circleMarker([c.y,c.x],{radius:8,color:'#fff',weight:2,fillColor:stops.length?col.no:col.wt,fillOpacity:1}).bindTooltip(esc(c.n)+(stops.length?' · 앱 목록에 없음':''),{permanent:!stops.length,direction:'right',className:'lb'}).addTo(MAPL)});
+  setTimeout(()=>{MAP.invalidateSize();if(pts.length>1)MAP.fitBounds(pts,{padding:[40,40],maxZoom:13});else MAP.setView([CO.y,CO.x],10)},50)}
+
+// ---------- 2. 날짜별 출고·코스 ----------
+let WOFF=0,WSEL=TODAY();
+function weekDays(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7)+WOFF*7);return [...Array(7)].map((_,k)=>{const x=new Date(d);x.setDate(d.getDate()+k);return ymd(x)})}
+function pRuns(key){const v=D.plan[key]||{};return Object.entries(v.runs||{}).filter(([k,r])=>r&&Array.isArray(r.ids)).map(([k,r])=>Object.assign({rid:k},r)).sort((a,b)=>(a.o||0)-(b.o||0)||(a.at||0)-(b.at||0))}
+function pEff(ds){const d=new Date(ds+'T00:00:00');const pk='plan:'+ds,p=D.plan[pk]||{};const own=pRuns(pk);const wkr=p.off?[]:pRuns('wk:'+d.getDay()).filter(r=>!(p.skip||{})[r.rid]);return own.concat(wkr.map(r=>Object.assign({wk:1},r)))}
+async function loadWeek(){const W=weekDays(),t=TODAY();const keys=W.map(d=>'plan:'+d).concat([0,1,2,3,4,5,6].map(k=>'wk:'+k)).concat(W.filter(d=>d<=t&&!D.hist[d]).map(d=>'trip:'+d));
+  $('weekGrid').innerHTML='<div class="hint">불러오는 중…</div>';
+  try{const v=await sget(keys);keys.forEach(k=>{if(/^trip:/.test(k))D.hist[k.slice(5)]=v[k]||{};else D.plan[k]=v[k]||{}})}catch(e){toast('예정 코스를 못 불러왔어요')}
+  await loadSignDays(W);renderWeek()}
+function renderWeek(){const W=weekDays(),t=TODAY();if(!W.includes(WSEL))WSEL=W.includes(t)?t:W[0];
+  document.querySelectorAll('[data-w]').forEach(b=>b.classList.toggle('on',+b.dataset.w===WOFF));
+  $('weekGrid').innerHTML=W.map(ds=>{const sl=slipsOf(ds),runs=pEff(ds),tr=tripStops(D.hist[ds]||{},false);const q=sl.reduce((a,x)=>a+qtySum(x.items),0);
+    const inRun=new Set(runs.flatMap(r=>r.ids));const miss=runs.length?sl.filter(x=>!inRun.has(x.id)).length:0;
+    return '<button class="day'+(ds===WSEL?' on':'')+(ds===t?' td':'')+'" data-ds="'+ds+'"><div class="dl">'+lbl(ds)+(ds===t?' 오늘':'')+'</div>'+
+      '<div class="big">'+(D.dv?sl.length:'-')+'<small> 곳 출고</small></div><div class="ln">'+(D.dv&&sl.length?'수량 합계 '+Math.round(q):'')+'</div>'+
+      (runs.length?'<span class="tag" style="background:var(--grl);color:var(--gr)">예정 코스 '+runs.length+'개</span>':(sl.length?'<span class="tag" style="background:var(--orl);color:var(--or)">예정 코스 없음</span>':''))+
+      (miss?'<span class="tag" style="background:var(--orl);color:var(--or)">코스에 없는 곳 '+miss+'</span>':'')+
+      (tr.length?'<span class="tag" style="background:var(--bll);color:var(--bl)">배송 기록 '+tr.filter(s=>s.done).length+'/'+tr.length+'</span>':'')+'</button>'}).join('');
+  renderDay(WSEL)}
+function renderDay(ds){const sl=slipsOf(ds),runs=pEff(ds),tr=tripStops(D.hist[ds]||{},ds===TODAY());
+  const inRun=new Set(runs.flatMap(r=>r.ids));const miss=runs.length?sl.filter(x=>!inRun.has(x.id)):[];
+  $('dayDetail').innerHTML='<div class="grid2"><div class="card"><h2>'+lbl(ds)+' 이카운트 출고 <small>'+(D.dv?sl.length+'곳':'')+'</small></h2>'+
+    (!D.dv?'<div class="empty">직원 암호를 넣으면 보여요.</div>':sl.length?slipTable(sl,ds<=TODAY()&&tr.length?tr:null,ds):'<div class="empty">이 날 판매 전표가 없어요.</div>')+'</div>'+
+    '<div class="card"><h2>예정 코스 <small>배송 앱 「예정 코스」에서 등록</small></h2>'+
+    (runs.length?runs.map(r=>'<div class="drv"><h3>'+esc(r.n||'코스')+'<span>'+(r.wk?'매주 '+WD[new Date(ds+'T00:00:00').getDay()]+'요일':'이 날만')+' · '+r.ids.length+'곳</span></h3><div class="rows">'+r.ids.map((id,i)=>'<div class="r"><span class="hint">'+(i+1)+'</span><div><b>'+esc(nameOf(id,(r.nm||{})[id]))+'</b></div><span>'+(sl.some(x=>x.id===id)?'<span class="st dn">출고 있음</span>':(D.dv?'<span class="st wt">출고 전표 없음</span>':''))+'</span></div>').join('')+'</div></div>').join('')
+      :'<div class="empty">등록된 예정 코스가 없어요.<br>기사님이나 사무실이 배송 앱 「예정 코스」 탭에서 미리 등록할 수 있어요.</div>')+
+    (miss.length?'<div class="alerts"><div class="a or"><span class="tg">코스에 없음</span><div>출고는 있는데 예정 코스에 없는 곳: '+miss.map(x=>esc(nameOf(x.id,x.ecount))).join(', ')+'</div></div></div>':'')+'</div></div>'}
+
+// ---------- 3. 지난 배송 기록 ----------
+let HDAYS=7,HROWS=[];
+async function loadHist(){const t=new Date();const days=[...Array(HDAYS)].map((_,k)=>{const d=new Date(t);d.setDate(t.getDate()-k);return ymd(d)});
+  const need=days.filter(d=>!D.hist[d]||d===TODAY());$('hTbl').innerHTML='<div class="hint">불러오는 중…</div>';
+  try{if(need.length){const v=await sget(need.map(d=>'trip:'+d));need.forEach(d=>D.hist[d]=v['trip:'+d]||{})}}catch(e){toast('기록을 못 불러왔어요')}
+  await loadSignDays(days);renderHist(days)}
+function renderHist(days){
+  HROWS=[];days.forEach(ds=>drivers(D.hist[ds]).forEach(p=>{const L=p.list;const deps=L.map(s=>mins(s.dep)).filter(v=>v!=null);const ends=L.map(s=>mins(s.arr)??mins(s.fin)).filter(v=>v!=null);
+    const first=deps.length?Math.min(...deps):null;const last=mins(p.end)??(ends.length?Math.max(...ends):null);
+    const late=L.filter(s=>{const a=mins(s.arr),e=mins(s.te);return a!=null&&e!=null&&a-e>LATE_MIN});
+    HROWS.push({ds,p,n:L.length,dn:L.filter(s=>s.done).length,first,last,dur:first!=null&&last!=null&&last>first?last-first:null,late})}));
+  const dd=new Set(HROWS.map(r=>r.ds)).size,tot=HROWS.reduce((a,r)=>a+r.n,0),dn=HROWS.reduce((a,r)=>a+r.dn,0),lt=HROWS.reduce((a,r)=>a+r.late.length,0);
+  const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;const af=avg(HROWS.map(r=>r.first).filter(v=>v!=null)),ad=avg(HROWS.map(r=>r.dur).filter(v=>v!=null));
+  const k=(c,l,n,u,s)=>'<div class="kpi '+c+'"><div class="l">'+l+'</div><div class="n">'+n+'<small>'+u+'</small></div><div class="s">'+s+'</div></div>';
+  $('hKpis').innerHTML=k('br','배송한 날',dd,'일','최근 '+HDAYS+'일 중')+k('gr','배송 완료',dn,'곳','앱 목록 '+tot+'곳')+k('','평균 첫 출발',af!=null?m2t(af):'-','','')+k('bl','평균 배송 시간',ad!=null?(Math.floor(ad/60)+'시간 '+Math.round(ad%60)+'분'):'-','','첫 출발 ~ 마지막 완료')+k(lt?'rd':'gr','늦게 도착',lt,'곳','예정보다 '+LATE_MIN+'분 넘게');
+  $('hTbl').innerHTML=HROWS.length?'<table><thead><tr><th>날짜</th><th>기사</th><th class="num">곳 수</th><th class="num">완료</th><th>첫 출발</th><th>마지막 완료</th><th>걸린 시간</th><th>늦게 도착</th></tr></thead><tbody>'+
+    HROWS.map((r,i)=>'<tr class="ck" data-hr="'+i+'"><td class="nw"><b>'+lbl(r.ds)+'</b></td><td>'+esc(r.p.who||'')+'</td><td class="num">'+r.n+'</td><td class="num">'+r.dn+'</td><td>'+m2t(r.first)+'</td><td>'+m2t(r.last)+(r.p.end?' <span class="hint">(배송 끝)</span>':'')+'</td><td>'+(r.dur!=null?Math.floor(r.dur/60)+'시간 '+Math.round(r.dur%60)+'분':'')+'</td><td>'+(r.late.length?'<span class="st lt">'+r.late.length+'곳</span>':'<span class="st dn">없음</span>')+'</td></tr><tr id="hx'+i+'" style="display:none"><td colspan="8" style="background:#FAF9F7">'+
+      '<table><thead><tr><th>순서</th><th>거래처</th><th>출발</th><th>도착 예정</th><th>도착</th><th>완료</th><th>사인 사진</th></tr></thead><tbody>'+r.p.list.map((s,j)=>{const sid=(s.p&&custOf(s.p))?s.p:idOfName(s.n);const a=mins(s.arr),e=mins(s.te);const lt=a!=null&&e!=null&&a-e>LATE_MIN;return '<tr><td>'+(j+1)+'</td><td>'+esc(s.n)+'</td><td>'+esc(s.dep)+'</td><td>'+(s.r?'약 ':'')+esc(s.te)+'</td><td'+(lt?' style="color:var(--rd);font-weight:700"':'')+'>'+esc(s.arr)+'</td><td>'+(s.done?esc(s.fin||'완료'):'')+'</td><td>'+(sid?signBtn(r.ds,sid):'')+'</td></tr>'}).join('')+'</tbody></table></td></tr>').join('')+'</tbody></table>'
+    :'<div class="empty">최근 '+HDAYS+'일 동안 배송 앱 기록이 없어요.<br>기사님이 배송 앱에서 「출발」을 누르기 시작하면 날마다 쌓여요.</div>';
+  const cnt={};HROWS.forEach(r=>r.p.list.forEach(s=>{if(!s.done)return;const id=idOfName(s.n)||s.n;cnt[id]=(cnt[id]||0)+1}));
+  const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  $('hTop').innerHTML=top.length?'<table><thead><tr><th>거래처</th><th class="num">배송 완료 횟수</th><th>지역</th></tr></thead><tbody>'+top.map(([id,n])=>'<tr class="ck" data-cid="'+esc(id)+'"><td><b>'+esc(nameOf(id,id))+'</b></td><td class="num">'+n+'</td><td class="hint">'+esc((custOf(id)||{}).r||'')+'</td></tr>').join('')+'</tbody></table>':'<div class="empty">아직 기록이 없어요.</div>'}
+function csv(){if(!HROWS.length){toast('받을 기록이 없어요');return}
+  const rows=[['날짜','기사','순서','거래처','출발','도착 예정','도착','완료','배송 끝']];
+  HROWS.forEach(r=>r.p.list.forEach((s,j)=>rows.push([r.ds,r.p.who||'',j+1,s.n,s.dep||'',(s.r?'약 ':'')+(s.te||''),s.arr||'',s.done?(s.fin||'완료'):'',r.p.end||''])));
+  const txt='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/csv'}));a.download=TODAY().replace(/-/g,'')+'_배송기록_최근'+HDAYS+'일.csv';a.click()}
+
+// ---------- 4. 거래처 현황 ----------
+let CF='all';
+function msgsOf(id){return Object.entries(D.msg[id]||{}).map(([mid,m])=>Object.assign({mid},m)).filter(m=>m&&m.t&&m.x).sort((a,b)=>a.t-b.t)}
+function renderCust(){const q=norm($('cq').value),old=new Date(Date.now()-30*864e5);const oldS=ymd(old);
+  let L=Object.values(D.byId).filter(c=>c.id!=='depot');
+  if(q)L=L.filter(c=>norm(c.n+' '+c.e+' '+(c.al||'')+' '+c.r+' '+c.a).includes(q));
+  if(CF==='noct')L=L.filter(c=>!ctOf(c.id).ct.some(o=>o&&o.p));
+  if(CF==='noaddr')L=L.filter(c=>!c.a||!c.y);
+  if(CF==='old')L=L.filter(c=>c.l&&c.l<oldS);
+  if(CF==='edit')L=L.filter(c=>D.ci[c.id]&&D.ci[c.id].ct);
+  if(CF==='msg')L=L.filter(c=>msgsOf(c.id).length);
+  L.sort((a,b)=>(b.l||'').localeCompare(a.l||'')||a.n.localeCompare(b.n,'ko'));
+  $('cCount').innerHTML='거래처 <small>'+L.length+'곳 · 최근 거래일 순 · 줄을 누르면 자세히</small>';
+  $('cTbl').innerHTML=L.length?'<table><thead><tr><th>거래처</th><th>지역</th><th>주소</th><th>담당자</th><th>최근 거래일</th><th class="num">거래일 수</th><th class="num">전달사항</th></tr></thead><tbody>'+
+    L.map(c=>{const {ct,ed}=ctOf(c.id);const o=ct[0];const mc=msgsOf(c.id).length;
+      return '<tr class="ck" data-cid="'+esc(c.id)+'"><td><b>'+esc(c.n)+'</b>'+(c.e&&c.e!==c.n?'<div class="hint">'+esc(c.e)+'</div>':'')+'</td><td class="nw">'+esc(c.r)+'</td><td class="hint">'+(c.a?esc(c.a):'<span class="st no">주소 없음</span>')+(c.a&&!c.y?' <span class="st no">위치 없음</span>':'')+'</td>'+
+      '<td class="hint">'+(o?esc(o.t||'담당자')+(o.p?'<br><span class="nw">'+esc(o.p)+'</span>':''):'<span class="st no">없음</span>')+(ed?' <span class="st mv">앱에서 고침</span>':'')+'</td>'+
+      '<td class="nw">'+(c.l?esc(c.l.slice(5).replace('-','/')):'-')+(c.l&&c.l<oldS?' <span class="st wt">30일+</span>':'')+'</td><td class="num">'+(c.k||'')+'</td><td class="num">'+(mc?'<span class="st mv">'+mc+'</span>':'')+'</td></tr>'}).join('')+'</tbody></table>'
+    :'<div class="empty">조건에 맞는 거래처가 없어요.</div>'}
+
+// ---------- 5. 전달사항 ----------
+let MF='all';
+function allMsgs(days){const from=Date.now()-days*864e5;const out=[];Object.keys(D.msg||{}).forEach(id=>msgsOf(id).forEach(m=>{if(m.t>=from)out.push(Object.assign({id,k:KN[m.k]?m.k:'office'},m))}));return out.sort((a,b)=>b.t-a.t)}
+function newMsgs(days){return allMsgs(days).filter(m=>m.k!=='office')}
+function readers(id,m){return Object.entries((D.msgr||{})[id]||{}).filter(([n,t])=>n!==m.by&&t>=m.t).map(([n])=>n)}
+function renderMsgs(){const L=allMsgs(60).filter(m=>MF==='all'||m.k===MF);const n=newMsgs(1).length;
+  $('msgCnt').style.display=n?'inline-block':'none';$('msgCnt').textContent=n;
+  $('mList').innerHTML=L.length?'<table><thead><tr><th style="width:120px">언제</th><th style="width:20%">거래처</th><th style="width:110px">종류</th><th>내용</th><th style="width:16%">쓴 사람 · 읽음</th></tr></thead><tbody>'+
+    L.map(m=>{const r=readers(m.id,m);return '<tr class="ck" data-cid="'+esc(m.id)+'"><td class="nw">'+ago(m.t)+'</td><td><b>'+esc(nameOf(m.id,m.pn))+'</b></td><td><span class="st '+({office:'mv',cust:'no',driver:'dn'}[m.k])+'">'+KN[m.k]+'</span></td><td>'+esc(m.x)+'</td><td class="hint">'+esc(m.by||'')+(r.length?'<br>읽음: '+esc(r.join(', ')):'')+'</td></tr>'}).join('')+'</tbody></table>'
+    :'<div class="empty">최근 60일 전달사항이 없어요.</div>'}
+
+// ---------- 거래처 상세 창 ----------
+let DCID=null;
+function openCust(id){const c=custOf(id);DCID=id;if(!c&&!String(id).startsWith('x:')){toast('거래처 정보를 못 찾았어요');return}
+  const nm=c?c.n:String(id).slice(2);$('dTitle').textContent=nm;$('dSub').textContent=c?[c.r,c.e&&c.e!==c.n?c.e:''].filter(Boolean).join(' · '):'배송 앱 거래처 목록에 없는 이카운트 거래처';
+  const {ct,ed}=ctOf(id);const t=TODAY();
+  const days=Object.keys((D.dv&&D.dv.slips)||{}).filter(d=>slipsOf(d).some(x=>x.id===id)).sort().reverse();
+  const past=days.filter(d=>d<=t).slice(0,8),fut=days.filter(d=>d>t).reverse().slice(0,6);
+  const trips=[];Object.keys(D.hist).sort().reverse().forEach(ds=>tripStops(D.hist[ds],ds===t).forEach(s=>{if(s.id===id)trips.push(Object.assign({ds},s))}));
+  const ms=msgsOf(id);const sgd=Object.keys(D.sign).filter(d=>signsOf(d,id).length).sort().reverse().slice(0,5);
+  const sRow=d=>{const x=slipsOf(d).find(x=>x.id===id);return '<tr><td class="nw"><b>'+lbl(d)+'</b></td><td class="items">'+itemsTxt(x.items)+'</td></tr>'};
+  $('dBody').innerHTML='<dl class="kv"><dt>주소</dt><dd>'+(c&&c.a?esc(c.a):'<span class="st no">주소 없음</span>')+'</dd><dt>최근 거래일</dt><dd>'+esc(c&&c.l||'-')+'</dd><dt>거래일 수</dt><dd>'+(c&&c.k||'-')+'</dd>'+
+    '<dt>담당자</dt><dd>'+(ct.length?ct.map(o=>esc(o.t||'담당자')+(o.p?' <b class="nw">'+esc(o.p)+'</b>':'')).join('<br>'):'<span class="st no">연락처 없음</span>')+'<div class="hint">'+(ed?'배송 앱에서 고침 · '+esc(ed.by||'')+(ed.at?' '+ago(ed.at):''):'이카운트 거래처 담당')+'</div></dd></dl>'+
+    (c&&c.y?'<div class="btns" style="margin-top:12px"><a class="btn ol" style="display:inline-flex;align-items:center;text-decoration:none" target="_blank" href="https://map.kakao.com/link/map/'+encodeURIComponent(c.n)+','+c.y+','+c.x+'">카카오맵에서 보기</a><a class="btn ol" style="display:inline-flex;align-items:center;text-decoration:none" target="_blank" href="https://map.kakao.com/link/from/'+encodeURIComponent('빵을그리다')+','+CO.y+','+CO.x+'/to/'+encodeURIComponent(c.n)+','+c.y+','+c.x+'">공장에서 가는 길</a></div>':'')+
+    '<h4>앞으로 출고 예정 (이카운트)</h4>'+(!D.dv?'<div class="hint">직원 암호가 필요해요</div>':fut.length?'<table><tbody>'+fut.map(sRow).join('')+'</tbody></table>':'<div class="hint">예정된 판매 전표가 없어요</div>')+
+    '<h4>최근 출고 (이카운트, 최근 4주)</h4>'+(!D.dv?'<div class="hint">직원 암호가 필요해요</div>':past.length?'<table><tbody>'+past.map(sRow).join('')+'</tbody></table>':'<div class="hint">최근 4주 판매 전표가 없어요</div>')+
+    '<h4>배송 앱 기록 <span class="hint">(불러온 날짜만)</span></h4>'+(trips.length?'<table><tbody>'+trips.slice(0,10).map(s=>'<tr><td class="nw"><b>'+lbl(s.ds)+'</b></td><td>'+esc(s.who||'')+'</td><td><span class="st '+s.st.c+'">'+s.st.t+'</span> <span class="hint">'+esc(s.st.d)+'</span></td></tr>').join('')+'</tbody></table>':'<div class="hint">기록이 없어요. 「지난 배송 기록」에서 기간을 늘리면 더 찾아봐요.</div>')+
+    '<h4>거래명세표 사인 사진 <span class="hint">(불러온 날짜만)</span></h4>'+(sgd.length?'<div class="sgw">'+sgd.map(d=>signHtml(d,id)).join('')+'</div>':'<div class="hint">사진이 없어요</div>')+
+    '<h4>전달사항 '+ms.length+'개</h4>'+(ms.length?ms.slice(-12).map(m=>{const k=KN[m.k]?m.k:'office',r=readers(id,m);return '<div class="msg '+k+'"><small>'+KN[k]+' · '+esc(m.by||'')+' · '+ago(m.t)+'</small>'+esc(m.x)+(r.length?'<small style="color:var(--gr)">읽음: '+esc(r.join(', '))+'</small>':'')+'</div>'}).join(''):'<div class="hint">아직 없어요</div>')+
+    (c?'<textarea id="dMsg" placeholder="기사님께 전할 내용 (예: 2층 카페로 올려 주세요)"></textarea><div class="btns" style="margin-top:8px"><button class="btn" id="dSend">사무실 전달로 보내기</button><span class="hint" style="align-self:center">보내는 이름: '+esc(me()||'(처음 보낼 때 물어봐요)')+'</span></div>':'');
+  const sd=$('dSend');if(sd)sd.onclick=()=>sendMsg(id,nm);
+  $('drawer').classList.add('on');fillImgs($('dBody'))}
+async function sendMsg(id,nm){const x=$('dMsg').value.trim();if(!x){toast('내용을 써 주세요');return}
+  let n=me();if(!n){n=(prompt('보내는 사람 이름 (예: 사무실 이혜영)','')||'').trim().slice(0,20);if(!n)return;localStorage.setItem('tmapgo_name',n)}
+  const mid=Date.now().toString(36)+Math.random().toString(36).slice(2,6);const m={t:Date.now(),by:n,x:x.slice(0,500),pn:nm,k:'office'};
+  $('dSend').disabled=true;
+  try{await storeCall({op:'merge',key:'msg',value:{[id]:{[mid]:m}},by:n});(D.msg[id]=D.msg[id]||{})[mid]=m;toast('보냈어요. 기사님 앱에 보여요');openCust(id);renderMsgs();renderCust()}
+  catch(e){toast('못 보냈어요. 인터넷 연결을 확인해 주세요');$('dSend').disabled=false}}
+
+// ---------- 화면 전환·시작 ----------
+const TITLES={today:'오늘 한눈에',week:'날짜별 출고·코스',hist:'지난 배송 기록',cust:'거래처 현황',msgs:'전달사항'};
+let PAGE='today';
+function go(p){PAGE=p;document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.toggle('on',s.id==='s-'+p));$('pTitle').textContent=TITLES[p];
+  if(p==='week')loadWeek();if(p==='hist')loadHist();if(p==='cust')renderCust();if(p==='msgs')renderMsgs();if(p==='today')renderToday();window.scrollTo(0,0)}
+function topInfo(){const d=new Date();$('topInfo').innerHTML='<b>오늘 '+(d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')</b> · '+hhmm(d)+'<br>거래처 '+Object.keys(D.byId).length+'곳';
+  $('srcInfo').innerHTML='거래처 자료 '+esc(D.custAt||'-')+'<br>이카운트 출고 '+esc(D.dv?D.dv.updated:'(암호 필요)')+'<br>배송 현황 '+(D.at?hhmm(new Date(D.at)):'-')+' 기준'}
+function renderAll(){topInfo();renderMsgs();if(PAGE==='today')renderToday();if(PAGE==='cust')renderCust();if(PAGE==='week')renderWeek()}
+async function refresh(full){try{if(full)await Promise.all([loadCust(),loadDv()]);await loadToday()}catch(e){toast('자료를 못 불러왔어요. 인터넷을 확인해 주세요')}renderAll()}
+document.addEventListener('click',e=>{
+  const nb=e.target.closest('#nav button');if(nb){go(nb.dataset.p);return}
+  const k=e.target.closest('[data-go]');if(k){const g=k.dataset.go;const el={tbl:'todayTbl',drv:'drivers',alerts:'alerts'}[g];if(el)$(el).scrollIntoView({behavior:'smooth',block:'start'});return}
+  const w=e.target.closest('[data-w]');if(w){WOFF=+w.dataset.w;loadWeek();return}
+  const dd=e.target.closest('[data-ds]');if(dd){WSEL=dd.dataset.ds;renderWeek();return}
+  const h=e.target.closest('[data-h]');if(h){HDAYS=+h.dataset.h;document.querySelectorAll('[data-h]').forEach(b=>b.classList.toggle('on',b===h));loadHist();return}
+  const hr=e.target.closest('[data-hr]');if(hr){const x=$('hx'+hr.dataset.hr);x.style.display=x.style.display==='none'?'':'none';return}
+  const cf=e.target.closest('#cf [data-f]');if(cf){CF=cf.dataset.f;document.querySelectorAll('#cf [data-f]').forEach(b=>b.classList.toggle('on',b===cf));renderCust();return}
+  const mf=e.target.closest('#mf [data-k]');if(mf){MF=mf.dataset.k;document.querySelectorAll('#mf [data-k]').forEach(b=>b.classList.toggle('on',b===mf));renderMsgs();return}
+  const sgb=e.target.closest('[data-sg]');if(sgb){const [d,i]=sgb.dataset.sg.split('|');showSigns(d,i);return}
+  const bi=e.target.closest('img[data-big]');if(bi&&bi.src.startsWith('data:')){window.open().document.write('<img src="'+bi.src+'" style="max-width:100%">');return}
+  const cr=e.target.closest('[data-cid]');if(cr){openCust(cr.dataset.cid);return}
+});
+$('cq').addEventListener('input',renderCust);
+$('dX').onclick=()=>$('drawer').classList.remove('on');
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('drawer').classList.remove('on');$('viewer').classList.remove('on')}});
+$('vX').onclick=()=>$('viewer').classList.remove('on');$('viewer').addEventListener('click',e=>{if(e.target.id==='viewer')$('viewer').classList.remove('on')});
+$('csvBtn').onclick=csv;
+$('reload').onclick=()=>{toast('새로 불러오는 중…');refresh(true)};
+$('lkGo').onclick=()=>unlock($('lkIn').value.trim());$('lkIn').onkeydown=e=>{if(e.key==='Enter')unlock($('lkIn').value.trim())};
+$('verTag').textContent=VER+' · '+VER_DATE+' 업데이트';
+(async function start(){
+  if(!localStorage.getItem('tmapgo_k')){$('lock').classList.add('on');setTimeout(()=>$('lkIn').focus(),50);return}
+  $('app').classList.add('on');await refresh(true);
+  setInterval(()=>{if(!document.hidden&&PAGE==='today')refresh(false)},30000);
+  setInterval(topInfo,30000);
+})();
+</script>
+</body>
+</html>

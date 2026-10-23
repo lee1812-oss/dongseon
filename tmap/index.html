@@ -4,22 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>티맵 바로가기 · 빵을그리다 배송</title>
-<meta name="theme-color" content="#6B4423">
+<meta name="theme-color" content="#2B3BCF">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon_192.png">
-<link rel="apple-touch-icon" href="icon_192.png">
+<link rel="apple-touch-icon" href="apple_180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="티맵 바로가기">
 <style>
-:root{--br:#6B4423;--br2:#F4EDE6;--tx:#1d1d1f;--mu:#5b5b60;--ln:#dcdce0;--bl:#1550d6;--gr:#1F6B45;--rd:#c62828;--or:#b45309}
+:root{--tm1:#1F4FE0;--tm2:#5A2BC8;--br:#7A4A23;--br2:#F4EDE6;--tx:#1d1d1f;--mu:#5b5b60;--ln:#dcdce0;--bl:#1550d6;--gr:#1F6B45;--rd:#c62828;--or:#b45309}
 *{box-sizing:border-box}
 body{margin:0;font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;background:#f3f3f5;color:var(--tx);font-size:17px;word-break:keep-all;overflow-wrap:break-word;-webkit-tap-highlight-color:transparent}
-header{background:var(--br);color:#fff;padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top))}
+header{background:linear-gradient(115deg,#1F4FE0 0%,#3A33D0 58%,#6A2BC0 100%);color:#fff;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));border-bottom:5px solid #7A4A23}
+.hb{display:flex;align-items:center;gap:12px;max-width:640px;margin:0 auto}.hlogo{flex:0 0 52px;height:52px;border-radius:14px;background:#FFF7EE;border:3px solid #7A4A23;display:flex;align-items:center;justify-content:center}.hlogo img{width:38px;display:block}
 header h1{margin:0;font-size:21px}
 header .sub{margin-top:4px;font-size:15px;opacity:.9}
 main{max-width:640px;margin:0 auto;padding:12px 12px 60px}
-h2.sec{font-size:19px;margin:16px 2px 10px;display:flex;align-items:center;gap:6px}
+h2.sec{font-size:19px;margin:16px 2px 10px;display:flex;align-items:center;gap:6px;border-left:5px solid #7A4A23;padding-left:8px;color:#3a2614}
 h2.sec:first-of-type{margin-top:6px}
 .card{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:14px;margin-bottom:12px}
 .card.done{opacity:.55}
@@ -29,7 +30,7 @@ h2.sec:first-of-type{margin-top:6px}
 .nm{font-size:20px;font-weight:800;line-height:1.3}
 .ad{color:var(--mu);margin-top:3px;font-size:16px;line-height:1.4}
 .memo{margin-top:4px;font-size:15px;color:#7a4b12}
-.go{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:60px;margin-top:12px;border:0;border-radius:12px;background:var(--bl);color:#fff;font-size:20px;font-weight:800;text-decoration:none}
+.go{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:60px;margin-top:12px;border:0;border-radius:12px;background:linear-gradient(90deg,#1F4FE0,#5A2BC8);color:#fff;font-size:20px;font-weight:800;text-decoration:none;box-shadow:0 2px 6px rgba(43,59,207,.25)}
 .go:active,.fgo:active{filter:brightness(.9)}
 .subs{display:flex;gap:8px;margin-top:8px}
 .sb{flex:1;min-height:50px;border:1px solid var(--ln);border-radius:10px;background:#fff;color:var(--tx);font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;text-decoration:none}
@@ -46,7 +47,7 @@ body.editing .edit{display:flex}
 .fv .t{flex:1;min-width:0}
 .fv .t b{font-size:18px;display:block}
 .fv .t span{font-size:14.5px;color:var(--mu)}
-.fgo{flex:0 0 auto;min-height:54px;padding:0 16px;border-radius:12px;background:var(--bl);color:#fff;font-weight:800;font-size:17px;display:flex;align-items:center;text-decoration:none}
+.fgo{flex:0 0 auto;min-height:54px;padding:0 16px;border-radius:12px;background:linear-gradient(90deg,#1F4FE0,#5A2BC8);color:#fff;font-weight:800;font-size:17px;display:flex;align-items:center;text-decoration:none}
 .fdel{display:none;flex:0 0 auto;min-height:54px;padding:0 12px;border-radius:12px;border:1px solid #f0c2c2;background:#fff;color:var(--rd);font-size:16px}
 body.editing .fdel{display:block}
 .empty{color:var(--mu);padding:16px 4px;font-size:16px;line-height:1.5}
@@ -105,10 +106,10 @@ body.editing .fdel{display:block}
 </style>
 </head>
 <body>
-<header>
-  <h1>티맵 바로가기</h1>
-  <div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div>
-</header>
+<header><div class="hb">
+  <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
+  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div></div>
+</div></header>
 <main>
   <div class="inst" id="inst"></div>
   <div class="notice" id="notice"></div>
@@ -147,7 +148,7 @@ body.editing .fdel{display:block}
 
   <button class="btn gr" id="share" style="margin-top:22px">📨 배송 목록 링크 보내기 (카톡·문자)</button>
   <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v013 · 이 휴대폰에만 저장돼요</div>
+  <div class="ver">v014 · 이 휴대폰에만 저장돼요</div>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
   <div class="sh-h"><b id="shT">전달사항</b><a class="fgo" id="shGo" href="#" data-act="go" style="min-height:44px">🚗 티맵</a><button id="shX">닫기</button></div>
@@ -504,7 +505,7 @@ setInterval(()=>{if(!document.hidden)msgPull()},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)msgPull()});
 
 // ---- 새 버전 자동 받기: 서버의 버전과 다르면 한 번 새로 연다 ----
-const APP_VER='v013';
+const APP_VER='v014';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

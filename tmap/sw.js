@@ -1,6 +1,6 @@
-// 티맵 바로가기 서비스워커 v013: 화면(html)은 항상 인터넷에서 새로 받고(캐시 안 씀), 안 되면 저장본
-const CN='tmapgo-v13';
-self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CN).then(c=>c.addAll(['manifest.webmanifest','icon_192.png','icon_512.png'])).catch(()=>{}))});
+// 티맵 바로가기 서비스워커 v014: 화면(html)은 항상 인터넷에서 새로 받고(캐시 안 씀), 안 되면 저장본
+const CN='tmapgo-v14';
+self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CN).then(c=>c.addAll(['manifest.webmanifest','icon_192.png','icon_512.png','brand_croissant.png'])).catch(()=>{}))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('tmapgo-')&&k!==CN).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{
   const r=e.request; if(r.method!=='GET'||new URL(r.url).origin!==location.origin)return;

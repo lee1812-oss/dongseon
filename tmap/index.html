@@ -150,6 +150,57 @@ body.editing .fdel{display:block}
 .manb{width:100%;min-height:52px;margin-top:12px;border-radius:12px;border:1.5px dashed #b9a48f;background:#FBF6F0;color:var(--br);font-size:17px;font-weight:800;font-family:inherit}
 .done .sb.ok.undo{background:#fff;color:#b45309;border:2px solid #b45309;opacity:1}
 .tend .ub{display:block;margin:8px auto 0;min-height:44px;padding:0 16px;border-radius:10px;border:1.5px solid #b45309;background:#fff;color:#b45309;font-size:15.5px;font-weight:800;font-family:inherit}
+
+main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.toast{bottom:calc(88px + env(safe-area-inset-bottom))}
+#tabs{position:fixed;left:0;right:0;bottom:0;z-index:7;background:#fff;border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
+#tabs .ti{display:flex;max-width:640px;margin:0 auto}
+#tabs button{flex:1;position:relative;min-height:64px;border:0;background:#fff;color:#333;font-size:17px;font-weight:800;font-family:inherit;border-top:4px solid transparent}
+#tabs button.on{color:#fff;background-color:#2B3BCF;background-image:linear-gradient(90deg,#1F4FE0,#5A2BC8);border-top-color:#7A4A23}
+#tabs .dot{display:none;position:absolute;top:8px;right:calc(50% - 56px);width:14px;height:14px;border-radius:50%;background:var(--rd);border:2px solid #fff}
+.tab{display:none}
+.prog{font-size:20px;font-weight:800;color:#3a2614;margin:4px 2px 12px}
+.card.nx{border:2px solid var(--tm1);padding:14px}
+.nl{font-size:15px;font-weight:800;color:var(--tm1);margin-bottom:8px}
+.sb.mb2{background:#FBF6F0;color:var(--br);border:1.5px solid #d9c6b3;font-weight:800;font-family:inherit}
+.sb.mb2.has{border-color:#e0a24a;background:#FFF4E0;color:#8a4b00}.sb.mb2.unread{border-color:var(--rd);background:#FDECEC;color:var(--rd)}
+.sb.ok{font-family:inherit;background:#fff}
+.sb.ok.undo{background:#fff;color:var(--or);border:2px solid var(--or)}
+.go{font-family:inherit}
+.dn .go{opacity:.6}
+.lkrow{display:flex;gap:18px;justify-content:center;flex:1 0 100%}
+.lk,.fr .lkrow .lk,.fv .lkrow .lk{min-height:44px;padding:0 6px;border:0;background:none;color:#555;font-size:15px;text-decoration:underline;font-family:inherit;display:inline-flex;align-items:center}
+.rl{font-size:16px;font-weight:700;color:var(--mu);margin:14px 2px 8px}
+.rw{background:#fff;border:1px solid var(--ln);border-radius:14px;margin-bottom:8px}
+.rw.open{border-color:var(--tm1);border-width:2px}
+.rh{display:flex;align-items:center;gap:10px;padding:10px 12px;min-height:60px;cursor:pointer}
+.rh .nm{flex:1;min-width:0;font-size:18.5px}
+.rw.dn .rh{opacity:.55}
+.rw .no{flex:0 0 34px}
+.chip{flex:0 0 auto;font-size:15px;font-weight:800;padding:5px 10px;border-radius:999px;white-space:nowrap}
+.chip.wt{background:#eee;color:#444}.chip.mv{background:#EAF0FF;color:#1F3FBF}.chip.ar{background:#E7F4EC;color:#1F6B45}.chip.dn{background:#E7F4EC;color:#1F6B45}
+.ar2{color:#888;font-size:14px}
+.rb{padding:0 14px 14px}
+.two{display:flex;gap:10px;margin-top:6px}.two .btn{margin-top:6px}
+.fr .star{min-height:46px;padding:0 10px;font-size:15.5px;background:#fff;color:var(--br);border:1.5px solid var(--br)}
+.fr .star.in{background:var(--br2);color:#6b4a2a;border-color:#d8cbbd}
+.fr .r2,.fv .r2{flex:1 0 100%;display:flex;gap:8px}
+.fr .r2 .addb,.fv .r2 .addb{flex:1;margin-top:0;min-height:54px;flex-basis:auto}
+.fr .r2 .fgo,.fv .r2 .fgo{flex:0 0 36%;justify-content:center;min-height:54px}
+.fv .t{flex:1 0 100%}
+.er{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:10px;margin-top:8px}
+.er .eh{display:flex;gap:10px;align-items:center}.er .eh b{font-size:18px}
+.er .eb{display:flex;gap:8px;margin-top:8px}
+.er .eb button{flex:1;min-height:54px;font-size:17px;font-weight:700;border-radius:10px;border:1px solid var(--ln);background:#fafafa;font-family:inherit}
+.er .eb .del{color:var(--rd);border-color:#f0c2c2}
+.nmrow{display:flex;align-items:center;gap:10px;font-size:18px}.nmrow b{flex:1}
+.nmrow button{min-height:54px;padding:0 18px;border-radius:12px;border:1px solid var(--ln);background:#fff;font-size:17px;font-weight:700;font-family:inherit}
+.inst{padding:8px 12px}.inst .btn{min-height:50px}
+.lrow{display:flex;align-items:center;gap:12px;width:100%;min-height:62px;margin:0 0 8px;padding:8px 12px;background:#fff;border:1.5px solid var(--ln);border-radius:12px;text-align:left;font:inherit;color:var(--tx)}
+.lrow .lc{flex:0 0 34px;height:34px;border:2px solid var(--ln);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff}
+.lrow.on{background:#EEF7F1;border-color:#2F7A4F}.lrow.on .lc{background:#2F7A4F;border-color:#2F7A4F}
+.lrow .lt{display:flex;flex-direction:column;min-width:0}.lrow .lt small{font-size:14px;color:var(--mu)}.lrow .lt b{font-size:18px}
+#ttsRow button{margin-left:10px}
 </style>
 </head>
 <body>
@@ -158,48 +209,52 @@ body.editing .fdel{display:block}
   <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div></div>
 </div></header>
 <main>
-  <div class="inst" id="inst"></div>
   <div class="notice" id="notice"></div>
-  <div class="box" id="findBox" style="margin:0 0 6px">
-    <h3>🔍 거래처 찾기</h3>
-    <input id="fq" type="search" placeholder="거래처 이름·지역 (예: 바다백미, 곤지암)" autocomplete="off">
-    <div class="hint" id="fmsg">2026년 이카운트 판매 거래처에서 찾아요.</div>
-    <div id="fpass" style="display:none">
-      <label for="fpw">직원 암호 (「내 동선」 앱과 같은 암호)</label>
-      <input id="fpw" type="password" inputmode="numeric" autocomplete="off">
-      <button class="btn br" id="fpwok">확인</button>
-    </div>
-    <div id="fres"></div>
-    <div id="manW" style="display:none">
-      <button class="manb" id="manOpen">✍️ 찾는 곳이 없으면 직접 넣기</button>
-      <div id="manBox" style="display:none">
-        <label for="fn">이름</label>
-        <input id="fn" placeholder="예) (화성)바다백미">
-        <label for="fa">주소</label>
-        <input id="fa" placeholder="예) 경기 화성시 서신면 백미길 210-35">
-        <button class="btn br" id="addManual">⭐ 빠른 찾기에 등록</button>
-        <button class="btn ol" id="addManualStop">📦 오늘 배송에 넣기</button>
-        <div class="hint">주소로 넣은 곳은 티맵이 열리면 검색 결과에서 한 번 더 눌러 주세요.</div>
+  <section class="tab" id="tab1">
+    <div class="inst" id="inst"></div>
+    <div class="prog" id="dayTitle">📦 오늘 배송</div>
+    <div class="rbar" id="rbar"></div>
+    <div id="nextCard"></div>
+    <div id="list"></div>
+    <div id="tabBtns" class="two"><button class="btn ln" id="eOpen">✏️ 코스 바꾸기</button><button class="btn ln" id="eAdd">＋ 거래처 넣기</button></div>
+    <button class="btn ln" id="loadOpen" style="margin-top:10px">📦 차에 싣는 순서 보기</button>
+    <div id="tripEnd"></div>
+  </section>
+  <section class="tab" id="tab2">
+    <div class="box" id="findBox" style="margin:0 0 6px">
+      <input id="fq" type="search" placeholder="🔍 거래처 이름·지역 (예: 바다백미, 곤지암)" autocomplete="off">
+      <div class="hint" id="fmsg">2026년 이카운트 판매 거래처에서 찾아요.</div>
+      <div id="fpass" style="display:none">
+        <label for="fpw">직원 암호 (「내 동선」 앱과 같은 암호)</label>
+        <input id="fpw" type="password" inputmode="numeric" autocomplete="off">
+        <button class="btn br" id="fpwok">확인</button>
+      </div>
+      <div id="fres"></div>
+      <div id="manW" style="display:none">
+        <button class="manb" id="manOpen">✍️ 찾는 곳이 없으면 직접 넣기</button>
+        <div id="manBox" style="display:none">
+          <label for="fn">이름</label>
+          <input id="fn" placeholder="예) (화성)바다백미">
+          <label for="fa">주소</label>
+          <input id="fa" placeholder="예) 경기 화성시 서신면 백미길 210-35">
+          <button class="btn br" id="addManual">⭐ 빠른 찾기에 등록</button>
+          <button class="btn ol" id="addManualStop">📦 오늘 배송에 넣기</button>
+          <div class="hint">주소로 넣은 곳은 티맵이 열리면 검색 결과에서 한 번 더 눌러 주세요.</div>
+        </div>
       </div>
     </div>
-  </div>
-
-  <h2 class="sec">💬 배송 전달사항 <span class="cnt" id="mcnt"></span></h2>
-  <div id="mbox" class="fav"></div>
-
-  <h2 class="sec" id="dayTitle">📦 배송 목록</h2>
-  <div class="rbar" id="rbar"></div>
-  <div id="list"></div>
-<div id="tripEnd"></div>
-
-  <h2 class="sec">⭐ 빠른 찾기</h2>
-  <div id="favs"></div>
-    </div>
-
-  <button class="btn ln" id="tripOpen" style="margin-top:22px">🏢 오늘 배송 현황 보기 (사무실용)</button>
-<button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
-  <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v021 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div id="favWrap"><h2 class="sec">⭐ 자주 가는 곳</h2><div id="favs"></div></div>
+  </section>
+  <section class="tab" id="tab3">
+    <h2 class="sec">🏢 오늘 배송 현황</h2>
+    <div id="tL"></div>
+    <div class="hint" style="margin:-4px 2px 10px">기사님이 「🚚 출발」을 누르면 여기에 자동으로 보여요 · 30초마다 새로 읽어요</div>
+    <h2 class="sec">💬 배송 전달사항 <span class="cnt" id="mcnt"></span></h2>
+    <div id="mbox" class="fav"></div>
+    <button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
+    <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div></div>
+    <div class="ver">v022 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+  </section>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
   <div class="sh-h"><b id="shT">전달사항</b><a class="fgo" id="shGo" href="#" data-act="go" style="min-height:44px">🚗 티맵</a><button id="shX">닫기</button></div>
@@ -212,16 +267,18 @@ body.editing .fdel{display:block}
     <button class="btn br" id="shSend">보내기</button>
   </div>
 </div></div>
+<div class="sheet" id="lsheet"><div class="sh"><div class="sh-h"><b style="flex:1">📦 차에 싣는 순서</b><button id="lX">닫기</button></div><div class="sh-l" id="lL"></div></div></div>
 <div class="sheet" id="rsheet"><div class="sh">
   <div class="sh-h"><b>🧭 최적 코스 정하기</b><button id="rX">닫기</button></div>
   <div class="sh-l" id="rL"></div>
   <div class="sh-f"><button class="rbtn" id="rCalc">🧭 최적 코스 계산</button><div class="hint" style="margin-top:6px;text-align:center">누를 때만 티맵에 물어봐요 (하루 무료 횟수가 있어요)</div></div>
 </div></div>
-<div class="sheet" id="tsheet"><div class="sh">
-<div class="sh-h"><b style="flex:1">🏢 오늘 배송 현황</b><button id="tX">닫기</button></div>
-<div class="sh-l" id="tL"></div>
-<div class="sh-f"><div class="hint" style="margin:0;text-align:center">기사님이 「🚚 출발」을 누르면 여기에 자동으로 보여요 · 30초마다 새로 읽어요</div></div>
+<div class="sheet" id="esheet"><div class="sh">
+  <div class="sh-h"><b style="flex:1">✏️ 코스 바꾸기</b><button id="eX">닫기</button></div>
+  <div class="sh-l" id="eL"></div>
+  <div class="sh-f"><button class="btn br" id="eDone" style="margin-top:0">✔ 다 했어요</button></div>
 </div></div>
+<nav id="tabs"><div class="ti"><button id="tb1" class="on">🚚 오늘 배송</button><button id="tb2">🔍 거래처</button><button id="tb3">🏢 사무실<span class="dot" id="tdot"></span></button></div></nav>
 <div class="upd" id="upd"></div>
 <div class="toast" id="toast"></div>
 
@@ -300,42 +357,47 @@ function kakaoHref(s){
 }
 
 // ---- 화면 ----
+const OPEN=new Set();
+const chipOf=s=>s.done?['dn','✔ 완료'+((s.fin||s.arr)?' '+esc(s.fin||s.arr):'')]:s.arr?['ar','📍 도착 '+esc(s.arr)]:s.dep?['mv','🚚 이동 중']:['wt','대기'];
+function msgBtn2(s){const p=pidOf(s),n=msgCount(p),u=unread(p);return '<button class="sb mb2'+(u?' unread':n?' has':'')+'" data-act="msg" data-pid="'+esc(p)+'" data-pn="'+esc(s.n)+'">'+(u?'🔴 새 전달 '+u+'개':n?'💬 전달사항 '+n:'💬 전달사항')+'</button>'}
+function stopBody(s,i){return `<div class="ad">${esc(s.a)}</div>${s.m?`<div class="memo">📝 ${esc(s.m)}</div>`:''}${msgPrev(s)}${tripLine(s)}
+  <a class="go" href="${tmapHref(s)}" data-act="go" data-i="${i}">${s.dep&&!s.done?'🚗 티맵 다시 열기':'🚚 출발 · 티맵 길안내'}</a>
+  <div class="subs"><button class="sb ok${s.done?' undo':''}" data-act="done" data-i="${i}">${s.done?'↩ 완료 취소':'✔ 배송 완료'}</button>${msgBtn2(s)}</div>
+  <div class="lkrow"><a class="lk" href="${kakaoHref(s)}" target="_blank" rel="noopener">카카오맵</a><button class="lk" data-act="copy" data-i="${i}">주소 복사</button></div>`}
+function nextIdx(){let k=S.stops.findIndex(s=>s.dep&&!s.done);if(k<0)k=S.stops.findIndex(s=>!s.done);return k}
 function render(){
-  if(S.day){const d=new Date(S.day+'T00:00:00');$('dayTitle').textContent='📦 '+(d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+') 배송'}
-  else $('dayTitle').textContent='📦 배송 목록';
-  const L=$('list');
-  L.innerHTML=S.stops.length?S.stops.map((s,i)=>`
-  <div class="card ${s.done?'done':''}">
-    <div class="row"><div class="nob"><div class="no">${s.done?'✓':i+1}</div>${(s.te||s.eta)&&!s.done&&!s.arr?`<div class="eta">${esc(s.te||s.eta)}<br>도착</div>`:''}</div>
-      <div style="flex:1;min-width:0">
-        <div class="nm">${esc(s.n)}${(s.y&&s.x)?'':'<span class="tag">주소로 찾기</span>'}</div>
-        <div class="ad">${esc(s.a)}</div>
-        ${s.m?`<div class="memo">📝 ${esc(s.m)}</div>`:''}
-      </div></div>
-    ${msgPrev(s)}
-    ${tripLine(s)}
-    <a class="go" href="${tmapHref(s)}" data-act="go" data-i="${i}">${s.dep&&!s.done?'🚗 티맵 다시 열기':'🚚 출발 · 티맵 길안내'}</a>
-    ${msgBtn(s)}
-    <div class="subs">
-      <a class="sb" href="${kakaoHref(s)}" target="_blank" rel="noopener">카카오맵</a>
-      <button class="sb" data-act="copy" data-i="${i}">주소 복사</button>
-      <button class="sb ok${s.done?' undo':''}" data-act="done" data-i="${i}">${s.done?'↩ 완료 취소':'배송 완료'}</button>
-    </div>
-    <div class="edit">
-      <button data-act="up" data-i="${i}">▲ 위로</button>
-      <button data-act="down" data-i="${i}">▼ 아래로</button>
-      <button class="del" data-act="del" data-i="${i}">삭제</button>
-    </div>
-  </div>`).join(''):'<div class="card empty">배송 목록이 비어 있어요. 받은 링크를 열어 주세요.</div>';
+  const n=S.stops.length, dn=S.stops.filter(s=>s.done).length;
+  let lab='오늘 배송';if(S.day){const d=new Date(S.day+'T00:00:00');lab=(d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+') 배송'}
+  $('dayTitle').textContent='📦 '+lab+(n?' · '+n+'곳 중 '+dn+'곳 완료':'');
+  const ni=nextIdx(), L=$('list'), N=$('nextCard');
+  $('tabBtns').style.display=n?'flex':'none';
+  if(!n){N.innerHTML='<div class="card empty" style="text-align:center;font-size:18px;font-weight:700">오늘 배송할 곳이 없어요</div><button class="btn br" id="emptyFind">🔍 거래처 찾아서 넣기</button>';L.innerHTML='';
+    const ef=$('emptyFind');if(ef)ef.onclick=()=>{showTab(2);$('fq').focus()}}
+  else{
+    if(ni>=0){const s=S.stops[ni];
+      N.innerHTML=`<div class="card nx"><div class="nl">${s.dep?'🚚 지금 가는 곳':'👉 다음 갈 곳'}</div>
+      <div class="row"><div class="nob"><div class="no">${ni+1}</div>${(s.te||s.eta)&&!s.arr?`<div class="eta">${esc(s.te||s.eta)}<br>도착</div>`:''}</div>
+      <div style="flex:1;min-width:0"><div class="nm">${esc(s.n)}${(s.y&&s.x)?'':'<span class="tag">주소로 찾기</span>'}</div></div></div>${stopBody(s,ni)}${typeof nextExtra==='function'?nextExtra(ni):''}</div>`;
+    }else N.innerHTML='<div class="tend">🎉 오늘 배송을 모두 마쳤어요</div>';
+    const rows=S.stops.map((s,i)=>i===ni?'':(()=>{const k=pidOf(s),op=OPEN.has(k),c=chipOf(s);
+      return `<div class="rw${s.done?' dn':''}${op?' open':''}"><div class="rh" data-tg="${esc(k)}"><div class="no" style="${s.done?'background:var(--gr)':''}">${s.done?'✓':i+1}</div><div class="nm">${esc(s.n)}</div><span class="chip ${c[0]}">${c[1]}</span><span class="ar2">${op?'▴':'▾'}</span></div>${op?'<div class="rb">'+stopBody(s,i)+'</div>':''}</div>`})()).join('');
+    L.innerHTML=rows?'<div class="rl">📋 '+(ni>=0?'나머지 곳':'전체 목록')+' (눌러서 펼치기)</div>'+rows:'';
+  }
   renderFav();
   if(typeof renderRouteBar==='function')renderRouteBar();
   if(typeof renderMsgs==='function')renderMsgs();
   if(typeof tripEndBar==='function')tripEndBar();
+  if(typeof renderEdit==='function')renderEdit();
 }
+function renderEdit(){const e=$('esheet');if(!e||!e.classList.contains('on'))return;const sc=$('eL').scrollTop,m=S.stops.length;
+  $('eL').innerHTML='<button class="rbtn" id="eRoute">🧭 최적 코스 자동으로 정하기</button>'+UNDO_BTN()+'<div class="hint" style="text-align:center">아래에서 직접 순서를 바꾸거나 뺄 수도 있어요</div>'
+   +(m?S.stops.map((s,i)=>`<div class="er"><div class="eh"><div class="no">${i+1}</div><b>${esc(s.n)}</b></div><div class="eb"><button data-act="up" data-i="${i}" style="${i?'':'opacity:.35'}">▲ 위로</button><button data-act="down" data-i="${i}" style="${i<m-1?'':'opacity:.35'}">▼ 아래로</button><button class="del" data-act="del" data-i="${i}">삭제</button></div></div>`).join(''):'<div class="empty">배송 목록이 비어 있어요.</div>');
+  $('eL').scrollTop=sc;const r=$('eRoute');if(r)r.onclick=()=>{if(S.stops.length<2){toast('2곳 이상 있어야 해요');return}$('esheet').classList.remove('on');openRoute()}}
 function renderFav(){
   $('favs').innerHTML=FAV.length?'<div class="fav">'+FAV.map((f,i)=>`<div class="fv"><div class="t"><b>${esc(f.n)}</b><span>${esc(f.a||'주소 미확인 · 티맵에서 이름으로 찾기')}</span></div>
-    <button class="mb" data-act="msg" data-pid="${esc(pidOf(f))}" data-pn="${esc(f.n)}">💬${msgCount(pidOf(f))||''}</button><a class="fgo" href="${tmapHref(f)}" data-act="go">🚗 티맵</a><button class="fdel" data-act="fdel" data-i="${i}">삭제</button>${addBtn(f.id,i)}</div>`).join('')+'</div>'
-    :'<div class="card empty">아직 등록된 곳이 없어요.<br>맨 위 「🔍 거래처 찾기」에서 <b>⭐ 빠른 등록</b>을 누르면 여기 들어와요.</div>';
+    <div class="r2">${addBtn(f.id,i)}<a class="fgo" href="${tmapHref(f)}" data-act="go">🚗 티맵</a></div>
+    <div class="lkrow"><button class="lk" data-act="msg" data-pid="${esc(pidOf(f))}" data-pn="${esc(f.n)}">💬 전달사항${msgCount(pidOf(f))?' '+msgCount(pidOf(f)):''}</button><button class="lk" data-act="fdel" data-i="${i}">삭제</button></div></div>`).join('')+'</div>'
+    :'<div class="card empty">아직 등록된 곳이 없어요.<br>거래처를 찾아서 <b>⭐ 빠른 등록</b>을 누르면 여기 들어와요.</div>';
 }
 
 // ---- 거래처 명단 (암호화 파일, 매일 06:30 갱신 · 신규 거래처 자동 추가) ----
@@ -401,13 +463,16 @@ async function custLoad(){
 function renderFind(){
   const R=$('fres'), q=norm($('fq').value);
   $('manW').style.display=q?'block':'none';if(!q)$('manBox').style.display='none';
+  $('favWrap').style.display=q?'none':'block';
   if(!q){R.innerHTML='';return}
   if(!C.list){R.innerHTML='<div class="hint" style="margin-top:10px;color:var(--or)">거래처 목록이 아직 안 열렸어요. 카톡으로 받은 「티맵 바로가기」 링크를 다시 눌러 주세요.</div>';return}
   const L=C.list.filter(c=>norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(q)).slice(0,30);
-  R.innerHTML=L.length?L.map(c=>{const inF=FAV.some(f=>f.id===c.id);
+  R.innerHTML=L.length?L.map(c=>{const inF=FAV.some(f=>f.id===c.id), mc=msgCount(c.id);
     return `<div class="fr"><div class="t"><div class="fn">${esc(c.n)}</div>
     <div class="fs">${c.r?esc(c.r)+' · ':''}${c.a?esc(c.a):'<span style="color:var(--or)">주소 미확인</span>'}</div></div>
-    <div class="fbtns"><a class="fgo" href="${tmapHref(toStop(c))}" data-act="go">🚗 티맵</a><button data-act="fadd" data-id="${c.id}" class="${inF?'in':''}">${inF?'✓ 빠른 찾기에 있음':'⭐ 빠른 등록'}</button><button class="mb" data-act="msg" data-pid="${esc(c.id)}" data-pn="${esc(c.n)}">💬 전달${msgCount(c.id)?' '+msgCount(c.id):''}</button></div>${addBtn(c.id)}</div>`}).join('')
+    <button class="star${inF?' in':''}" data-act="fadd" data-id="${c.id}">${inF?'⭐ 등록됨':'⭐ 빠른 등록'}</button>
+    <div class="r2">${addBtn(c.id)}<a class="fgo" href="${tmapHref(toStop(c))}" data-act="go">🚗 티맵</a></div>
+    <div class="lkrow"><button class="lk" data-act="msg" data-pid="${esc(c.id)}" data-pn="${esc(c.n)}">💬 전달사항${mc?' '+mc:''}</button></div></div>`}).join('')
     :'<div class="hint" style="margin-top:10px">「'+esc($('fq').value)+'」 거래처가 없어요. 아래 「✍️ 직접 넣기」를 눌러 주세요.</div>';
 }
 function applyPending(){
@@ -443,7 +508,7 @@ document.addEventListener('click',e=>{
     if(!st)return;
     S.stops.push(st);delete S.preset;noPlan();save();render();renderFind();toast('📦 「'+st.n+'」을(를) 배송 목록 '+S.stops.length+'번에 넣었어요');return}
   if(act==='fadd'){const c=C.list&&C.list.find(z=>z.id===b.dataset.id);if(!c)return;
-    if(FAV.some(f=>f.id===c.id)){toast('이미 등록돼 있어요');return}
+    {const fx=FAV.findIndex(f=>f.id===c.id);if(fx>=0){if(confirm('「'+c.n+'」을(를) 빠른 찾기에서 뺄까요?')){FAV.splice(fx,1);saveFav();renderFav();renderFind();toast('빠른 찾기에서 뺐어요')}return}}
     const st=toStop(c);FAV.push({id:st.id,n:st.n,a:c.a,y:st.y,x:st.x});saveFav();renderFav();renderFind();toast('⭐ 「'+c.n+'」을(를) 빠른 찾기에 등록했어요');return}
   if(act==='fdel'){const f=FAV[i];if(f&&confirm('「'+f.n+'」을(를) 빠른 찾기에서 지울까요?')){FAV.splice(i,1);saveFav();renderFav()}return}
   if(act==='copy'){navigator.clipboard?.writeText(s.a||s.n).then(()=>toast('주소를 복사했어요'),()=>toast(s.a));return}
@@ -465,7 +530,6 @@ $('addManual').addEventListener('click',()=>{const m=manRead();if(!m)return;
   FAV.push({id:m.id,n:m.n,a:m.a,y:null,x:null});saveFav();renderFav();manDone();toast('⭐ 「'+m.n+'」을(를) 빠른 찾기에 등록했어요');});
 $('addManualStop').addEventListener('click',()=>{const m=manRead();if(!m)return;
   S.stops.push({id:m.id,n:m.n,a:m.a,y:null,x:null,m:'주소 미확인 · 티맵에서 주소로 찾아요'});delete S.preset;noPlan();save();render();renderFind();manDone();toast('📦 「'+m.n+'」을(를) 배송 목록 '+S.stops.length+'번에 넣었어요');});
-$('editT').addEventListener('click',()=>{document.body.classList.toggle('editing');$('editT').textContent=document.body.classList.contains('editing')?'✔ 편집 끝':'✏️ 순서 바꾸기·삭제'});
 $('share').addEventListener('click',async()=>{
   if(!S.stops.length){toast('보낼 거래처가 없어요');return}
   const base=location.origin+location.pathname, kk=localStorage.getItem('tmapgo_k'), kh=kk?'&k='+kk:'';
@@ -533,14 +597,14 @@ function renderMsgs(){
   const box=$('mbox'); const from=Date.now()-30*864e5;
   const T=Object.keys(M.msg||{}).map(pid=>{const L=msgsOf(pid).filter(m=>m.t>=from);return L.length?{pid,L,last:L[L.length-1]}:null}).filter(Boolean).sort((a,b)=>b.last.t-a.last.t);
   const nu=T.reduce((a,x)=>a+unread(x.pid),0);
-  $('mcnt').innerHTML=nu?'<span class="new">새 글 '+nu+'</span>':'';
+  $('tdot').style.display=nu?'block':'none';$('mcnt').innerHTML=nu?'<span class="new">새 글 '+nu+'</span>':'';
   if(!localStorage.getItem('tmapgo_k')){box.innerHTML='<div class="empty">카톡으로 받은 「티맵 바로가기」 링크로 열면 전달사항을 보고 쓸 수 있어요.</div>';return}
   box.innerHTML=T.length?T.slice(0,8).map(x=>{const u=unread(x.pid);return '<div class="mt" data-act="msg" data-pid="'+esc(x.pid)+'" data-pn="'+esc(x.last.pn||'')+'"><div class="t"><b>'+esc(x.last.pn||'거래처')+'</b>'+(u?'<span class="new">새 글 '+u+'</span>':'')+'<div class="p">'+kl(kOf(x.last))+esc(x.last.x)+'</div><div class="w">'+esc(x.last.by||'')+' · '+hm(x.last.t)+' · '+x.L.length+'개</div></div></div>'}).join('')
     :'<div class="empty">아직 전달사항이 없어요.<br>거래처 옆 <b>💬</b>를 누르면 배송 전달사항을 남길 수 있어요.</div>';
 }
 let MW=0;
 async function msgPull(){const st=Date.now();try{const j=await storeCall({op:'get',keys:'msg,msgr'});if(st<MW)return;M={msg:(j.data.msg||{}).value||{},msgr:(j.data.msgr||{}).value||{}};localStorage.setItem('tmapgo_msg',JSON.stringify(M));render();renderFind();if(SHP)renderSheet()}catch(e){renderMsgs()}}
-function askName(){let n=prompt('이름을 알려 주세요 (예: 사무실 이혜영, 기사 김OO)',me()||'');if(n===null)return false;n=n.trim().slice(0,20);if(!n){toast('이름을 넣어 주세요');return false}localStorage.setItem('tmapgo_name',n);$('shMe').textContent=n;return true}
+function askName(){let n=prompt('이름을 알려 주세요 (예: 사무실 이혜영, 기사 김OO)',me()||'');if(n===null)return false;n=n.trim().slice(0,20);if(!n){toast('이름을 넣어 주세요');return false}localStorage.setItem('tmapgo_name',n);$('shMe').textContent=n;if(typeof nameShow==='function')nameShow();return true}
 function renderSheet(){
   const L=msgsOf(SHP); const rd=(M.msgr||{})[SHP]||{};
   $('shT').textContent='💬 '+SHN; $('shMe').textContent=me()||'(이름 없음)';
@@ -611,8 +675,7 @@ function startAt(){const now=new Date();if(O.when==='now'||!/^\d\d:\d\d$/.test(O
 function addBtn(id,fi){const inL=S.stops.some(s=>s.id&&s.id===id);
   return '<button class="addb'+(inL?' in':'')+'" data-act="sadd" data-id="'+esc(id)+'"'+(fi!==undefined?' data-fi="'+fi+'"':'')+'>'+(inL?'✓ 배송 목록에 있음':'📦 오늘 배송에 넣기')+'</button>'}
 function renderRouteBar(){const b=$('rbar');if(!b)return;
-  b.innerHTML=S.stops.length>=2?'<button class="rbtn" id="rOpen">🧭 최적 코스 정하기</button>'+(S.plan&&S.stops.some(s=>s.eta)?'<div class="hint">'+esc(S.plan.txt||'')+'</div>':'')+UNDO_BTN():'';
-  const o=$('rOpen');if(o)o.onclick=openRoute}
+  b.innerHTML=(S.plan&&S.stops.some(s=>s.eta))?'<div class="hint" style="text-align:center;color:#1F3FBF;margin:0 0 10px">'+esc(S.plan.txt||'')+'</div>'+UNDO_BTN():(S.plan?UNDO_BTN():'')}
 function openRoute(){RS.res=RS.alt=null;RS.err='';RS.keyAsk=false;renderRoute();$('rsheet').classList.add('on');$('rL').scrollTop=0}
 function closeRoute(){$('rsheet').classList.remove('on')}
 function segB(r,v,t,on){return '<button data-r="'+r+'" data-v="'+v+'" class="'+(on?'on':'')+'">'+t+'</button>'}
@@ -849,9 +912,15 @@ async function tripPush(now){
 (function(){const r0=render;render=function(){const sig=S.stops.map(s=>s.n).join('|');if(render.sig!==undefined&&render.sig!==sig&&S.stops.length){tripMark();localStorage.setItem(KEY,JSON.stringify(S));tripSoon()}render.sig=sig;r0()}})();
 // ---- 사무실: 오늘 배송 현황 ----
 let TPI=null;
-function tripOpen(){if(!localStorage.getItem('tmapgo_k')){toast('카톡으로 받은 링크로 한 번 열어 주세요');return}
-  $('tsheet').classList.add('on');$('tL').innerHTML='<div class="hint">불러오는 중…</div>';tripPull();clearInterval(TPI);TPI=setInterval(()=>{if(!document.hidden)tripPull()},30000)}
-function tripClose(){$('tsheet').classList.remove('on');clearInterval(TPI)}
+let TAB=1;
+function nameShow(){$('myName').textContent=me()||'(아직 없어요)'}
+function showTab(t){TAB=t;for(let k=1;k<=3;k++){$('tab'+k).style.display=k===t?'block':'none';$('tb'+k).classList.toggle('on',k===t)}
+  clearInterval(TPI);TPI=null;
+  if(t===3){nameShow();renderMsgs();
+    if(!localStorage.getItem('tmapgo_k')){$('tL').innerHTML='<div class="card empty">카톡으로 받은 「티맵 바로가기」 링크로 한 번 열면 현황이 보여요.</div>'}
+    else{$('tL').innerHTML='<div class="hint">불러오는 중…</div>';tripPull();msgPull();TPI=setInterval(()=>{if(!document.hidden&&TAB===3)tripPull()},30000)}}
+  if(t===2&&!C.list&&C.state!=='loading')custLoad();
+  window.scrollTo(0,0)}
 async function tripPull(){
   try{const j=await storeCall({op:'get',keys:'trip:'+TODAY()});const all=((j.data['trip:'+TODAY()]||{}).value)||{};
     const ps=Object.values(all).filter(p=>p&&p.list&&p.list.length).sort((a,b)=>b.at-a.at);
@@ -867,7 +936,15 @@ function tripCard(p){
     return '<div class="tr"><b>'+(i+1)+'. '+esc(s.n)+'</b><i class="'+c+'">'+esc(t)+'</i></div>'}).join('');
   return '<div class="tp"><h4>🚚 '+esc(p.who)+'<span>마지막 소식 '+hhmm(at)+'</span></h4>'+rows+(p.end?'<div class="tend" style="margin:8px 0 0">🏠 '+esc(p.end)+' 오늘 배송 끝</div>':'')+'</div>';
 }
-$('tripOpen').addEventListener('click',tripOpen);$('tX').addEventListener('click',tripClose);
+for(let k=1;k<=3;k++)$('tb'+k).addEventListener('click',()=>showTab(k));
+$('eOpen').addEventListener('click',()=>{$('esheet').classList.add('on');renderEdit()});
+function closeEdit(){$('esheet').classList.remove('on')}
+$('eX').addEventListener('click',closeEdit);$('eDone').addEventListener('click',closeEdit);
+$('esheet').addEventListener('click',e=>{if(e.target.id==='esheet')closeEdit()});
+$('eAdd').addEventListener('click',()=>{showTab(2);$('fq').focus()});
+$('nameBtn').addEventListener('click',()=>{askName();nameShow()});
+$('list').addEventListener('click',e=>{const h=e.target.closest('[data-tg]');if(!h)return;const k=h.dataset.tg;OPEN.has(k)?OPEN.delete(k):OPEN.add(k);render()});
+showTab(1);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){tripArrCheck();if(!me()&&S.tday===TODAY()&&S.stops.some(s=>s.dep)&&!sessionStorage.getItem('tmapgo_askn')){sessionStorage.setItem('tmapgo_askn','1');setTimeout(()=>{const n=prompt('배송하시는 분 이름을 알려 주세요 (예: 기사 김OO)\n사무실 배송 현황에 이 이름으로 보여요','');if(n&&n.trim()){localStorage.setItem('tmapgo_name',n.trim().slice(0,20));tripPush(true)}},600)}}});
 setTimeout(tripArrCheck,1500);
 msgTok&&msgTok().catch(()=>{});
@@ -882,7 +959,42 @@ function undoPlan(){if(!S.plan)return;const pv=Array.isArray(S.planPrev)?S.planP
   toast('↩ 정한 코스를 취소했어요'+(pv.length?'. 전 순서로 돌아갔어요':''))}
 function UNDO_BTN(){return S.plan?'<button class="btn ol" data-undo="1" style="min-height:54px;width:100%;margin:6px 0 10px;color:#C26A0A;border-color:#C26A0A;font-weight:700">↩ 정한 코스 취소 (전 순서로)</button>':''}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-undo]');if(b){e.preventDefault();undoPlan()}});
-const APP_VER='v021';
+
+// ===== v022: 인기 내비·배송 앱 기능 중 기사님께 맞는 것만 (사용자 요청 10/24) =====
+// 1) ⏭ 나중에 가기(Circuit·Routific의 건너뛰기/재방문) 2) 📲 도착 시간 알리기(카카오내비 도착시간 공유) 3) 📦 싣는 순서(Circuit 적재 순서)
+// 4) 🔊 음성 안내(티맵·카카오내비 음성) 5) 화면 켜짐 유지(내비 공통)
+const TTS_ON=()=>localStorage.getItem('tmapgo_tts')!=='0';
+function say(t){try{if(!TTS_ON()||!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ko-KR';u.rate=0.95;speechSynthesis.speak(u)}catch(e){}}
+function ttsRow(){const r=$('ttsRow');if(!r)return;r.innerHTML='🔊 음성 안내: <b>'+(TTS_ON()?'켜짐':'꺼짐')+'</b><button id="ttsBtn">'+(TTS_ON()?'끄기':'켜기')+'</button>';
+  $('ttsBtn').onclick=()=>{localStorage.setItem('tmapgo_tts',TTS_ON()?'0':'1');ttsRow();if(TTS_ON())say('음성 안내를 켰어요')}}
+function nextExtra(ni){const s=S.stops[ni];if(!s)return '';const more=S.stops.some((z,k)=>k!==ni&&!z.done);
+  return '<div class="two">'+(more?'<button class="btn ln" data-x="later" data-i="'+ni+'">⏭ 나중에 가기</button>':'')+'<button class="btn ln" data-x="eta" data-i="'+ni+'">📲 도착 알리기</button></div>'}
+function etaOf(s){const t=s.te||s.eta;if(t&&/^\d\d:\d\d$/.test(t))return t;return ''}
+async function shareEta(s){const t=etaOf(s);
+  const txt='안녕하세요, 빵을그리다 배송입니다. '+s.n+'에 '+(t?t+'쯤':'곧')+' 도착할 예정입니다. 감사합니다.';
+  if(navigator.share){try{await navigator.share({text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}
+  try{await navigator.clipboard.writeText(txt);toast('문구를 복사했어요. 카톡·문자에 붙여 넣어 보내 주세요')}catch(e){location.href='sms:?body='+encodeURIComponent(txt)}}
+function laterStop(i){const s=S.stops[i];if(!s)return;
+  if(!confirm('「'+s.n+'」은(는) 맨 뒤로 보내고\n다음 곳으로 먼저 갈까요?'))return;
+  S.stops.splice(i,1);delete s.dep;delete s.te;delete s.teR;delete s.arr;S.stops.push(s);delete S.preset;noPlan();save();render();
+  const n=S.stops[nextIdx()];toast('⏭ 「'+s.n+'」은(는) 맨 뒤로 보냈어요');if(n&&n!==s)say('다음 갈 곳은 '+n.n+'입니다')}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-x]');if(b){const i=+b.dataset.i;
+    if(b.dataset.x==='later')laterStop(i);else if(b.dataset.x==='eta'&&S.stops[i])shareEta(S.stops[i]);return}
+  const d=e.target.closest&&e.target.closest('[data-act="done"]');if(d){const s=S.stops[+d.dataset.i];setTimeout(()=>{if(s&&s.done){const n=S.stops[nextIdx()];say('배송 완료. '+(n?'다음 갈 곳은 '+n.n+'입니다':'오늘 배송을 모두 마쳤어요. 수고하셨어요'))}},50)}});
+// 싣는 순서: 마지막에 갈 곳을 먼저(안쪽에) 싣기
+const LKEY=()=>'tmapgo_load_'+TODAY();
+function loadGet(){try{return JSON.parse(localStorage.getItem(LKEY())||'{}')}catch(e){return {}}}
+function renderLoad(){const L=$('lL');if(!L)return;const ck=loadGet(),list=S.stops.map((s,i)=>({s,i})).filter(o=>!o.s.done).reverse();
+  const n=list.filter(o=>ck[pidOf(o.s)]).length;
+  L.innerHTML='<div class="hint" style="text-align:center;margin:0 0 8px">맨 위부터 차 안쪽에 실어요 · 마지막에 갈 곳이 먼저예요<br><b>'+n+' / '+list.length+'곳 실었어요</b></div>'
+   +(list.length?list.map((o,k)=>{const on=!!ck[pidOf(o.s)];return '<button class="lrow'+(on?' on':'')+'" data-ld="'+esc(pidOf(o.s))+'"><span class="lc">'+(on?'✔':'')+'</span><span class="lt"><small>'+(k+1)+'번째로 싣기 · 배송 '+(o.i+1)+'번</small><b>'+esc(o.s.n)+'</b></span></button>'}).join(''):'<div class="empty">실을 곳이 없어요</div>')}
+function openLoad(){$('lsheet').classList.add('on');renderLoad()}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-ld]');if(!b)return;const ck=loadGet(),k=b.dataset.ld;if(ck[k])delete ck[k];else ck[k]=1;localStorage.setItem(LKEY(),JSON.stringify(ck));renderLoad()});
+// 화면 켜짐 유지 (앱이 보일 때만)
+let WL=null;async function wake(){try{if('wakeLock' in navigator&&!document.hidden&&!WL){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)wake()});
+setTimeout(()=>{ttsRow();wake();const lo=$('loadOpen');if(lo)lo.onclick=openLoad;const lx=$('lX');if(lx)lx.onclick=()=>$('lsheet').classList.remove('on');const ls=$('lsheet');if(ls)ls.addEventListener('click',e=>{if(e.target.id==='lsheet')ls.classList.remove('on')})},0);
+const APP_VER='v022';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

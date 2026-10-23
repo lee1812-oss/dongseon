@@ -247,7 +247,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v028 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
+  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v029 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -301,7 +301,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div></div>
-    <div class="ver">v028 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="ver">v029 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
@@ -1086,7 +1086,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='✅ 열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v028';
+const APP_VER='v029';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){
@@ -1201,15 +1201,18 @@ function pcEdit(ds,wk,rid){const d=new Date(ds+'T00:00:00');const key=wk?'wk:'+d
   PE={ds,key,wk:!!wk,rid:rid||('r'+Date.now().toString(36)),n:r?r.n:(pEff(ds).own.length?'코스 '+(pEff(ds).own.length+1):'코스 1'),ids:r?r.ids.slice():[],rep:!!wk,isNew:!r,q:''};
   let b=$('psheet');if(!b){b=document.createElement('div');b.className='sheet';b.id='psheet';document.body.appendChild(b);b.addEventListener('click',e=>{if(e.target.id==='psheet')b.classList.remove('on')})}
   pcEditDraw();b.classList.add('on')}
-function pcEditDraw(){const b=$('psheet');const d=new Date(PE.ds+'T00:00:00');const q=norm(PE.q||'');
+function pcResDraw(){const box=$('pRes');if(!box)return;const q=norm(PE.q||'');
   const res=q&&C.list?C.list.filter(c=>!PE.ids.includes(c.id)&&norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(q)).slice(0,12):[];
+  box.innerHTML=res.map(c=>'<button data-pa="'+esc(c.id)+'">＋ <b>'+esc(c.n)+'</b> <span style="color:#666;font-size:14px">'+esc(c.r||'')+'</span></button>').join('')+(q&&!C.list?'<div class="pnone">거래처 목록이 아직 안 열렸어요</div>':'')+(q&&C.list&&!res.length?'<div class="pnone">찾는 거래처가 없어요</div>':'');
+  box.querySelectorAll('[data-pa]').forEach(x=>x.onclick=()=>{PE.ids.push(x.dataset.pa);PE.q='';pcEditDraw();toast('넣었어요 ('+PE.ids.length+'번)')})}
+function pcEditDraw(){const b=$('psheet');const d=new Date(PE.ds+'T00:00:00');const q=norm(PE.q||'');
   b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">📅 '+pLbl(d)+' 코스</b><button id="pX">닫기</button></div><div class="sh-l" id="pL">'
    +'<label class="hint" style="margin:0">코스 이름</label><input class="rin" id="pN" value="'+esc(PE.n)+'" placeholder="예) 오전 코스, 화성 코스">'
    +'<div class="qk" style="margin-top:6px"><button data-pn="오전 코스">오전 코스</button><button data-pn="오후 코스">오후 코스</button></div>'
    +'<div class="rq">배송 순서 ('+PE.ids.length+'곳)</div>'
    +(PE.ids.length?PE.ids.map((id,i)=>'<div class="pst"><div class="no">'+(i+1)+'</div><b>'+esc(pName(id))+'</b><button data-pm="up" data-i="'+i+'">▲</button><button data-pm="down" data-i="'+i+'">▼</button><button data-pm="del" data-i="'+i+'" style="color:var(--rd)">빼기</button></div>').join(''):'<div class="pnone">아래에서 거래처를 찾아 넣어 주세요</div>')
    +'<div class="rq">＋ 거래처 넣기</div><input class="rin" id="pQ" type="search" placeholder="🔍 거래처 이름·지역" value="'+esc(PE.q||'')+'" autocomplete="off">'
-   +'<div class="pres">'+res.map(c=>'<button data-pa="'+esc(c.id)+'">＋ <b>'+esc(c.n)+'</b> <span style="color:#666;font-size:14px">'+esc(c.r||'')+'</span></button>').join('')+(q&&!C.list?'<div class="pnone">거래처 목록이 아직 안 열렸어요</div>':'')+(q&&C.list&&!res.length?'<div class="pnone">찾는 거래처가 없어요</div>':'')+'</div>'
+   +'<div class="pres" id="pRes"></div>'
    +'<label class="pchk"><input type="checkbox" id="pRep"'+(PE.rep?' checked':'')+'> 🔁 매주 '+WD[d.getDay()]+'요일마다 반복</label>'
    +'<button class="btn br" id="pSave" style="margin-top:12px">💾 저장</button>'
    +(!PE.isNew?'<button class="btn ln" id="pDel" style="margin-top:8px;color:var(--rd)">🗑 이 코스 지우기'+(PE.wk?' (매주 반복 전체)':'')+'</button>':'')
@@ -1219,8 +1222,10 @@ function pcEditDraw(){const b=$('psheet');const d=new Date(PE.ds+'T00:00:00');co
   $('pN').oninput=e=>{PE.n=e.target.value};
   b.querySelectorAll('[data-pn]').forEach(x=>x.onclick=()=>{PE.n=x.dataset.pn;$('pN').value=PE.n});
   $('pRep').onchange=e=>{PE.rep=e.target.checked};
-  const qi=$('pQ');qi.oninput=e=>{PE.q=e.target.value;const p=qi.selectionStart;pcEditDraw();const n=$('pQ');n.focus();try{n.setSelectionRange(p,p)}catch(_){}};
-  b.querySelectorAll('[data-pa]').forEach(x=>x.onclick=()=>{PE.ids.push(x.dataset.pa);PE.q='';pcEditDraw();toast('넣었어요 ('+PE.ids.length+'번)')});
+  // v029: 글자를 칠 때마다 창 전체를 다시 그리면 한글 조합이 끊겨 「ㄷㅏㄹ」처럼 떨어져 들어감 → 검색칸은 그대로 두고 결과 목록만 새로 그림
+  const qi=$('pQ');qi.oninput=e=>{PE.q=e.target.value;pcResDraw()};
+  qi.addEventListener('compositionend',e=>{PE.q=e.target.value;pcResDraw()});
+  pcResDraw();
   b.querySelectorAll('[data-pm]').forEach(x=>x.onclick=()=>{const i=+x.dataset.i,a=PE.ids;
     if(x.dataset.pm==='up'&&i>0)[a[i-1],a[i]]=[a[i],a[i-1]];if(x.dataset.pm==='down'&&i<a.length-1)[a[i+1],a[i]]=[a[i],a[i+1]];if(x.dataset.pm==='del')a.splice(i,1);pcEditDraw()});
   $('pSave').onclick=pcSave;

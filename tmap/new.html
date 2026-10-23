@@ -247,7 +247,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div></div>
-    <div class="ver">v020 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="ver">v021 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
@@ -383,7 +383,7 @@ function render(){
   if(typeof renderEdit==='function')renderEdit();
 }
 function renderEdit(){const e=$('esheet');if(!e||!e.classList.contains('on'))return;const sc=$('eL').scrollTop,m=S.stops.length;
-  $('eL').innerHTML='<button class="rbtn" id="eRoute">🧭 최적 코스 자동으로 정하기</button><div class="hint" style="text-align:center">아래에서 직접 순서를 바꾸거나 뺄 수도 있어요</div>'
+  $('eL').innerHTML='<button class="rbtn" id="eRoute">🧭 최적 코스 자동으로 정하기</button>'+UNDO_BTN()+'<div class="hint" style="text-align:center">아래에서 직접 순서를 바꾸거나 뺄 수도 있어요</div>'
    +(m?S.stops.map((s,i)=>`<div class="er"><div class="eh"><div class="no">${i+1}</div><b>${esc(s.n)}</b></div><div class="eb"><button data-act="up" data-i="${i}" style="${i?'':'opacity:.35'}">▲ 위로</button><button data-act="down" data-i="${i}" style="${i<m-1?'':'opacity:.35'}">▼ 아래로</button><button class="del" data-act="del" data-i="${i}">삭제</button></div></div>`).join(''):'<div class="empty">배송 목록이 비어 있어요.</div>');
   $('eL').scrollTop=sc;const r=$('eRoute');if(r)r.onclick=()=>{if(S.stops.length<2){toast('2곳 이상 있어야 해요');return}$('esheet').classList.remove('on');openRoute()}}
 function renderFav(){
@@ -661,14 +661,14 @@ function dayLbl(d){return d.toDateString()===new Date().toDateString()?'오늘':
 function hav(a,b){const r=Math.PI/180,dy=(b.y-a.y)*r,dx=(b.x-a.x)*r,q=Math.sin(dy/2)**2+Math.cos(a.y*r)*Math.cos(b.y*r)*Math.sin(dx/2)**2;return 12742*Math.asin(Math.sqrt(q))}
 function stayOf(s){const v=+per(pidOf(s)).stay;return v>0?v:10}
 function pinRank(){const ps=S.stops.map(s=>pidOf(s)).filter(p=>per(p).pin).sort((a,b)=>per(a).pin-per(b).pin);const m={};ps.forEach((p,i)=>m[p]=i+1);return m}
-function noPlan(){S.stops.forEach(s=>delete s.eta);delete S.plan}
+function noPlan(){S.stops.forEach(s=>delete s.eta);delete S.plan;delete S.planPrev}
 function startAt(){const now=new Date();if(O.when==='now'||!/^\d\d:\d\d$/.test(O.when))return now;
   const [h,m]=O.when.split(':').map(Number);const fut=!!(S.day&&S.day>ymd(now));const d=fut?new Date(S.day+'T00:00:00'):new Date(now);d.setHours(h,m,0,0);
   if(!fut&&now-d>3*3600e3)d.setDate(d.getDate()+1);return d}
 function addBtn(id,fi){const inL=S.stops.some(s=>s.id&&s.id===id);
   return '<button class="addb'+(inL?' in':'')+'" data-act="sadd" data-id="'+esc(id)+'"'+(fi!==undefined?' data-fi="'+fi+'"':'')+'>'+(inL?'✓ 배송 목록에 있음':'📦 오늘 배송에 넣기')+'</button>'}
 function renderRouteBar(){const b=$('rbar');if(!b)return;
-  b.innerHTML=(S.plan&&S.stops.some(s=>s.eta))?'<div class="hint" style="text-align:center;color:#1F3FBF;margin:0 0 10px">'+esc(S.plan.txt||'')+'</div>':''}
+  b.innerHTML=(S.plan&&S.stops.some(s=>s.eta))?'<div class="hint" style="text-align:center;color:#1F3FBF;margin:0 0 10px">'+esc(S.plan.txt||'')+'</div>'+UNDO_BTN():(S.plan?UNDO_BTN():'')}
 function openRoute(){RS.res=RS.alt=null;RS.err='';RS.keyAsk=false;renderRoute();$('rsheet').classList.add('on');$('rL').scrollTop=0}
 function closeRoute(){$('rsheet').classList.remove('on')}
 function segB(r,v,t,on){return '<button data-r="'+r+'" data-v="'+v+'" class="'+(on?'on':'')+'">'+t+'</button>'}
@@ -811,6 +811,7 @@ function errText(e){
 function applyRes(which){const R=RS[which];if(!R)return;
   if(!R.order.every(s=>S.stops.includes(s))){toast('그사이 배송 목록이 바뀌었어요. 다시 계산해 주세요');RS.res=RS.alt=null;renderRoute();return}
   const done=S.stops.filter(s=>s.done), used=new Set([...R.order,...R.noLoc]), rest=S.stops.filter(s=>!s.done&&!used.has(s));
+  if(!S.plan||!Array.isArray(S.planPrev))S.planPrev=S.stops.map(pidOf);
   S.stops.forEach(s=>delete s.eta);
   R.order.forEach((s,i)=>{const r=R.rows[i];if(r&&r.eta)s.eta=r.eta});
   S.stops=[...done,...R.order,...R.noLoc.filter(s=>S.stops.includes(s)),...rest];
@@ -942,7 +943,16 @@ setTimeout(tripArrCheck,1500);
 msgTok&&msgTok().catch(()=>{});
 
 // ---- 새 버전 자동 받기: 서버의 버전과 다르면 한 번 새로 연다 ----
-const APP_VER='v020';
+
+// v021: 정한 코스 취소 (사용자 요청 10/24 「코스를 선택했다가 삭제할 수 있게」) - 순서를 코스 정하기 전으로, 도착 예정 시간 지움
+function undoPlan(){if(!S.plan)return;const pv=Array.isArray(S.planPrev)?S.planPrev:[];
+  if(!confirm('정한 코스를 취소할까요?\n'+(pv.length?'순서가 코스 정하기 전으로 돌아가고 ':'')+'도착 예정 시간이 지워져요.\n(배송 완료·출발 기록은 그대로예요)'))return;
+  if(pv.length){const ix=s=>{const k=pv.indexOf(pidOf(s));return k<0?1e9:k};S.stops=S.stops.map((s,i)=>[s,i]).sort((a,b)=>(ix(a[0])-ix(b[0]))||(a[1]-b[1])).map(a=>a[0])}
+  noPlan();save();render();if(typeof renderFind==='function')renderFind();if(typeof renderEdit==='function'&&$('esheet')&&$('esheet').classList.contains('on'))renderEdit();
+  toast('↩ 정한 코스를 취소했어요'+(pv.length?'. 전 순서로 돌아갔어요':''))}
+function UNDO_BTN(){return S.plan?'<button class="btn ol" data-undo="1" style="min-height:54px;width:100%;margin:6px 0 10px;color:#C26A0A;border-color:#C26A0A;font-weight:700">↩ 정한 코스 취소 (전 순서로)</button>':''}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-undo]');if(b){e.preventDefault();undoPlan()}});
+const APP_VER='v021';
 async function verCheck(){
   try{const r=await fetch('new.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

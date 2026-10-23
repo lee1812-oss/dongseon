@@ -201,6 +201,10 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .lrow.on{background:#EEF7F1;border-color:#2F7A4F}.lrow.on .lc{background:#2F7A4F;border-color:#2F7A4F}
 .lrow .lt{display:flex;flex-direction:column;min-width:0}.lrow .lt small{font-size:14px;color:var(--mu)}.lrow .lt b{font-size:18px}
 #ttsRow button{margin-left:10px}
+#keyBox .kb{background:#FFF8E6;border:2px solid #E0A526;border-radius:14px;padding:14px;margin:0 0 12px}
+#keyBox .kb b{font-size:18px}#keyBox .kr{display:flex;gap:8px;margin-top:10px}
+#keyBox input{flex:1;min-width:0;min-height:54px;font-size:22px;letter-spacing:4px;padding:0 12px;border:1.5px solid var(--ln);border-radius:10px}
+#keyBox button{min-height:54px;padding:0 20px;font-size:18px;font-weight:800;background:var(--br);color:#fff;border:0;border-radius:10px}
 </style>
 </head>
 <body>
@@ -209,6 +213,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
   <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div></div>
 </div></header>
 <main>
+  <div id="keyBox" style="display:none"></div>
   <div class="notice" id="notice"></div>
   <section class="tab" id="tab1">
     <div class="inst" id="inst"></div>
@@ -253,7 +258,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div></div>
-    <div class="ver">v022 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="ver">v023 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
@@ -448,7 +453,7 @@ async function custLoad(){
     }
   }
   const pass=getPass();
-  if(!pass){C.state='idle';fmsg(C.list?'저장된 목록으로 찾아요.':'카톡으로 받은 「티맵 바로가기」 링크로 한 번 열면 거래처가 보여요.');renderFind();return}
+  if(!pass){C.state='idle';fmsg(C.list?'저장된 목록으로 찾아요.':'맨 위 「🔑 직원 암호로 열기」에 암호를 넣으면 거래처가 보여요.');renderFind();return}
   try{
     const r=await fetch('../delivery.enc.json?t='+Date.now(),{cache:'no-store'});
     if(!r.ok)throw new Error('net');
@@ -465,7 +470,7 @@ function renderFind(){
   $('manW').style.display=q?'block':'none';if(!q)$('manBox').style.display='none';
   $('favWrap').style.display=q?'none':'block';
   if(!q){R.innerHTML='';return}
-  if(!C.list){R.innerHTML='<div class="hint" style="margin-top:10px;color:var(--or)">거래처 목록이 아직 안 열렸어요. 카톡으로 받은 「티맵 바로가기」 링크를 다시 눌러 주세요.</div>';return}
+  if(!C.list){R.innerHTML='<div class="hint" style="margin-top:10px;color:var(--or)">거래처 목록이 아직 안 열렸어요. 맨 위 「🔑 직원 암호로 열기」에 암호를 넣어 주세요.</div>';return}
   const L=C.list.filter(c=>norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(q)).slice(0,30);
   R.innerHTML=L.length?L.map(c=>{const inF=FAV.some(f=>f.id===c.id), mc=msgCount(c.id);
     return `<div class="fr"><div class="t"><div class="fn">${esc(c.n)}</div>
@@ -598,7 +603,7 @@ function renderMsgs(){
   const T=Object.keys(M.msg||{}).map(pid=>{const L=msgsOf(pid).filter(m=>m.t>=from);return L.length?{pid,L,last:L[L.length-1]}:null}).filter(Boolean).sort((a,b)=>b.last.t-a.last.t);
   const nu=T.reduce((a,x)=>a+unread(x.pid),0);
   $('tdot').style.display=nu?'block':'none';$('mcnt').innerHTML=nu?'<span class="new">새 글 '+nu+'</span>':'';
-  if(!localStorage.getItem('tmapgo_k')){box.innerHTML='<div class="empty">카톡으로 받은 「티맵 바로가기」 링크로 열면 전달사항을 보고 쓸 수 있어요.</div>';return}
+  if(!localStorage.getItem('tmapgo_k')){box.innerHTML='<div class="empty">맨 위 「🔑 직원 암호로 열기」에 암호를 넣으면 전달사항을 보고 쓸 수 있어요.</div>';return}
   box.innerHTML=T.length?T.slice(0,8).map(x=>{const u=unread(x.pid);return '<div class="mt" data-act="msg" data-pid="'+esc(x.pid)+'" data-pn="'+esc(x.last.pn||'')+'"><div class="t"><b>'+esc(x.last.pn||'거래처')+'</b>'+(u?'<span class="new">새 글 '+u+'</span>':'')+'<div class="p">'+kl(kOf(x.last))+esc(x.last.x)+'</div><div class="w">'+esc(x.last.by||'')+' · '+hm(x.last.t)+' · '+x.L.length+'개</div></div></div>'}).join('')
     :'<div class="empty">아직 전달사항이 없어요.<br>거래처 옆 <b>💬</b>를 누르면 배송 전달사항을 남길 수 있어요.</div>';
 }
@@ -614,7 +619,7 @@ function renderSheet(){
   setTimeout(()=>{$('shL').scrollTop=1e6},30);
 }
 async function openSheet(pid,pn){
-  if(!localStorage.getItem('tmapgo_k')){toast('카톡으로 받은 링크로 한 번 열어 주세요');return}
+  if(!localStorage.getItem('tmapgo_k')){(showTab(1),keyBox(),toast('맨 위에 직원 암호를 넣어 주세요'));return}
   SHP=pid;SHN=pn||'거래처';
   const st=(C.list&&C.list.find(c=>c.id===pid))||S.stops.find(s=>pidOf(s)===pid)||FAV.find(f=>pidOf(f)===pid);
   if(st){$('shGo').href=tmapHref(st.a!==undefined&&st.l!==undefined?toStop(st):st);$('shGo').style.display='flex'}else $('shGo').style.display='none';
@@ -917,7 +922,7 @@ function nameShow(){$('myName').textContent=me()||'(아직 없어요)'}
 function showTab(t){TAB=t;for(let k=1;k<=3;k++){$('tab'+k).style.display=k===t?'block':'none';$('tb'+k).classList.toggle('on',k===t)}
   clearInterval(TPI);TPI=null;
   if(t===3){nameShow();renderMsgs();
-    if(!localStorage.getItem('tmapgo_k')){$('tL').innerHTML='<div class="card empty">카톡으로 받은 「티맵 바로가기」 링크로 한 번 열면 현황이 보여요.</div>'}
+    if(!localStorage.getItem('tmapgo_k')){$('tL').innerHTML='<div class="card empty">「오늘 배송」 탭 맨 위 「🔑 직원 암호로 열기」에 암호를 넣으면 현황이 보여요.</div>'}
     else{$('tL').innerHTML='<div class="hint">불러오는 중…</div>';tripPull();msgPull();TPI=setInterval(()=>{if(!document.hidden&&TAB===3)tripPull()},30000)}}
   if(t===2&&!C.list&&C.state!=='loading')custLoad();
   window.scrollTo(0,0)}
@@ -994,7 +999,25 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 let WL=null;async function wake(){try{if('wakeLock' in navigator&&!document.hidden&&!WL){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)wake()});
 setTimeout(()=>{ttsRow();wake();const lo=$('loadOpen');if(lo)lo.onclick=openLoad;const lx=$('lX');if(lx)lx.onclick=()=>$('lsheet').classList.remove('on');const ls=$('lsheet');if(ls)ls.addEventListener('click',e=>{if(e.target.id==='lsheet')ls.classList.remove('on')})},0);
-const APP_VER='v022';
+
+// ===== v023: 카톡 링크 없이 직원 암호 4자리로 열기 (사용자 요청 10/24) =====
+// k.enc.json = 링크 열쇠를 직원 암호(PBKDF2 20만 회 + AES-GCM)로 잠근 파일. 암호를 바꾸면 이 파일도 다시 만들어야 함.
+function keyBox(){const b=$('keyBox');if(!b)return;if(localStorage.getItem('tmapgo_k')){b.innerHTML='';b.style.display='none';return}
+  b.style.display='block';
+  b.innerHTML='<div class="kb"><b>🔑 직원 암호로 열기</b><div class="hint">처음 한 번만 넣으면 거래처 찾기·전달사항·사무실 현황이 열려요</div>'
+   +'<div class="kr"><input id="kbIn" type="password" inputmode="numeric" maxlength="12" placeholder="직원 암호" autocomplete="off"><button id="kbGo">열기</button></div><div id="kbMsg" class="hint"></div></div>';
+  const go=()=>keyUnlock($('kbIn').value.trim());$('kbGo').onclick=go;$('kbIn').onkeydown=e=>{if(e.key==='Enter')go()}}
+async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 넣어 주세요';return}
+  m.textContent='여는 중이에요…';$('kbGo').disabled=true;
+  try{const j=await (await fetch('k.enc.json?t='+Date.now(),{cache:'no-store'})).json();const d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0)),e=new TextEncoder();
+    const base=await crypto.subtle.importKey('raw',e.encode(p),'PBKDF2',false,['deriveKey']);
+    const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:d(j.s),iterations:j.it||200000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
+    const k=new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:d(j.iv)},key,d(j.ct)));
+    if(!/^[A-Za-z0-9_-]{16,}$/.test(k))throw new Error('bad');
+    localStorage.setItem('tmapgo_k',k);m.textContent='✅ 열렸어요';setTimeout(()=>location.reload(),400)}
+  catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
+setTimeout(keyBox,0);
+const APP_VER='v023';
 async function verCheck(){
   try{const r=await fetch('new.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

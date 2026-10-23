@@ -196,6 +196,11 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .nmrow{display:flex;align-items:center;gap:10px;font-size:18px}.nmrow b{flex:1}
 .nmrow button{min-height:54px;padding:0 18px;border-radius:12px;border:1px solid var(--ln);background:#fff;font-size:17px;font-weight:700;font-family:inherit}
 .inst{padding:8px 12px}.inst .btn{min-height:50px}
+.lrow{display:flex;align-items:center;gap:12px;width:100%;min-height:62px;margin:0 0 8px;padding:8px 12px;background:#fff;border:1.5px solid var(--ln);border-radius:12px;text-align:left;font:inherit;color:var(--tx)}
+.lrow .lc{flex:0 0 34px;height:34px;border:2px solid var(--ln);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff}
+.lrow.on{background:#EEF7F1;border-color:#2F7A4F}.lrow.on .lc{background:#2F7A4F;border-color:#2F7A4F}
+.lrow .lt{display:flex;flex-direction:column;min-width:0}.lrow .lt small{font-size:14px;color:var(--mu)}.lrow .lt b{font-size:18px}
+#ttsRow button{margin-left:10px}
 </style>
 </head>
 <body>
@@ -212,6 +217,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     <div id="nextCard"></div>
     <div id="list"></div>
     <div id="tabBtns" class="two"><button class="btn ln" id="eOpen">✏️ 코스 바꾸기</button><button class="btn ln" id="eAdd">＋ 거래처 넣기</button></div>
+    <button class="btn ln" id="loadOpen" style="margin-top:10px">📦 차에 싣는 순서 보기</button>
     <div id="tripEnd"></div>
   </section>
   <section class="tab" id="tab2">
@@ -246,8 +252,8 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     <h2 class="sec">💬 배송 전달사항 <span class="cnt" id="mcnt"></span></h2>
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
-    <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div></div>
-    <div class="ver">v021 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div></div>
+    <div class="ver">v022 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
@@ -261,6 +267,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     <button class="btn br" id="shSend">보내기</button>
   </div>
 </div></div>
+<div class="sheet" id="lsheet"><div class="sh"><div class="sh-h"><b style="flex:1">📦 차에 싣는 순서</b><button id="lX">닫기</button></div><div class="sh-l" id="lL"></div></div></div>
 <div class="sheet" id="rsheet"><div class="sh">
   <div class="sh-h"><b>🧭 최적 코스 정하기</b><button id="rX">닫기</button></div>
   <div class="sh-l" id="rL"></div>
@@ -370,7 +377,7 @@ function render(){
     if(ni>=0){const s=S.stops[ni];
       N.innerHTML=`<div class="card nx"><div class="nl">${s.dep?'🚚 지금 가는 곳':'👉 다음 갈 곳'}</div>
       <div class="row"><div class="nob"><div class="no">${ni+1}</div>${(s.te||s.eta)&&!s.arr?`<div class="eta">${esc(s.te||s.eta)}<br>도착</div>`:''}</div>
-      <div style="flex:1;min-width:0"><div class="nm">${esc(s.n)}${(s.y&&s.x)?'':'<span class="tag">주소로 찾기</span>'}</div></div></div>${stopBody(s,ni)}</div>`;
+      <div style="flex:1;min-width:0"><div class="nm">${esc(s.n)}${(s.y&&s.x)?'':'<span class="tag">주소로 찾기</span>'}</div></div></div>${stopBody(s,ni)}${typeof nextExtra==='function'?nextExtra(ni):''}</div>`;
     }else N.innerHTML='<div class="tend">🎉 오늘 배송을 모두 마쳤어요</div>';
     const rows=S.stops.map((s,i)=>i===ni?'':(()=>{const k=pidOf(s),op=OPEN.has(k),c=chipOf(s);
       return `<div class="rw${s.done?' dn':''}${op?' open':''}"><div class="rh" data-tg="${esc(k)}"><div class="no" style="${s.done?'background:var(--gr)':''}">${s.done?'✓':i+1}</div><div class="nm">${esc(s.n)}</div><span class="chip ${c[0]}">${c[1]}</span><span class="ar2">${op?'▴':'▾'}</span></div>${op?'<div class="rb">'+stopBody(s,i)+'</div>':''}</div>`})()).join('');
@@ -952,7 +959,42 @@ function undoPlan(){if(!S.plan)return;const pv=Array.isArray(S.planPrev)?S.planP
   toast('↩ 정한 코스를 취소했어요'+(pv.length?'. 전 순서로 돌아갔어요':''))}
 function UNDO_BTN(){return S.plan?'<button class="btn ol" data-undo="1" style="min-height:54px;width:100%;margin:6px 0 10px;color:#C26A0A;border-color:#C26A0A;font-weight:700">↩ 정한 코스 취소 (전 순서로)</button>':''}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-undo]');if(b){e.preventDefault();undoPlan()}});
-const APP_VER='v021';
+
+// ===== v022: 인기 내비·배송 앱 기능 중 기사님께 맞는 것만 (사용자 요청 10/24) =====
+// 1) ⏭ 나중에 가기(Circuit·Routific의 건너뛰기/재방문) 2) 📲 도착 시간 알리기(카카오내비 도착시간 공유) 3) 📦 싣는 순서(Circuit 적재 순서)
+// 4) 🔊 음성 안내(티맵·카카오내비 음성) 5) 화면 켜짐 유지(내비 공통)
+const TTS_ON=()=>localStorage.getItem('tmapgo_tts')!=='0';
+function say(t){try{if(!TTS_ON()||!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ko-KR';u.rate=0.95;speechSynthesis.speak(u)}catch(e){}}
+function ttsRow(){const r=$('ttsRow');if(!r)return;r.innerHTML='🔊 음성 안내: <b>'+(TTS_ON()?'켜짐':'꺼짐')+'</b><button id="ttsBtn">'+(TTS_ON()?'끄기':'켜기')+'</button>';
+  $('ttsBtn').onclick=()=>{localStorage.setItem('tmapgo_tts',TTS_ON()?'0':'1');ttsRow();if(TTS_ON())say('음성 안내를 켰어요')}}
+function nextExtra(ni){const s=S.stops[ni];if(!s)return '';const more=S.stops.some((z,k)=>k!==ni&&!z.done);
+  return '<div class="two">'+(more?'<button class="btn ln" data-x="later" data-i="'+ni+'">⏭ 나중에 가기</button>':'')+'<button class="btn ln" data-x="eta" data-i="'+ni+'">📲 도착 알리기</button></div>'}
+function etaOf(s){const t=s.te||s.eta;if(t&&/^\d\d:\d\d$/.test(t))return t;return ''}
+async function shareEta(s){const t=etaOf(s);
+  const txt='안녕하세요, 빵을그리다 배송입니다. '+s.n+'에 '+(t?t+'쯤':'곧')+' 도착할 예정입니다. 감사합니다.';
+  if(navigator.share){try{await navigator.share({text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}
+  try{await navigator.clipboard.writeText(txt);toast('문구를 복사했어요. 카톡·문자에 붙여 넣어 보내 주세요')}catch(e){location.href='sms:?body='+encodeURIComponent(txt)}}
+function laterStop(i){const s=S.stops[i];if(!s)return;
+  if(!confirm('「'+s.n+'」은(는) 맨 뒤로 보내고\n다음 곳으로 먼저 갈까요?'))return;
+  S.stops.splice(i,1);delete s.dep;delete s.te;delete s.teR;delete s.arr;S.stops.push(s);delete S.preset;noPlan();save();render();
+  const n=S.stops[nextIdx()];toast('⏭ 「'+s.n+'」은(는) 맨 뒤로 보냈어요');if(n&&n!==s)say('다음 갈 곳은 '+n.n+'입니다')}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-x]');if(b){const i=+b.dataset.i;
+    if(b.dataset.x==='later')laterStop(i);else if(b.dataset.x==='eta'&&S.stops[i])shareEta(S.stops[i]);return}
+  const d=e.target.closest&&e.target.closest('[data-act="done"]');if(d){const s=S.stops[+d.dataset.i];setTimeout(()=>{if(s&&s.done){const n=S.stops[nextIdx()];say('배송 완료. '+(n?'다음 갈 곳은 '+n.n+'입니다':'오늘 배송을 모두 마쳤어요. 수고하셨어요'))}},50)}});
+// 싣는 순서: 마지막에 갈 곳을 먼저(안쪽에) 싣기
+const LKEY=()=>'tmapgo_load_'+TODAY();
+function loadGet(){try{return JSON.parse(localStorage.getItem(LKEY())||'{}')}catch(e){return {}}}
+function renderLoad(){const L=$('lL');if(!L)return;const ck=loadGet(),list=S.stops.map((s,i)=>({s,i})).filter(o=>!o.s.done).reverse();
+  const n=list.filter(o=>ck[pidOf(o.s)]).length;
+  L.innerHTML='<div class="hint" style="text-align:center;margin:0 0 8px">맨 위부터 차 안쪽에 실어요 · 마지막에 갈 곳이 먼저예요<br><b>'+n+' / '+list.length+'곳 실었어요</b></div>'
+   +(list.length?list.map((o,k)=>{const on=!!ck[pidOf(o.s)];return '<button class="lrow'+(on?' on':'')+'" data-ld="'+esc(pidOf(o.s))+'"><span class="lc">'+(on?'✔':'')+'</span><span class="lt"><small>'+(k+1)+'번째로 싣기 · 배송 '+(o.i+1)+'번</small><b>'+esc(o.s.n)+'</b></span></button>'}).join(''):'<div class="empty">실을 곳이 없어요</div>')}
+function openLoad(){$('lsheet').classList.add('on');renderLoad()}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-ld]');if(!b)return;const ck=loadGet(),k=b.dataset.ld;if(ck[k])delete ck[k];else ck[k]=1;localStorage.setItem(LKEY(),JSON.stringify(ck));renderLoad()});
+// 화면 켜짐 유지 (앱이 보일 때만)
+let WL=null;async function wake(){try{if('wakeLock' in navigator&&!document.hidden&&!WL){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)wake()});
+setTimeout(()=>{ttsRow();wake();const lo=$('loadOpen');if(lo)lo.onclick=openLoad;const lx=$('lX');if(lx)lx.onclick=()=>$('lsheet').classList.remove('on');const ls=$('lsheet');if(ls)ls.addEventListener('click',e=>{if(e.target.id==='lsheet')ls.classList.remove('on')})},0);
+const APP_VER='v022';
 async function verCheck(){
   try{const r=await fetch('new.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

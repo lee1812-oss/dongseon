@@ -258,7 +258,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div></div>
-    <div class="ver">v024 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="ver">v025 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
@@ -975,6 +975,11 @@ function ttsRow(){const r=$('ttsRow');if(!r)return;r.innerHTML='🔊 음성 안�
 function nextExtra(ni){const s=S.stops[ni];if(!s)return '';const more=S.stops.some((z,k)=>k!==ni&&!z.done);
   return '<div class="two">'+(more?'<button class="btn ln" data-x="later" data-i="'+ni+'">⏭ 나중에 가기</button>':'')+'<button class="btn ln" data-x="eta" data-i="'+ni+'">📲 도착 알리기</button></div>'}
 function etaOf(s){const t=s.te||s.eta;if(t&&/^\d\d:\d\d$/.test(t))return t;return ''}
+// v025: PC는 카카오 공식 「카카오톡 공유」 창(JS SDK)으로 방·친구를 골라 보냄. JavaScript 키는 웹용 공개 키(등록된 주소에서만 동작)
+const KAKAO_JS='54e2b68a09b153563617958627d985cf';let kakaoP=null;
+function kakaoLoad(){if(window.Kakao&&Kakao.isInitialized&&Kakao.isInitialized())return Promise.resolve(true);if(kakaoP)return kakaoP;
+  kakaoP=new Promise(res=>{const sc=document.createElement('script');sc.src='https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js';sc.crossOrigin='anonymous';
+    sc.onload=()=>{try{if(!Kakao.isInitialized())Kakao.init(KAKAO_JS);res(true)}catch(e){res(false)}};sc.onerror=()=>{kakaoP=null;res(false)};document.head.appendChild(sc)});return kakaoP}
 async function shareEta(s){const t=etaOf(s);
   const txt='안녕하세요, 빵을그리다 배송입니다. '+s.n+'에 '+(t?t+'쯤':'곧')+' 도착할 예정입니다. 감사합니다.';
   let b=$('asheet');if(!b){b=document.createElement('div');b.className='sheet';b.id='asheet';document.body.appendChild(b);b.addEventListener('click',e=>{if(e.target.id==='asheet')b.classList.remove('on')})}
@@ -982,15 +987,18 @@ async function shareEta(s){const t=etaOf(s);
   b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">📲 도착 알리기</b><button id="aX">닫기</button></div><div class="sh-l">'
    +'<div class="hint" style="margin:0 0 6px">보낼 글 (고쳐도 돼요)</div><textarea id="aTx" style="width:100%;min-height:96px;font-size:17px;padding:10px;border:1.5px solid var(--ln);border-radius:10px;box-sizing:border-box">'+esc(txt)+'</textarea>'
    +'<button class="btn" id="aKa" style="background:#FEE500;color:#191919;font-weight:800;margin-top:10px">💬 카카오톡으로 보내기</button>'
-   +(pc?'<div class="hint" id="aPc" style="margin-top:6px">PC에서는 글이 복사돼요. PC 카톡에서 보낼 방을 열고 <b>Ctrl+V</b> → 전송</div>':'<div class="hint" style="margin-top:6px">카톡이 열리면 보낼 방(사람)을 고르면 돼요</div>')
+   +(pc?'<div class="hint" id="aPc" style="margin-top:6px">PC에서는 <b>카카오톡 공유 창</b>이 열려요. 보낼 방(사람)을 고르고 「보내기」를 누르면 돼요. (처음 한 번은 카카오 로그인)</div>':'<div class="hint" style="margin-top:6px">카톡이 열리면 보낼 방(사람)을 고르면 돼요</div>')
    +(!pc?'<button class="btn ln" id="aSm" style="margin-top:8px">✉️ 문자로 보내기</button>':'')
    +'<button class="btn ln" id="aCp" style="margin-top:8px">📋 글만 복사</button></div></div>';
-  b.classList.add('on');
+  b.classList.add('on');if(pc)kakaoLoad();
   const cur=()=>$('aTx').value.trim(), copy=async()=>{try{await navigator.clipboard.writeText(cur());return true}catch(e){const a=$('aTx');a.select();try{return document.execCommand('copy')}catch(_){return false}}};
   $('aX').onclick=()=>b.classList.remove('on');
   $('aCp').onclick=async()=>{toast(await copy()?'📋 복사했어요. 원하는 곳에 붙여 넣어 주세요':'글을 길게 눌러 복사해 주세요')};
   const sm=$('aSm');if(sm)sm.onclick=()=>{location.href='sms:'+(isI?'&':'?')+'body='+encodeURIComponent(cur())};
   $('aKa').onclick=async()=>{const x=cur();
+    if(pc&&window.Kakao&&Kakao.isInitialized&&Kakao.isInitialized()){try{const u='https://lee1812-oss.github.io/dongseon/tmap/';
+      Kakao.Share.sendDefault({objectType:'text',text:x.length>200?x.slice(0,199)+'…':x,link:{webUrl:u,mobileWebUrl:u},buttons:[]});copy();
+      toast('💬 카카오톡 공유 창이 열렸어요. 보낼 방을 골라 주세요');return}catch(e){console.warn('kakao share',e)}}
     if(isA){await copy();location.href='intent:#Intent;action=android.intent.action.SEND;type=text/plain;S.android.intent.extra.TEXT='+encodeURIComponent(x)+';package=com.kakao.talk;S.browser_fallback_url='+encodeURIComponent('https://play.google.com/store/apps/details?id=com.kakao.talk')+';end';return}
     if(isI&&navigator.share){try{await navigator.share({text:x});return}catch(e){if(e&&e.name==='AbortError')return}}
     const ok=await copy();toast(ok?'📋 복사했어요. 카톡에서 보낼 방을 열고 붙여 넣기(Ctrl+V) 해 주세요':'글을 복사하지 못했어요. 글을 길게 눌러 복사해 주세요');
@@ -1033,7 +1041,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='✅ 열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v024';
+const APP_VER='v025';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

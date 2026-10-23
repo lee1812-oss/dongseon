@@ -80,16 +80,20 @@ body.editing .edit{display:flex}
   </div>
 
   <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v002 · 이 휴대폰에만 저장돼요</div>
+  <div class="ver">v003 · 이 휴대폰에만 저장돼요</div>
 </main>
 <div class="toast" id="toast"></div>
 
 <script>
 const KEY='tmapgo_v1';
-const DEFAULT={day:'2026-10-24',stops:[
- {n:'(화성)서신노을카페_에코팜랜드',a:'경기 화성시 서신면 영종로안길 24 (화성에코팜테마파크 안)',y:37.11982835,x:126.69359386,m:''},
- {n:'(화성)바다백미',a:'경기 화성시 서신면 백미길 210-35 (백미항, 카페 바다백미)',y:37.14345643,x:126.68014266,m:''}
-]};
+// 짧은 링크용 배송 목록 (?d=1024 처럼 열면 그날 목록이 등록됨)
+const ROUTES={
+ '1024':{day:'2026-10-24',stops:[
+  {n:'(화성)서신노을카페_에코팜랜드',a:'경기 화성시 서신면 영종로안길 24 (화성에코팜테마파크 안)',y:37.11982835,x:126.69359386,m:''},
+  {n:'(화성)바다백미',a:'경기 화성시 서신면 백미길 210-35 (백미항, 카페 바다백미)',y:37.14345643,x:126.68014266,m:''}
+ ]}
+};
+const DEFAULT=Object.assign({preset:'1024'},ROUTES['1024']);
 const $=id=>document.getElementById(id);
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let S=load();
@@ -99,6 +103,20 @@ function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';cle
 const isAndroid=/Android/i.test(navigator.userAgent), isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 // 링크로 받은 목록 읽기 (#p=...)
+function readParam(){
+  const k=(new URLSearchParams(location.search).get('d')||'').replace(/\D/g,'').slice(-4);
+  if(!k)return;
+  const R=ROUTES[k];
+  if(R){
+    if(S.preset!==k){
+      if(S.stops.length) localStorage.setItem(KEY+'_prev',JSON.stringify(S));
+      S=JSON.parse(JSON.stringify(Object.assign({preset:k},R))); save();
+      const n=$('notice'); n.textContent='✅ '+k.slice(0,2)+'/'+k.slice(2)+' 배송지 '+R.stops.length+'곳을 등록했어요.'; n.style.display='block';
+    }
+  }
+  history.replaceState(null,'',location.pathname+location.hash);
+}
+readParam();
 function readHash(){
   const h=location.hash.slice(1); if(!h.startsWith('p='))return;
   try{
@@ -163,22 +181,22 @@ document.addEventListener('click',e=>{
   }
   if(act==='copy'){navigator.clipboard?.writeText(s.a||s.n).then(()=>toast('주소를 복사했어요'),()=>toast(s.a));return}
   if(act==='done'){s.done=!s.done;save();render();return}
-  if(act==='up'&&i>0){[S.stops[i-1],S.stops[i]]=[S.stops[i],S.stops[i-1]];save();render();return}
-  if(act==='down'&&i<S.stops.length-1){[S.stops[i+1],S.stops[i]]=[S.stops[i],S.stops[i+1]];save();render();return}
-  if(act==='del'){if(confirm('「'+s.n+'」을(를) 목록에서 지울까요?')){S.stops.splice(i,1);save();render()}return}
+  if(act==='up'&&i>0){[S.stops[i-1],S.stops[i]]=[S.stops[i],S.stops[i-1]];delete S.preset;save();render();return}
+  if(act==='down'&&i<S.stops.length-1){[S.stops[i+1],S.stops[i]]=[S.stops[i],S.stops[i+1]];delete S.preset;save();render();return}
+  if(act==='del'){if(confirm('「'+s.n+'」을(를) 목록에서 지울까요?')){S.stops.splice(i,1);delete S.preset;save();render()}return}
 });
 $('day').addEventListener('change',e=>{S.day=e.target.value;save()});
 $('add').addEventListener('click',()=>{
   const n=$('fn').value.trim(), a=$('fa').value.trim(), m=$('fm').value.trim();
   if(!n&&!a){toast('거래처 이름이나 주소를 넣어 주세요');return}
-  S.stops.push({n:n||a,a,y:null,x:null,m}); save(); render();
+  S.stops.push({n:n||a,a,y:null,x:null,m}); delete S.preset; save(); render();
   $('fn').value=$('fa').value=$('fm').value=''; toast('추가했어요');
 });
 $('editT').addEventListener('click',()=>{document.body.classList.toggle('editing');$('editT').textContent=document.body.classList.contains('editing')?'✔ 편집 끝':'✏️ 순서 바꾸기·삭제'});
 $('share').addEventListener('click',async()=>{
   if(!S.stops.length){toast('보낼 거래처가 없어요');return}
   const o={d:S.day||'',s:S.stops.map(s=>[s.n,s.a,s.y?+(+s.y).toFixed(6):0,s.x?+(+s.x).toFixed(6):0,s.m||''])};
-  const url=location.origin+location.pathname+'#p='+encodeURIComponent(JSON.stringify(o));
+  const url=S.preset&&ROUTES[S.preset]?location.origin+location.pathname+'?d='+S.preset:location.origin+location.pathname+'#p='+encodeURIComponent(JSON.stringify(o));
   const dd=S.day?S.day.slice(5).replace('-','/')+' ':'';
   const text=dd+'배송지 '+S.stops.length+'곳 ('+S.stops.map(s=>s.n).join(', ')+')\n링크를 열고 「티맵 길안내 시작」을 누르세요.';
   if(navigator.share){try{await navigator.share({title:'티맵 바로가기',text,url});return}catch(e){if(e.name==='AbortError')return}}

@@ -243,12 +243,32 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .pchk{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:17px;font-weight:700}.pchk input{width:24px;height:24px}
 .ptoday{background:#FFF8E6;border:2px solid #f1c24a;border-radius:14px;padding:12px;margin-bottom:12px}
 .ptoday b{font-size:17.5px}.ptoday .btn{margin-top:8px}
+/* v032 거래명세표 사인 사진 */
+.sb.sg{background:#EEF4FF;color:#1F4FBF;border:1.5px solid #b9cdf5;font-weight:800;font-family:inherit}
+.sb.sg.has{background:#EAF6EF;color:var(--gr);border-color:#9fd0b3}
+.sb.sg.wait{background:#FFF4E0;color:#8a4b00;border-color:#e0a24a}
+.gbtn{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:58px;border-radius:12px;font-size:18px;font-weight:800;margin:0 0 8px;cursor:pointer}
+.gbtn.cam{background:var(--br);color:#fff}.gbtn.lib{background:#fff;color:var(--br);border:2px solid var(--br)}
+.gbtn input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.ggrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gt{background:#fff;border:1px solid #e3e3e8;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.gim{aspect-ratio:3/4;background:#ececf0;display:flex;align-items:center;justify-content:center;color:var(--mu);font-size:15px;cursor:pointer}
+.gim img{width:100%;height:100%;object-fit:cover;display:block}
+.gm{padding:6px 8px;font-size:15px;line-height:1.4;color:var(--tx)}
+.gs{font-weight:800}.gs.ok{color:var(--gr)}.gs.up{color:var(--or)}.gs.err{color:var(--rd)}
+.gdel{width:100%;min-height:44px;border:0;border-top:1px solid #eee;background:#fff;color:var(--rd);font-size:15px;font-weight:700;font-family:inherit;margin-top:auto}
+.pv{position:fixed;inset:0;background:#000;z-index:30;display:none;flex-direction:column}.pv.on{display:flex}
+.pv img{flex:1;min-height:0;width:100%;object-fit:contain}
+.pvb{display:flex;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom))}
+.pvb a,.pvb button{flex:1;min-height:54px;border-radius:12px;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;text-decoration:none;border:0;font-family:inherit}
+.pvb a{background:#fff;color:#111}.pvb button{background:#444;color:#fff}
+.sgo{margin-left:6px;border:1.5px solid #9fd0b3;background:#EAF6EF;color:var(--gr);border-radius:8px;font-size:14px;font-weight:700;padding:4px 8px;font-family:inherit;white-space:nowrap}
 </style>
 </head>
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v031 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
+  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v032 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -305,6 +325,15 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     <div class="ver">v031 · 출발 버튼 TMAP 로고 · 이모티콘 정리 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
+<div class="sheet" id="gsheet"><div class="sh">
+  <div class="sh-h"><b id="gT" style="flex:1">명세표 사진</b><button id="gX">닫기</button></div>
+  <div class="sh-l" id="gL"></div>
+  <div class="sh-f" id="gF">
+    <label class="gbtn cam">카메라로 찍기<input type="file" accept="image/*" capture="environment" id="gCam"></label>
+    <label class="gbtn lib">휴대폰 사진에서 불러오기<input type="file" accept="image/*" multiple id="gLib"></label>
+    <div class="hint" style="text-align:center">명세표 전체와 사인이 잘 보이게 찍어 주세요. 여러 장도 돼요.</div>
+  </div></div></div>
+<div class="pv" id="gV"><img id="gVi" alt="명세표 사진"><div class="pvb"><a id="gVs" href="#" download="명세표.jpg">휴대폰에 저장</a><button id="gVx">닫기</button></div></div>
 <div class="sheet" id="sheet"><div class="sh">
   <div class="sh-h"><b id="shT">전달사항</b><a class="fgo" id="shGo" href="#" data-act="go" style="min-height:44px">티맵</a><button id="shX">닫기</button></div>
   <div class="sh-l" id="shL"></div>
@@ -411,7 +440,7 @@ const chipOf=s=>s.done?['dn','완료'+((s.fin||s.arr)?' '+esc(s.fin||s.arr):'')]
 function msgBtn2(s){const p=pidOf(s),n=msgCount(p),u=unread(p);return '<button class="sb mb2'+(u?' unread':n?' has':'')+'" data-act="msg" data-pid="'+esc(p)+'" data-pn="'+esc(s.n)+'">'+(u?'새 전달 '+u+'개':n?'전달사항 '+n:'전달사항')+'</button>'}
 function stopBody(s,i){return `<div class="ad">${esc(s.a)}</div>${ctRow(s)}${s.m?`<div class="memo">${esc(s.m)}</div>`:''}${msgPrev(s)}${tripLine(s)}
   <a class="go" href="${tmapHref(s)}" data-act="go" data-i="${i}"><i class="tlogo" aria-label="TMAP"></i>${s.dep&&!s.done?'티맵 다시 열기':'출발 · 티맵 길안내'}</a>
-  <div class="subs"><button class="sb ok${s.done?' undo':''}" data-act="done" data-i="${i}">${s.done?'완료 취소':'배송 완료'}</button>${msgBtn2(s)}</div>
+  <div class="subs"><button class="sb ok${s.done?' undo':''}" data-act="done" data-i="${i}">${s.done?'완료 취소':'배송 완료'}</button>${msgBtn2(s)}</div>${typeof signBtn==='function'?signBtn(s):''}
   <div class="lkrow"><a class="lk" href="${kakaoHref(s)}" target="_blank" rel="noopener">카카오맵</a><button class="lk" data-act="copy" data-i="${i}">주소 복사</button></div>`}
 function nextIdx(){let k=S.stops.findIndex(s=>s.dep&&!s.done);if(k<0)k=S.stops.findIndex(s=>!s.done);return k}
 function render(){
@@ -954,7 +983,7 @@ async function tripPush(now){
   clearTimeout(TPT);
   if(!localStorage.getItem('tmapgo_k')||!S.stops.length||S.tday!==TODAY())return;
   try{const t=await msgTok();if(!t)return;
-    const v={};v[DEV]={who:me()||'이름 없음',at:Date.now(),end:S.tend||'',list:S.stops.map(s=>({n:s.n,dep:s.dep||'',arr:s.arr||'',te:s.te||'',r:s.teR?1:0,done:!!s.done,fin:s.fin||''}))};
+    const v={};v[DEV]={who:me()||'이름 없음',at:Date.now(),end:S.tend||'',list:S.stops.map(s=>({n:s.n,p:pidOf(s),dep:s.dep||'',arr:s.arr||'',te:s.te||'',r:s.teR?1:0,done:!!s.done,fin:s.fin||''}))};
     await fetch(STORE_URL,{method:'POST',keepalive:true,body:JSON.stringify({token:t,op:'merge',key:'trip:'+TODAY(),value:v,by:me()||DEV})});
   }catch(e){}
 }
@@ -973,7 +1002,7 @@ function showTab(t){TAB=t;for(let k=1;k<=4;k++){$('tab'+k).style.display=k===t?'
   if(t===2&&!C.list&&C.state!=='loading')custLoad();
   window.scrollTo(0,0)}
 async function tripPull(){
-  try{const j=await storeCall({op:'get',keys:'trip:'+TODAY()});const all=((j.data['trip:'+TODAY()]||{}).value)||{};
+  try{const j=await storeCall({op:'get',keys:'trip:'+TODAY()+',sign:'+TODAY()});if(window.SG&&j.data['sign:'+TODAY()]){SG.rem=j.data['sign:'+TODAY()].value||{};SG.remAt=Date.now()}const all=((j.data['trip:'+TODAY()]||{}).value)||{};
     const ps=Object.values(all).filter(p=>p&&p.list&&p.list.length).sort((a,b)=>b.at-a.at);
     $('tL').innerHTML=ps.length?ps.map(tripCard).join(''):'<div class="card empty">아직 오늘 기록이 없어요.<br>기사님이 「출발」을 누르면 여기에 보여요.</div>';
   }catch(e){$('tL').innerHTML='<div class="card empty">현황을 못 불러왔어요. 인터넷 연결을 확인하고 잠시 뒤 다시 열어 주세요.</div>'}
@@ -984,7 +1013,7 @@ function tripCard(p){
     if(s.done){c='dn';t='완료'+(s.arr?' · '+s.arr+' 도착':s.fin?' · '+s.fin+' 완료':'')}
     else if(s.arr){c='ar';t=''+s.arr+' 도착'}
     else if(s.dep){const l=tripLate(s.te);c=l?'lt':'mv';t=l?'확인 필요 · '+(s.r?'약 ':'')+s.te+' 도착 예정이었어요':'이동 중 · '+(s.te?(s.r?'약 ':'')+s.te+' 도착 예정':s.dep+' 출발')}
-    return '<div class="tr"><b>'+(i+1)+'. '+esc(s.n)+'</b><i class="'+c+'">'+esc(t)+'</i></div>'}).join('');
+    return '<div class="tr"><b>'+(i+1)+'. '+esc(s.n)+'</b><i class="'+c+'">'+esc(t)+'</i>'+(typeof sgOff==='function'?sgOff(s):'')+'</div>'}).join('');
   return '<div class="tp"><h4>'+esc(p.who)+'<span>마지막 소식 '+hhmm(at)+'</span></h4>'+rows+(p.end?'<div class="tend" style="margin:8px 0 0">'+esc(p.end)+' 오늘 배송 끝</div>':'')+'</div>';
 }
 for(let k=1;k<=4;k++)$('tb'+k).addEventListener('click',()=>{showTab(k);if(k===4)pcLoad()});
@@ -995,6 +1024,70 @@ $('esheet').addEventListener('click',e=>{if(e.target.id==='esheet')closeEdit()})
 $('eAdd').addEventListener('click',()=>{showTab(2);$('fq').focus()});
 $('nameBtn').addEventListener('click',()=>{askName();nameShow()});
 $('list').addEventListener('click',e=>{const h=e.target.closest('[data-tg]');if(!h)return;const k=h.dataset.tg;OPEN.has(k)?OPEN.delete(k):OPEN.add(k);render()});
+
+// ===== 거래명세표 사인 사진 (v032): 카메라로 찍기 / 휴대폰 사진 불러오기 → 폰에 먼저 보관 → 공유 저장소(드라이브 비공개 폴더)로 올림 =====
+var SG={rem:{},remAt:0,loc:[],pid:null,pn:'',ro:false}, SGIMG={}, SGBUSY=false;
+function sgDB(){return sgDB.p||(sgDB.p=new Promise((ok,no)=>{const r=indexedDB.open('tmapgo_sign',1);r.onupgradeneeded=()=>r.result.createObjectStore('p',{keyPath:'lid'});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)}))}
+async function sgTx(fn){const db=await sgDB();return new Promise((ok,no)=>{const t=db.transaction('p','readwrite');const q=fn(t.objectStore('p'));t.oncomplete=()=>ok(q&&q.result);t.onerror=()=>no(t.error)})}
+const sgPut=o=>sgTx(s=>s.put(o)), sgDelL=lid=>sgTx(s=>s.delete(lid));
+async function sgLoad(){try{SG.loc=(await sgTx(s=>s.getAll()))||[]}catch(e){SG.loc=[]}
+  const old=Date.now()-14*864e5;for(const o of SG.loc.filter(o=>o.fid&&o.t<old))await sgDelL(o.lid).catch(()=>{});SG.loc=SG.loc.filter(o=>!(o.fid&&o.t<old))}
+function sgList(pid){if(!SG)return [];const d=TODAY(),r=SG.rem[pid]||{},out=[],seen=new Set();
+  Object.entries(r).forEach(([fid,x])=>{if(!x)return;out.push({fid,lid:x.lid,t:x.t,by:x.by,src:x.src,st:'ok'});if(x.lid)seen.add(x.lid)});
+  SG.loc.filter(o=>o.day===d&&o.pid===pid&&!seen.has(o.lid)).forEach(o=>{if(o.fid&&SG.remAt>(o.upAt||0)&&!r[o.fid])return;out.push({fid:o.fid,lid:o.lid,t:o.t,by:o.by,src:o.src,st:o.fid?'ok':(o.st==='err'?'err':'up')})});
+  return out.sort((a,b)=>a.t-b.t)}
+function signBtn(s){if(!window.SG)return '';const p=pidOf(s),L=sgList(p),w=L.filter(x=>x.st!=='ok').length;
+  return '<div class="subs"><button class="sb sg'+(L.length?' has':'')+(w?' wait':'')+'" data-act="sign" data-pid="'+esc(p)+'" data-pn="'+esc(s.n)+'">'+(L.length?'명세표 사진 '+L.length+'장'+(w?' (올리는 중 '+w+')':'')+' · 보기·추가':'사인 받은 명세표 사진 찍기')+'</button></div>'}
+function sgOff(s){if(!window.SG)return '';let p=s.p;if(!p){const e=Object.entries(SG.rem).find(([k,v])=>Object.values(v||{}).some(x=>x&&x.n===s.n));p=e&&e[0]}
+  const n=p?Object.values(SG.rem[p]||{}).filter(Boolean).length:0;return n?'<button class="sgo" data-act="sign" data-pid="'+esc(p)+'" data-pn="'+esc(s.n)+'" data-ro="1">사인 사진 '+n+'장</button>':''}
+function sgRef(){render();if($('gsheet').classList.contains('on'))sgDraw()}
+function sgOpen(pid,pn,ro){if(!localStorage.getItem('tmapgo_k')){showTab(1);keyBox();toast('맨 위에 직원 암호를 넣어 주세요');return}
+  SG.pid=pid;SG.pn=pn||'거래처';SG.ro=!!ro;$('gF').style.display=ro?'none':'block';$('gsheet').classList.add('on');sgDraw();sgPull();sgSync()}
+function sgClose(){$('gsheet').classList.remove('on');SG.pid=null}
+function sgDraw(){const L=sgList(SG.pid);$('gT').textContent=SG.pn+' · 명세표 사진';
+  const SL={ok:'저장됨',up:'올리는 중…',err:'아직 못 올림 · 인터넷 되면 다시 보내요'};
+  $('gL').innerHTML=L.length?'<div class="ggrid">'+L.map(x=>{const k=x.fid||x.lid;return '<div class="gt"><div class="gim" data-act="sgview" data-k="'+esc(k)+'">'+(SGIMG[k]?'<img src="'+SGIMG[k]+'" alt="">':'불러오는 중')+'</div><div class="gm">'+esc(hm(x.t))+' · '+esc(x.by||'')+(x.src==='lib'?' · 사진첩':'')+'<br><span class="gs '+x.st+'">'+SL[x.st]+'</span></div>'+(SG.ro?'':'<button class="gdel" data-act="sgdel" data-k="'+esc(k)+'">지우기</button>')+'</div>'}).join('')+'</div>'
+    :'<div class="empty" style="text-align:center">아직 사진이 없어요.<br>사인 받은 거래명세표를<br>아래 버튼으로 찍어 주세요.</div>';
+  L.forEach(x=>{const k=x.fid||x.lid;if(SGIMG[k])return;sgImg(x).then(u=>{if(!u)return;const el=document.querySelector('#gL .gim[data-k="'+CSS.escape(k)+'"]');if(el)el.innerHTML='<img src="'+u+'" alt="">'}).catch(()=>{const el=document.querySelector('#gL .gim[data-k="'+CSS.escape(k)+'"]');if(el)el.textContent='사진을 못 불러왔어요'})})}
+async function sgImg(x){const k=x.fid||x.lid;if(SGIMG[k])return SGIMG[k];
+  const o=SG.loc.find(z=>(x.lid&&z.lid===x.lid)||(x.fid&&z.fid===x.fid));if(o&&o.buf)return SGIMG[k]=URL.createObjectURL(new Blob([o.buf],{type:'image/jpeg'}));
+  if(!x.fid)return null;const j=await storeCall({op:'img',id:x.fid});const b=atob(j.data),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);
+  return SGIMG[k]=URL.createObjectURL(new Blob([a],{type:j.mime||'image/jpeg'}))}
+async function sgShrink(f){const u=URL.createObjectURL(f);try{const im=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=u});
+  const sc=Math.min(1,1800/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*sc);c.height=Math.round(im.naturalHeight*sc);
+  const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);
+  const b=await new Promise(ok=>c.toBlob(ok,'image/jpeg',0.8));if(!b)throw new Error('blob');return await b.arrayBuffer()}finally{URL.revokeObjectURL(u)}}
+function sgB64(buf){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]);r.onerror=no;r.readAsDataURL(new Blob([buf],{type:'image/jpeg'}))})}
+async function sgAdd(files,src){files=[...(files||[])].filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|heic|webp)$/i.test(f.name));if(!files.length)return;
+  if(!me()&&!askName())return;let n=0;toast('사진을 준비하고 있어요…');
+  for(const f of files){try{const buf=await sgShrink(f);const o={lid:Date.now().toString(36)+Math.random().toString(36).slice(2,6),day:TODAY(),pid:SG.pid,pn:SG.pn,by:me(),t:Date.now(),src,buf,st:'up'};
+    await sgPut(o);SG.loc.push(o);n++}catch(e){toast('이 사진은 못 읽었어요. 다른 사진으로 해 주세요')}}
+  if(!n)return;sgRef();const pid=SG.pid;await sgSync();
+  const L=sgList(pid),bad=L.filter(x=>x.st!=='ok').length;toast(bad?'폰에 보관했어요. 인터넷이 되면 자동으로 올라가요':'사진 '+n+'장을 저장했어요');
+  const s=S.stops.find(z=>pidOf(z)===pid);if(s&&!s.done&&confirm('명세표 사진을 남겼어요.\n「'+s.n+'」 배송 완료도 같이 누를까요?')){s.done=true;if(!s.fin)s.fin=hhmm(new Date());tripMark();save();render();toast('배송 완료로 바꿨어요')}}
+async function sgSync(){if(SGBUSY||!localStorage.getItem('tmapgo_k'))return;SGBUSY=true;
+  try{for(const o of SG.loc.filter(o=>!o.fid)){o.st='up';
+    try{const j=await storeCall({op:'sign',date:o.day,pid:o.pid,pn:o.pn,by:o.by,t:o.t,src:o.src,lid:o.lid,data:await sgB64(o.buf)});
+      o.fid=j.fid;o.st='ok';o.upAt=Date.now();if(o.day===TODAY())((SG.rem[o.pid]=SG.rem[o.pid]||{})[j.fid]=j.rec);if(SGIMG[o.lid])SGIMG[j.fid]=SGIMG[o.lid]}
+    catch(e){o.st='err'}
+    await sgPut(o).catch(()=>{});sgRef()}}finally{SGBUSY=false}}
+async function sgPull(){if(!localStorage.getItem('tmapgo_k'))return;const k='sign:'+TODAY();
+  try{const j=await storeCall({op:'get',keys:k});SG.rem=((j.data[k]||{}).value)||{};SG.remAt=Date.now();sgRef()}catch(e){}}
+async function sgDel(k){const x=sgList(SG.pid).find(z=>(z.fid||z.lid)===k);if(!x||!confirm('이 사진을 지울까요?\n(지우면 사무실에서도 안 보여요)'))return;
+  try{if(x.fid){await storeCall({op:'signdel',date:TODAY(),pid:SG.pid,id:x.fid,by:me()});if(SG.rem[SG.pid])delete SG.rem[SG.pid][x.fid]}
+    const o=SG.loc.find(z=>(x.lid&&z.lid===x.lid)||(x.fid&&z.fid===x.fid));if(o){await sgDelL(o.lid).catch(()=>{});SG.loc=SG.loc.filter(z=>z!==o)}
+    sgRef();toast('지웠어요')}catch(e){toast('못 지웠어요. 인터넷 연결을 확인해 주세요')}}
+async function sgView(k){const x=sgList(SG.pid).find(z=>(z.fid||z.lid)===k);if(!x)return;try{const u=await sgImg(x);if(!u)return;$('gVi').src=u;$('gVs').href=u;
+  $('gVs').download='명세표_'+String(SG.pn).replace(/[\\/:*?"<>|]/g,'')+'_'+TODAY()+'_'+hm(x.t).replace(/\D/g,'').slice(-4)+'.jpg';$('gV').classList.add('on')}catch(e){toast('사진을 못 불러왔어요')}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
+  if(a==='sign'){e.preventDefault();sgOpen(b.dataset.pid,b.dataset.pn,b.dataset.ro==='1')}else if(a==='sgdel')sgDel(b.dataset.k);else if(a==='sgview')sgView(b.dataset.k)});
+$('gX').addEventListener('click',sgClose);$('gsheet').addEventListener('click',e=>{if(e.target.id==='gsheet')sgClose()});
+$('gVx').addEventListener('click',()=>$('gV').classList.remove('on'));
+['gCam','gLib'].forEach(id=>$(id).addEventListener('change',e=>{const f=e.target.files;sgAdd(f,id==='gCam'?'cam':'lib').finally(()=>{e.target.value=''})}));
+window.addEventListener('online',()=>sgSync());
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){sgSync();if(TAB===1)sgPull()}});
+setInterval(()=>{if(!document.hidden&&TAB===1&&localStorage.getItem('tmapgo_k'))sgPull()},60000);
+sgLoad().then(()=>{render();sgPull();sgSync()});
 showTab(1);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){tripArrCheck();if(!me()&&S.tday===TODAY()&&S.stops.some(s=>s.dep)&&!sessionStorage.getItem('tmapgo_askn')){sessionStorage.setItem('tmapgo_askn','1');setTimeout(()=>{const n=prompt('배송하시는 분 이름을 알려 주세요 (예: 기사 김OO)\n사무실 배송 현황에 이 이름으로 보여요','');if(n&&n.trim()){localStorage.setItem('tmapgo_name',n.trim().slice(0,20));tripPush(true)}},600)}}});
 setTimeout(tripArrCheck,1500);
@@ -1087,7 +1180,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v031';
+const APP_VER='v032';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

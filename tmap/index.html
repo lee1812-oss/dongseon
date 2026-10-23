@@ -140,6 +140,13 @@ body.editing .fdel{display:block}
 .sh-l .hint{font-size:15.5px}.kbox .hint{font-size:16px;color:#5b4a1a}
 .kbox{background:#FFF8E6;border:1px solid #f1d48a;border-radius:12px;padding:12px;margin-bottom:6px}.kbox b{font-size:17px}
 @media (forced-colors:active){.rbtn,.seg button.on{forced-color-adjust:none;background-color:#2B3BCF !important;color:#fff !important}}
+.tk{margin-top:10px;padding:9px 12px;border-radius:10px;font-size:17px;font-weight:800;line-height:1.4}
+.tk.mv{background:#EAF0FF;color:#1F3FBF}.tk.ar{background:#E7F4EC;color:#1F6B45}.tk.dn{background:#f1f1f3;color:#5b5b60}.tk.lt{background:#FFF1E0;color:#b45309}
+.tend{margin:4px 0 8px;padding:12px;border-radius:12px;background:#E7F4EC;color:#1F6B45;font-size:18px;font-weight:800;text-align:center}
+.tp{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.tp h4{margin:0 0 8px;font-size:18px;color:#3a2614;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.tp h4 span{font-size:14px;color:var(--mu);font-weight:600}
+.tr{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px dashed #ddd;font-size:16.5px}.tr:first-of-type{border-top:0}.tr b{flex:1;min-width:0}.tr i{font-style:normal;font-weight:800;text-align:right;white-space:nowrap}
+.tr i.mv{color:#1F3FBF}.tr i.ar,.tr i.dn{color:#1F6B45}.tr i.wt{color:#8a8a90;font-weight:600}.tr i.lt{color:#b45309}
 </style>
 </head>
 <body>
@@ -168,6 +175,7 @@ body.editing .fdel{display:block}
   <h2 class="sec" id="dayTitle">📦 배송 목록</h2>
   <div class="rbar" id="rbar"></div>
   <div id="list"></div>
+<div id="tripEnd"></div>
 
   <h2 class="sec">⭐ 빠른 찾기</h2>
   <div id="favs"></div>
@@ -184,9 +192,10 @@ body.editing .fdel{display:block}
     <div class="hint">주소로 등록한 곳은 티맵이 열리면 검색 결과에서 한 번 더 눌러 주세요.</div>
   </div>
 
-  <button class="btn gr" id="share" style="margin-top:22px">📨 배송 목록 링크 보내기 (카톡·문자)</button>
+  <button class="btn ln" id="tripOpen" style="margin-top:22px">🏢 오늘 배송 현황 보기 (사무실용)</button>
+<button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
   <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v016 · 이 휴대폰에만 저장돼요</div>
+  <div class="ver">v017 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
   <div class="sh-h"><b id="shT">전달사항</b><a class="fgo" id="shGo" href="#" data-act="go" style="min-height:44px">🚗 티맵</a><button id="shX">닫기</button></div>
@@ -203,6 +212,11 @@ body.editing .fdel{display:block}
   <div class="sh-h"><b>🧭 최적 코스 정하기</b><button id="rX">닫기</button></div>
   <div class="sh-l" id="rL"></div>
   <div class="sh-f"><button class="rbtn" id="rCalc">🧭 최적 코스 계산</button><div class="hint" style="margin-top:6px;text-align:center">누를 때만 티맵에 물어봐요 (하루 무료 횟수가 있어요)</div></div>
+</div></div>
+<div class="sheet" id="tsheet"><div class="sh">
+<div class="sh-h"><b style="flex:1">🏢 오늘 배송 현황</b><button id="tX">닫기</button></div>
+<div class="sh-l" id="tL"></div>
+<div class="sh-f"><div class="hint" style="margin:0;text-align:center">기사님이 「🚚 출발」을 누르면 여기에 자동으로 보여요 · 30초마다 새로 읽어요</div></div>
 </div></div>
 <div class="upd" id="upd"></div>
 <div class="toast" id="toast"></div>
@@ -288,14 +302,15 @@ function render(){
   const L=$('list');
   L.innerHTML=S.stops.length?S.stops.map((s,i)=>`
   <div class="card ${s.done?'done':''}">
-    <div class="row"><div class="nob"><div class="no">${s.done?'✓':i+1}</div>${s.eta&&!s.done?`<div class="eta">${esc(s.eta)}<br>도착</div>`:''}</div>
+    <div class="row"><div class="nob"><div class="no">${s.done?'✓':i+1}</div>${(s.te||s.eta)&&!s.done&&!s.arr?`<div class="eta">${esc(s.te||s.eta)}<br>도착</div>`:''}</div>
       <div style="flex:1;min-width:0">
         <div class="nm">${esc(s.n)}${(s.y&&s.x)?'':'<span class="tag">주소로 찾기</span>'}</div>
         <div class="ad">${esc(s.a)}</div>
         ${s.m?`<div class="memo">📝 ${esc(s.m)}</div>`:''}
       </div></div>
     ${msgPrev(s)}
-    <a class="go" href="${tmapHref(s)}" data-act="go">🚗 티맵 길안내 시작</a>
+    ${tripLine(s)}
+    <a class="go" href="${tmapHref(s)}" data-act="go" data-i="${i}">${s.dep&&!s.done?'🚗 티맵 다시 열기':'🚚 출발 · 티맵 길안내'}</a>
     ${msgBtn(s)}
     <div class="subs">
       <a class="sb" href="${kakaoHref(s)}" target="_blank" rel="noopener">카카오맵</a>
@@ -311,6 +326,7 @@ function render(){
   renderFav();
   if(typeof renderRouteBar==='function')renderRouteBar();
   if(typeof renderMsgs==='function')renderMsgs();
+  if(typeof tripEndBar==='function')tripEndBar();
 }
 function renderFav(){
   $('favs').innerHTML=FAV.length?'<div class="fav">'+FAV.map((f,i)=>`<div class="fv"><div class="t"><b>${esc(f.n)}</b><span>${esc(f.a||'주소 미확인 · 티맵에서 이름으로 찾기')}</span></div>
@@ -413,7 +429,7 @@ document.addEventListener('click',e=>{
   const i=+b.dataset.i, act=b.dataset.act, s=S.stops[i];
   if(act==='msg'){openSheet(b.dataset.pid,b.dataset.pn);return}
   if(act==='mdel'){msgDel(b.dataset.pid,b.dataset.mid);return}
-  if(act==='go'){if(isIOS){const t=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t<3000)toast('티맵이 안 열리면 앱스토어에서 「TMAP」을 설치해 주세요.')},2000)}return}
+  if(act==='go'){if(b.dataset.i!==undefined&&S.stops[i])tripGo(i);if(isIOS){const t=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t<3000)toast('티맵이 안 열리면 앱스토어에서 「TMAP」을 설치해 주세요.')},2000)}return}
   if(act==='sadd'){const id=b.dataset.id, at=S.stops.findIndex(z=>z.id&&z.id===id);
     if(at>=0){const z=S.stops[at];if(confirm('「'+z.n+'」을(를) 오늘 배송 목록에서 뺄까요?')){S.stops.splice(at,1);delete S.preset;noPlan();save();render();renderFind();toast('배송 목록에서 뺐어요')}return}
     let st=null;
@@ -426,7 +442,7 @@ document.addEventListener('click',e=>{
     const st=toStop(c);FAV.push({id:st.id,n:st.n,a:c.a,y:st.y,x:st.x});saveFav();renderFav();renderFind();toast('⭐ 「'+c.n+'」을(를) 빠른 찾기에 등록했어요');return}
   if(act==='fdel'){const f=FAV[i];if(f&&confirm('「'+f.n+'」을(를) 빠른 찾기에서 지울까요?')){FAV.splice(i,1);saveFav();renderFav()}return}
   if(act==='copy'){navigator.clipboard?.writeText(s.a||s.n).then(()=>toast('주소를 복사했어요'),()=>toast(s.a));return}
-  if(act==='done'){s.done=!s.done;save();render();return}
+  if(act==='done'){s.done=!s.done;if(s.done){if(!s.fin)s.fin=hhmm(new Date())}else delete s.fin;tripMark();save();render();return}
   if(act==='up'&&i>0){[S.stops[i-1],S.stops[i]]=[S.stops[i],S.stops[i-1]];delete S.preset;noPlan();save();render();return}
   if(act==='down'&&i<S.stops.length-1){[S.stops[i+1],S.stops[i]]=[S.stops[i],S.stops[i+1]];delete S.preset;noPlan();save();render();return}
   if(act==='del'){if(confirm('「'+s.n+'」을(를) 배송 목록에서 지울까요?')){S.stops.splice(i,1);delete S.preset;noPlan();save();render()}return}
@@ -768,8 +784,87 @@ $('rL').addEventListener('change',e=>{const t=e.target,r=t.dataset&&t.dataset.r,
   RS.res=RS.alt=null;RS.err='';renderRoute();
 });
 
+// ===== v017 배송 기록: 「출발」 버튼 하나로 출발·도착 예정·도착·완료를 남기고 사무실 「오늘 배송 현황」에 공유 =====
+const TODAY=()=>ymd(new Date());
+const DEV=(()=>{let d=localStorage.getItem('tmapgo_dev');if(!d){d='d'+Math.random().toString(36).slice(2,8);localStorage.setItem('tmapgo_dev',d)}return d})();
+const LATE_MIN=30;
+(function tripDayReset(){if(S.tday&&S.tday!==TODAY()){S.stops.forEach(s=>{delete s.dep;delete s.arr;delete s.te;delete s.teR;delete s.fin});delete S.tday;delete S.tend;localStorage.setItem(KEY,JSON.stringify(S))}})();
+function tripLine(s){
+  if(s.done)return '<div class="tk dn">✔ 배송 완료'+(s.arr?' · '+esc(s.arr)+' 도착':s.fin?' · '+esc(s.fin)+' 완료':'')+'</div>';
+  if(s.arr)return '<div class="tk ar">📍 '+esc(s.arr)+' 도착했어요</div>';
+  if(s.dep){const late=tripLate(s.te);return '<div class="tk '+(late?'lt':'mv')+'">🚚 '+esc(s.dep)+' 출발'+(s.te?' · '+(s.teR?'약 ':'')+esc(s.te)+' 도착 예정':'')+'</div>'}
+  return '';
+}
+function tripLate(te){if(!te||!/^\d\d:\d\d$/.test(te))return false;const [h,m]=te.split(':').map(Number);const d=new Date();d.setHours(h,m,0,0);return Date.now()-d>LATE_MIN*60e3}
+function tripMark(){S.tday=TODAY()}
+function tripFrom(s){
+  const prev=S.stops.filter(z=>z!==s&&(z.dep||z.done)&&z.y&&z.x).sort((a,b)=>String(b.dep||b.fin||'').localeCompare(String(a.dep||a.fin||'')))[0];
+  return prev||CO;
+}
+function tripGo(i){
+  const s=S.stops[i],now=new Date();
+  if(s.dep&&!s.done&&S.tday===TODAY())return; // 같은 곳 티맵 다시 열기는 기록 그대로
+  S.stops.forEach(z=>{if(z!==s&&z.dep&&!z.done){z.done=true;if(!z.fin)z.fin=hhmm(now)}});
+  s.done=false;delete s.arr;delete s.fin;s.dep=hhmm(now);delete S.tend;tripMark();
+  if(s.y&&s.x){const o=tripFrom(s);const km=hav(o,s)*1.35;const sp=km<10?30:km<30?45:65;const t=new Date(now.getTime()+Math.max(5,Math.round(km/sp*60+3))*60e3);s.te=hhmm(t);s.teR=1}else{delete s.te;delete s.teR}
+  save();tripPush(true);setTimeout(render,60);
+  if(s.y&&s.x&&tKey()){const o=tripFrom(s);tapi('/routes?version=1',{startX:String(o.x),startY:String(o.y),endX:String(s.x),endY:String(s.y),reqCoordType:'WGS84GEO',resCoordType:'WGS84GEO',searchOption:'0'},[])
+    .then(j=>{const sec=+((j.features&&j.features[0]&&j.features[0].properties)||{}).totalTime;if(sec>0&&s.dep&&!s.arr){s.te=hhmm(new Date(now.getTime()+sec*1000));delete s.teR;save();render();tripPush(true)}}).catch(()=>{});}
+}
+async function tripArrCheck(){
+  if(S.tday!==TODAY())return;
+  const s=S.stops.find(z=>z.dep&&!z.arr&&!z.done&&z.y&&z.x);if(!s||!navigator.geolocation)return;
+  try{if(navigator.permissions){const p=await navigator.permissions.query({name:'geolocation'});if(p.state==='denied')return}}catch(e){}
+  navigator.geolocation.getCurrentPosition(p=>{
+    const d=hav({y:p.coords.latitude,x:p.coords.longitude},s);
+    if(d<=0.5&&!s.arr&&!s.done){s.arr=hhmm(new Date());save();render();tripPush(true);toast('📍 「'+s.n+'」 도착 시각을 기록했어요')}
+  },()=>{},{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+}
+function tripEndBar(){const b=$('tripEnd');if(!b)return;
+  if(S.tday!==TODAY()||!S.stops.some(s=>s.dep)){b.innerHTML='';return}
+  b.innerHTML=S.tend?'<div class="tend">🏠 '+esc(S.tend)+' 오늘 배송 끝 · 수고하셨어요</div>':'<button class="btn ol" id="tEndB">🏠 오늘 배송 끝</button>';
+  const e=$('tEndB');if(e)e.onclick=()=>{if(!confirm('오늘 배송을 모두 마쳤나요?\n출발한 곳은 모두 「배송 완료」로 바뀌어요.'))return;const t=hhmm(new Date());S.stops.forEach(s=>{if(s.dep&&!s.done){s.done=true;if(!s.fin)s.fin=t}});S.tend=t;save();render();tripPush(true);toast('🏠 오늘 배송 끝을 사무실에 알렸어요')};
+}
+let TPT=null;
+function tripSoon(){clearTimeout(TPT);TPT=setTimeout(()=>tripPush(false),2500)}
+async function tripPush(now){
+  clearTimeout(TPT);
+  if(!localStorage.getItem('tmapgo_k')||!S.stops.length||S.tday!==TODAY())return;
+  try{const t=await msgTok();if(!t)return;
+    const v={};v[DEV]={who:me()||'이름 없음',at:Date.now(),end:S.tend||'',list:S.stops.map(s=>({n:s.n,dep:s.dep||'',arr:s.arr||'',te:s.te||'',r:s.teR?1:0,done:!!s.done,fin:s.fin||''}))};
+    await fetch(STORE_URL,{method:'POST',keepalive:true,body:JSON.stringify({token:t,op:'merge',key:'trip:'+TODAY(),value:v,by:me()||DEV})});
+  }catch(e){}
+}
+(function(){const s0=save;save=function(){s0();tripSoon()}})();
+// 순서·추가·삭제·최적 코스로 목록이 바뀌면 오늘 기록으로 표시 (기사님이 직접 코스를 바꿔도 사무실에 그대로 보임)
+(function(){const r0=render;render=function(){const sig=S.stops.map(s=>s.n).join('|');if(render.sig!==undefined&&render.sig!==sig&&S.stops.length){tripMark();localStorage.setItem(KEY,JSON.stringify(S));tripSoon()}render.sig=sig;r0()}})();
+// ---- 사무실: 오늘 배송 현황 ----
+let TPI=null;
+function tripOpen(){if(!localStorage.getItem('tmapgo_k')){toast('카톡으로 받은 링크로 한 번 열어 주세요');return}
+  $('tsheet').classList.add('on');$('tL').innerHTML='<div class="hint">불러오는 중…</div>';tripPull();clearInterval(TPI);TPI=setInterval(()=>{if(!document.hidden)tripPull()},30000)}
+function tripClose(){$('tsheet').classList.remove('on');clearInterval(TPI)}
+async function tripPull(){
+  try{const j=await storeCall({op:'get',keys:'trip:'+TODAY()});const all=((j.data['trip:'+TODAY()]||{}).value)||{};
+    const ps=Object.values(all).filter(p=>p&&p.list&&p.list.length).sort((a,b)=>b.at-a.at);
+    $('tL').innerHTML=ps.length?ps.map(tripCard).join(''):'<div class="card empty">아직 오늘 기록이 없어요.<br>기사님이 「🚚 출발」을 누르면 여기에 보여요.</div>';
+  }catch(e){$('tL').innerHTML='<div class="card empty">현황을 못 불러왔어요. 인터넷 연결을 확인하고 잠시 뒤 다시 열어 주세요.</div>'}
+}
+function tripCard(p){
+  const at=new Date(p.at);
+  const rows=p.list.map((s,i)=>{let c='wt',t='대기';
+    if(s.done){c='dn';t='✔ 완료'+(s.arr?' · '+s.arr+' 도착':s.fin?' · '+s.fin+' 완료':'')}
+    else if(s.arr){c='ar';t='📍 '+s.arr+' 도착'}
+    else if(s.dep){const l=tripLate(s.te);c=l?'lt':'mv';t=l?'⚠ 확인 필요 · '+(s.r?'약 ':'')+s.te+' 도착 예정이었어요':'🚚 이동 중 · '+(s.te?(s.r?'약 ':'')+s.te+' 도착 예정':s.dep+' 출발')}
+    return '<div class="tr"><b>'+(i+1)+'. '+esc(s.n)+'</b><i class="'+c+'">'+esc(t)+'</i></div>'}).join('');
+  return '<div class="tp"><h4>🚚 '+esc(p.who)+'<span>마지막 소식 '+hhmm(at)+'</span></h4>'+rows+(p.end?'<div class="tend" style="margin:8px 0 0">🏠 '+esc(p.end)+' 오늘 배송 끝</div>':'')+'</div>';
+}
+$('tripOpen').addEventListener('click',tripOpen);$('tX').addEventListener('click',tripClose);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){tripArrCheck();if(!me()&&S.tday===TODAY()&&S.stops.some(s=>s.dep)&&!sessionStorage.getItem('tmapgo_askn')){sessionStorage.setItem('tmapgo_askn','1');setTimeout(()=>{const n=prompt('배송하시는 분 이름을 알려 주세요 (예: 기사 김OO)\n사무실 배송 현황에 이 이름으로 보여요','');if(n&&n.trim()){localStorage.setItem('tmapgo_name',n.trim().slice(0,20));tripPush(true)}},600)}}});
+setTimeout(tripArrCheck,1500);
+msgTok&&msgTok().catch(()=>{});
+
 // ---- 새 버전 자동 받기: 서버의 버전과 다르면 한 번 새로 연다 ----
-const APP_VER='v016';
+const APP_VER='v017';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){
@@ -787,6 +882,7 @@ msgPull();
 verCheck();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)verCheck()});
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
 </script>
 </body>
 </html>

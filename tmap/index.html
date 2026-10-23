@@ -147,6 +147,7 @@ body.editing .fdel{display:block}
 .tp h4{margin:0 0 8px;font-size:18px;color:#3a2614;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.tp h4 span{font-size:14px;color:var(--mu);font-weight:600}
 .tr{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px dashed #ddd;font-size:16.5px}.tr:first-of-type{border-top:0}.tr b{flex:1;min-width:0}.tr i{font-style:normal;font-weight:800;text-align:right;white-space:nowrap}
 .tr i.mv{color:#1F3FBF}.tr i.ar,.tr i.dn{color:#1F6B45}.tr i.wt{color:#8a8a90;font-weight:600}.tr i.lt{color:#b45309}
+.manb{width:100%;min-height:52px;margin-top:12px;border-radius:12px;border:1.5px dashed #b9a48f;background:#FBF6F0;color:var(--br);font-size:17px;font-weight:800;font-family:inherit}
 </style>
 </head>
 <body>
@@ -167,6 +168,18 @@ body.editing .fdel{display:block}
       <button class="btn br" id="fpwok">확인</button>
     </div>
     <div id="fres"></div>
+    <div id="manW" style="display:none">
+      <button class="manb" id="manOpen">✍️ 찾는 곳이 없으면 직접 넣기</button>
+      <div id="manBox" style="display:none">
+        <label for="fn">이름</label>
+        <input id="fn" placeholder="예) (화성)바다백미">
+        <label for="fa">주소</label>
+        <input id="fa" placeholder="예) 경기 화성시 서신면 백미길 210-35">
+        <button class="btn br" id="addManual">⭐ 빠른 찾기에 등록</button>
+        <button class="btn ol" id="addManualStop">📦 오늘 배송에 넣기</button>
+        <div class="hint">주소로 넣은 곳은 티맵이 열리면 검색 결과에서 한 번 더 눌러 주세요.</div>
+      </div>
+    </div>
   </div>
 
   <h2 class="sec">💬 배송 전달사항 <span class="cnt" id="mcnt"></span></h2>
@@ -179,23 +192,12 @@ body.editing .fdel{display:block}
 
   <h2 class="sec">⭐ 빠른 찾기</h2>
   <div id="favs"></div>
-  <button class="btn ol" id="regOpen">＋ 빠른 찾기 등록</button>
-
-  <div class="box" id="reg" style="display:none">
-    <h3>⭐ 빠른 찾기 등록 <button id="regClose">닫기 ✕</button></h3>
-    <div class="hint" style="margin-top:0">맨 위 「🔍 거래처 찾기」에서 찾은 뒤 <b>⭐ 등록</b>을 누르면 여기 들어와요. 목록에 없는 곳은 아래에 직접 넣어 주세요.</div>
-    <label for="fn">이름</label>
-    <input id="fn" placeholder="예) (화성)바다백미">
-    <label for="fa">주소</label>
-    <input id="fa" placeholder="예) 경기 화성시 서신면 백미길 210-35">
-    <button class="btn br" id="addManual">빠른 찾기에 등록</button>
-    <div class="hint">주소로 등록한 곳은 티맵이 열리면 검색 결과에서 한 번 더 눌러 주세요.</div>
-  </div>
+    </div>
 
   <button class="btn ln" id="tripOpen" style="margin-top:22px">🏢 오늘 배송 현황 보기 (사무실용)</button>
 <button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
   <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v017 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+  <div class="ver">v018 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
   <div class="sh-h"><b id="shT">전달사항</b><a class="fgo" id="shGo" href="#" data-act="go" style="min-height:44px">🚗 티맵</a><button id="shX">닫기</button></div>
@@ -331,7 +333,7 @@ function render(){
 function renderFav(){
   $('favs').innerHTML=FAV.length?'<div class="fav">'+FAV.map((f,i)=>`<div class="fv"><div class="t"><b>${esc(f.n)}</b><span>${esc(f.a||'주소 미확인 · 티맵에서 이름으로 찾기')}</span></div>
     <button class="mb" data-act="msg" data-pid="${esc(pidOf(f))}" data-pn="${esc(f.n)}">💬${msgCount(pidOf(f))||''}</button><a class="fgo" href="${tmapHref(f)}" data-act="go">🚗 티맵</a><button class="fdel" data-act="fdel" data-i="${i}">삭제</button>${addBtn(f.id,i)}</div>`).join('')+'</div>'
-    :'<div class="card empty">아직 등록된 곳이 없어요.<br>자주 가는 거래처를 등록해 두면 여기서 바로 티맵을 열 수 있어요.</div>';
+    :'<div class="card empty">아직 등록된 곳이 없어요.<br>맨 위 「🔍 거래처 찾기」에서 <b>⭐ 빠른 등록</b>을 누르면 여기 들어와요.</div>';
 }
 
 // ---- 거래처 명단 (암호화 파일, 매일 06:30 갱신 · 신규 거래처 자동 추가) ----
@@ -396,14 +398,15 @@ async function custLoad(){
 }
 function renderFind(){
   const R=$('fres'), q=norm($('fq').value);
+  $('manW').style.display=q?'block':'none';if(!q)$('manBox').style.display='none';
   if(!q){R.innerHTML='';return}
   if(!C.list){R.innerHTML='<div class="hint" style="margin-top:10px;color:var(--or)">거래처 목록이 아직 안 열렸어요. 카톡으로 받은 「티맵 바로가기」 링크를 다시 눌러 주세요.</div>';return}
   const L=C.list.filter(c=>norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(q)).slice(0,30);
   R.innerHTML=L.length?L.map(c=>{const inF=FAV.some(f=>f.id===c.id);
     return `<div class="fr"><div class="t"><div class="fn">${esc(c.n)}</div>
     <div class="fs">${c.r?esc(c.r)+' · ':''}${c.a?esc(c.a):'<span style="color:var(--or)">주소 미확인</span>'}</div></div>
-    <div class="fbtns"><a class="fgo" href="${tmapHref(toStop(c))}" data-act="go">🚗 티맵</a><button data-act="fadd" data-id="${c.id}" class="${inF?'in':''}">${inF?'✓ 등록됨':'⭐ 등록'}</button><button class="mb" data-act="msg" data-pid="${esc(c.id)}" data-pn="${esc(c.n)}">💬 전달${msgCount(c.id)?' '+msgCount(c.id):''}</button></div>${addBtn(c.id)}</div>`}).join('')
-    :'<div class="hint" style="margin-top:10px">「'+esc($('fq').value)+'」 거래처가 없어요. 아래 「직접 입력」으로 등록해 주세요.</div>';
+    <div class="fbtns"><a class="fgo" href="${tmapHref(toStop(c))}" data-act="go">🚗 티맵</a><button data-act="fadd" data-id="${c.id}" class="${inF?'in':''}">${inF?'✓ 빠른 찾기에 있음':'⭐ 빠른 등록'}</button><button class="mb" data-act="msg" data-pid="${esc(c.id)}" data-pn="${esc(c.n)}">💬 전달${msgCount(c.id)?' '+msgCount(c.id):''}</button></div>${addBtn(c.id)}</div>`}).join('')
+    :'<div class="hint" style="margin-top:10px">「'+esc($('fq').value)+'」 거래처가 없어요. 아래 「✍️ 직접 넣기」를 눌러 주세요.</div>';
 }
 function applyPending(){
   if(!C.pending||!C.list)return;
@@ -447,17 +450,18 @@ document.addEventListener('click',e=>{
   if(act==='down'&&i<S.stops.length-1){[S.stops[i+1],S.stops[i]]=[S.stops[i],S.stops[i+1]];delete S.preset;noPlan();save();render();return}
   if(act==='del'){if(confirm('「'+s.n+'」을(를) 배송 목록에서 지울까요?')){S.stops.splice(i,1);delete S.preset;noPlan();save();render()}return}
 });
-$('regOpen').addEventListener('click',()=>{$('reg').style.display='block';$('regOpen').style.display='none'});
-$('regClose').addEventListener('click',()=>{$('reg').style.display='none';$('regOpen').style.display='flex'});
+
+
 $('fq').addEventListener('input',renderFind);
 $('fq').addEventListener('focus',()=>{if(!C.list&&C.state!=='loading')custLoad()});
 $('fpwok').addEventListener('click',()=>{const v=$('fpw').value.trim();if(!v){toast('암호를 넣어 주세요');return}localStorage.setItem(PKEY,v);C.badPass=false;$('fpw').value='';custLoad()});
-$('addManual').addEventListener('click',()=>{
-  const n=$('fn').value.trim(), a=$('fa').value.trim();
-  if(!n&&!a){toast('이름이나 주소를 넣어 주세요');return}
-  FAV.push({id:'m'+Date.now(),n:n||a,a,y:null,x:null});saveFav();renderFav();
-  $('fn').value=$('fa').value='';toast('⭐ 빠른 찾기에 등록했어요');
-});
+$('manOpen').addEventListener('click',()=>{const b=$('manBox');const on=b.style.display==='none';b.style.display=on?'block':'none';if(on){if(!$('fn').value)$('fn').value=$('fq').value.trim();$('fa').focus()}});
+function manRead(){const n=$('fn').value.trim(), a=$('fa').value.trim();if(!n&&!a){toast('이름이나 주소를 넣어 주세요');return null}return {id:'m'+Date.now(),n:n||a,a:a||n}}
+function manDone(){$('fn').value=$('fa').value='';$('manBox').style.display='none'}
+$('addManual').addEventListener('click',()=>{const m=manRead();if(!m)return;
+  FAV.push({id:m.id,n:m.n,a:m.a,y:null,x:null});saveFav();renderFav();manDone();toast('⭐ 「'+m.n+'」을(를) 빠른 찾기에 등록했어요');});
+$('addManualStop').addEventListener('click',()=>{const m=manRead();if(!m)return;
+  S.stops.push({id:m.id,n:m.n,a:m.a,y:null,x:null,m:'주소 미확인 · 티맵에서 주소로 찾아요'});delete S.preset;noPlan();save();render();renderFind();manDone();toast('📦 「'+m.n+'」을(를) 배송 목록 '+S.stops.length+'번에 넣었어요');});
 $('editT').addEventListener('click',()=>{document.body.classList.toggle('editing');$('editT').textContent=document.body.classList.contains('editing')?'✔ 편집 끝':'✏️ 순서 바꾸기·삭제'});
 $('share').addEventListener('click',async()=>{
   if(!S.stops.length){toast('보낼 거래처가 없어요');return}
@@ -864,7 +868,7 @@ setTimeout(tripArrCheck,1500);
 msgTok&&msgTok().catch(()=>{});
 
 // ---- 새 버전 자동 받기: 서버의 버전과 다르면 한 번 새로 연다 ----
-const APP_VER='v017';
+const APP_VER='v018';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

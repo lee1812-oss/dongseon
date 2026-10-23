@@ -98,6 +98,9 @@ body.editing .fdel{display:block}
 .mprev.k-cust-box{background:#FFF1DC;border-color:#f0c48a}.mprev.k-office-box{background:#EEF3FF;border-color:#c4d6ff}
 .kind{display:flex;gap:6px;margin-bottom:8px}.kind button{flex:1;min-height:46px;border-radius:10px;border:1.5px solid var(--ln);background:#fff;font-size:15.5px;font-weight:700}
 .kind button.on[data-k="office"]{background:#1F4FBF;color:#fff;border-color:#1F4FBF}.kind button.on[data-k="cust"]{background:#C26A0A;color:#fff;border-color:#C26A0A}.kind button.on[data-k="driver"]{background:#1F6B45;color:#fff;border-color:#1F6B45}
+.sh{overflow:auto}
+@media (max-height:700px){.sh-f textarea{min-height:56px}.qk button{min-height:40px}.sh-f .btn{min-height:50px;margin-top:8px}.kind button{min-height:42px}.sh-l{min-height:90px}}
+.upd{position:fixed;left:12px;right:12px;top:calc(10px + env(safe-area-inset-top));z-index:9;background:#1F6B45;color:#fff;border-radius:12px;padding:12px 14px;font-size:16.5px;font-weight:700;text-align:center;display:none}
 .notice{background:#e8f0ff;border:1px solid #c4d6ff;color:#173c8a;border-radius:12px;padding:10px 12px;font-size:15.5px;margin-bottom:10px;display:none}
 </style>
 </head>
@@ -144,7 +147,7 @@ body.editing .fdel{display:block}
 
   <button class="btn gr" id="share" style="margin-top:22px">📨 배송 목록 링크 보내기 (카톡·문자)</button>
   <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v012 · 이 휴대폰에만 저장돼요</div>
+  <div class="ver">v013 · 이 휴대폰에만 저장돼요</div>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
   <div class="sh-h"><b id="shT">전달사항</b><a class="fgo" id="shGo" href="#" data-act="go" style="min-height:44px">🚗 티맵</a><button id="shX">닫기</button></div>
@@ -157,6 +160,7 @@ body.editing .fdel{display:block}
     <button class="btn br" id="shSend">보내기</button>
   </div>
 </div></div>
+<div class="upd" id="upd"></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -499,10 +503,24 @@ document.querySelectorAll('.qk button').forEach(b=>b.addEventListener('click',()
 setInterval(()=>{if(!document.hidden)msgPull()},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)msgPull()});
 
+// ---- 새 버전 자동 받기: 서버의 버전과 다르면 한 번 새로 연다 ----
+const APP_VER='v013';
+async function verCheck(){
+  try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
+    if(v&&v!==APP_VER){
+      const last=sessionStorage.getItem('tmapgo_upd');
+      if(last===v){const u=$('upd');u.textContent='🔄 새 버전('+v+')이 있어요. 눌러서 업데이트';u.style.display='block';u.onclick=()=>location.reload();return}
+      sessionStorage.setItem('tmapgo_upd',v);
+      if(navigator.serviceWorker){const rg=await navigator.serviceWorker.getRegistration();if(rg)await rg.update().catch(()=>{})}
+      if(!$('sheet').classList.contains('on'))location.reload();
+    }}catch(e){}
+}
 render();
 setupInstall();
 custLoad();
 msgPull();
+verCheck();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)verCheck()});
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>

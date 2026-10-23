@@ -247,7 +247,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v027 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
+  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v028 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -274,7 +274,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
       <div class="hint" id="fmsg">2026년 이카운트 판매 거래처에서 찾아요.</div>
       <div id="fpass" style="display:none">
         <label for="fpw">직원 암호 (「내 동선」 앱과 같은 암호)</label>
-        <input id="fpw" type="password" inputmode="numeric" autocomplete="off">
+        <input id="fpw" type="text" inputmode="numeric" autocomplete="off" style="-webkit-text-security:disc" data-lpignore="true" data-1p-ignore="true">
         <button class="btn br" id="fpwok">확인</button>
       </div>
       <div id="fres"></div>
@@ -301,7 +301,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">📨 배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div></div>
-    <div class="ver">v027 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="ver">v028 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
@@ -731,7 +731,7 @@ function closeRoute(){$('rsheet').classList.remove('on')}
 function segB(r,v,t,on){return '<button data-r="'+r+'" data-v="'+v+'" class="'+(on?'on':'')+'">'+t+'</button>'}
 function renderRoute(){
   const L=$('rL'), key=tKey(); let h='';
-  if(!key||RS.keyBad||RS.keyAsk) h+='<div class="kbox"><b>🔑 '+(RS.keyBad?'티맵 열쇠가 맞지 않아요':key?'새 티맵 열쇠 넣기':'티맵 열쇠가 필요해요')+'</b><div class="hint">최적 코스 계산은 티맵에 물어봐야 해서 열쇠가 있어야 해요.<br><b>사무실(이혜영)에게 열쇠를 받아 한 번만 넣어 주세요.</b> 이 휴대폰에만 저장돼요. (열쇠가 없어도 다른 기능은 그대로 써요)</div><input class="rin" id="rKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="여기에 열쇠 붙여넣기"><button class="btn br" data-r="key" style="min-height:54px">열쇠 저장</button></div>';
+  if(!key||RS.keyBad||RS.keyAsk) h+='<div class="kbox"><b>🔑 '+(RS.keyBad?'티맵 열쇠가 맞지 않아요':key?'새 티맵 열쇠 넣기':'티맵 열쇠가 필요해요')+'</b><div class="hint">최적 코스 계산은 티맵에 물어봐야 해서 열쇠가 있어야 해요.<br><b>사무실(이혜영)에게 열쇠를 받아 한 번만 넣어 주세요.</b> 이 휴대폰에만 저장돼요. (열쇠가 없어도 다른 기능은 그대로 써요)</div><input class="rin" id="rKey" type="text" style="-webkit-text-security:disc" data-lpignore="true" data-1p-ignore="true" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="여기에 열쇠 붙여넣기"><button class="btn br" data-r="key" style="min-height:54px">열쇠 저장</button></div>';
   h+='<div class="rq">① 어디서 출발해요?</div><div class="seg">'+segB('from','co','🏭 회사(빵을그리다)',O.from==='co')+segB('from','gps','📍 현재 위치',O.from==='gps')+'</div>';
   const tm=O.when!=='now';
   h+='<div class="rq">② 언제 출발해요?</div><div class="seg">'+segB('when','now','⏱ 지금 출발',!tm)+segB('when','set','🕘 시간 정하기',tm)+'</div>'+(tm?'<input class="rin" type="time" data-r="whent" value="'+esc(O.when)+'" aria-label="출발 시각">'+(S.day&&S.day>ymd(new Date())?'<div class="hint">'+md(new Date(S.day+'T00:00:00'))+' 배송 날짜 기준이에요.</div>':''):'');
@@ -1074,7 +1074,7 @@ setTimeout(()=>{ttsRow();wake();const lo=$('loadOpen');if(lo)lo.onclick=openLoad
 function keyBox(){const b=$('keyBox');if(!b)return;if(localStorage.getItem('tmapgo_k')){b.innerHTML='';b.style.display='none';return}
   b.style.display='block';
   b.innerHTML='<div class="kb"><b>🔑 직원 암호로 열기</b><div class="hint">처음 한 번만 넣으면 거래처 찾기·전달사항·사무실 현황이 열려요</div>'
-   +'<div class="kr"><input id="kbIn" type="password" inputmode="numeric" maxlength="12" placeholder="직원 암호" autocomplete="off"><button id="kbGo">열기</button></div><div id="kbMsg" class="hint"></div></div>';
+   +'<div class="kr"><input id="kbIn" type="text" style="-webkit-text-security:disc" data-lpignore="true" data-1p-ignore="true" inputmode="numeric" maxlength="12" placeholder="직원 암호" autocomplete="off"><button id="kbGo">열기</button></div><div id="kbMsg" class="hint"></div></div>';
   const go=()=>keyUnlock($('kbIn').value.trim());$('kbGo').onclick=go;$('kbIn').onkeydown=e=>{if(e.key==='Enter')go()}}
 async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 넣어 주세요';return}
   m.textContent='여는 중이에요…';$('kbGo').disabled=true;
@@ -1086,7 +1086,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='✅ 열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v027';
+const APP_VER='v028';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

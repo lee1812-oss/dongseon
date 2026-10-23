@@ -139,7 +139,7 @@ body.editing .fdel{display:block}
 
   <button class="btn gr" id="share" style="margin-top:22px">📨 배송 목록 링크 보내기 (카톡·문자)</button>
   <button class="btn ln" id="editT">✏️ 순서 바꾸기·삭제</button>
-  <div class="ver">v010 · 이 휴대폰에만 저장돼요</div>
+  <div class="ver">v011 · 이 휴대폰에만 저장돼요</div>
 </main>
 <div class="sheet" id="sheet"><div class="sh">
   <div class="sh-h"><b id="shT">전달사항</b><a class="fgo" id="shGo" href="#" data-act="go" style="min-height:44px">🚗 티맵</a><button id="shX">닫기</button></div>
@@ -444,7 +444,8 @@ function renderMsgs(){
   box.innerHTML=T.length?T.slice(0,8).map(x=>{const u=unread(x.pid);return '<div class="mt" data-act="msg" data-pid="'+esc(x.pid)+'" data-pn="'+esc(x.last.pn||'')+'"><div class="t"><b>'+esc(x.last.pn||'거래처')+'</b>'+(u?'<span class="new">새 글 '+u+'</span>':'')+'<div class="p">'+esc(x.last.x)+'</div><div class="w">'+esc(x.last.by||'')+' · '+hm(x.last.t)+' · '+x.L.length+'개</div></div></div>'}).join('')
     :'<div class="empty">아직 전달사항이 없어요.<br>거래처 옆 <b>💬</b>를 누르면 배송 전달사항을 남길 수 있어요.</div>';
 }
-async function msgPull(){try{const j=await storeCall({op:'get',keys:'msg,msgr'});M={msg:(j.data.msg||{}).value||{},msgr:(j.data.msgr||{}).value||{}};localStorage.setItem('tmapgo_msg',JSON.stringify(M));render();renderFind();if(SHP)renderSheet()}catch(e){renderMsgs()}}
+let MW=0;
+async function msgPull(){const st=Date.now();try{const j=await storeCall({op:'get',keys:'msg,msgr'});if(st<MW)return;M={msg:(j.data.msg||{}).value||{},msgr:(j.data.msgr||{}).value||{}};localStorage.setItem('tmapgo_msg',JSON.stringify(M));render();renderFind();if(SHP)renderSheet()}catch(e){renderMsgs()}}
 function askName(){let n=prompt('이름을 알려 주세요 (예: 사무실 이혜영, 기사 김OO)',me()||'');if(n===null)return false;n=n.trim().slice(0,20);if(!n){toast('이름을 넣어 주세요');return false}localStorage.setItem('tmapgo_name',n);$('shMe').textContent=n;return true}
 function renderSheet(){
   const L=msgsOf(SHP); const rd=(M.msgr||{})[SHP]||{};
@@ -469,11 +470,11 @@ async function msgSend(text){
   if(!me()&&!askName())return;
   const mid=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   const m={t:Date.now(),by:me(),x:text.slice(0,500),pn:SHN};
-  ((M.msg[SHP]=M.msg[SHP]||{})[mid]=m);renderSheet();$('shIn').value='';
+  MW=Date.now();((M.msg[SHP]=M.msg[SHP]||{})[mid]=m);renderSheet();$('shIn').value='';
   try{await storeCall({op:'merge',key:'msg',value:{[SHP]:{[mid]:m}},by:me()});SEEN[SHP]=Date.now();localStorage.setItem('tmapgo_seen',JSON.stringify(SEEN));toast('보냈어요');msgPull()}
   catch(e){delete M.msg[SHP][mid];renderSheet();toast('못 보냈어요. 인터넷 연결을 확인해 주세요')}
 }
-async function msgDel(pid,mid){if(!confirm('이 전달사항을 지울까요?'))return;try{await storeCall({op:'merge',key:'msg',value:{[pid]:{[mid]:null}},by:me()});if(M.msg[pid])delete M.msg[pid][mid];renderSheet();render();toast('지웠어요')}catch(e){toast('못 지웠어요')}}
+async function msgDel(pid,mid){if(!confirm('이 전달사항을 지울까요?'))return;MW=Date.now();try{await storeCall({op:'merge',key:'msg',value:{[pid]:{[mid]:null}},by:me()});if(M.msg[pid])delete M.msg[pid][mid];renderSheet();render();toast('지웠어요')}catch(e){toast('못 지웠어요')}}
 $('shX').addEventListener('click',()=>{$('sheet').classList.remove('on');SHP=null;render()});
 $('sheet').addEventListener('click',e=>{if(e.target.id==='sheet'){$('sheet').classList.remove('on');SHP=null;render()}});
 $('shSend').addEventListener('click',()=>msgSend($('shIn').value));

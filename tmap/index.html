@@ -263,12 +263,111 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .pvb a,.pvb button{flex:1;min-height:54px;border-radius:12px;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;text-decoration:none;border:0;font-family:inherit}
 .pvb a{background:#fff;color:#111}.pvb button{background:#444;color:#fff}
 .sgo{margin-left:6px;border:1.5px solid #9fd0b3;background:#EAF6EF;color:var(--gr);border-radius:8px;font-size:14px;font-weight:700;padding:4px 8px;font-family:inherit;white-space:nowrap}
+
+/* v033 화면 색 고르기 (Color Hunt) */
+.thsh{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center}
+.thsh.on{display:flex}
+.thp{background:#fff;width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 14px calc(18px + env(safe-area-inset-bottom))}
+.thh{display:flex;align-items:center;gap:8px;margin-bottom:6px}.thh b{flex:1;font-size:20px}
+.thh button,.thr button,.thdef{min-height:54px;padding:0 16px;border-radius:12px;border:1.5px solid #c9c9ce;background:#fff;font-size:17px;font-weight:800;font-family:inherit;color:#1d1d1f}
+.thdef{width:100%;margin:10px 0 4px}
+.thdef.on,.thc.on{outline:4px solid #1d1d1f;outline-offset:2px}
+.thsub{font-size:16px;font-weight:800;margin:14px 2px 8px;color:#333}
+.thg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.thc{padding:0;border:1px solid #dcdce0;border-radius:14px;background:#fff;overflow:hidden;font-family:inherit;text-align:left;cursor:pointer}
+.ths{display:flex;flex-direction:column;height:110px}.ths i{display:block}
+.ths i:nth-child(1){flex:4}.ths i:nth-child(2){flex:2.6}.ths i:nth-child(3){flex:1.8}.ths i:nth-child(4){flex:1.6}
+.thn{padding:8px 10px;font-size:15.5px;font-weight:800;color:#333;display:flex;justify-content:space-between;gap:6px}
+.thn em{font-style:normal;color:#1F6B45;white-space:nowrap}
+.thm{margin-top:16px;padding:14px;border:1.5px dashed #c9c9ce;border-radius:14px;background:#fafafa}
+.thm a{display:flex;align-items:center;justify-content:center;min-height:54px;margin-top:10px;border-radius:12px;background:#fff;border:1.5px solid #333;color:#1d1d1f;font-size:17px;font-weight:800;text-decoration:none}
+.thr{display:flex;gap:8px;margin-top:10px}.thr input{flex:1;min-width:0;min-height:54px;font-size:16px;padding:0 12px;border:1.5px solid #c9c9ce;border-radius:12px}
+.thmsg{margin-top:8px;font-size:15.5px;font-weight:700;color:#1F6B45}.thmsg.bad{color:#c62828}
+#thRow button{margin-left:10px}
+#thRow .thmini{display:inline-flex;vertical-align:middle;margin-left:6px;border-radius:5px;overflow:hidden;border:1px solid #ccc}#thRow .thmini i{width:14px;height:18px;display:block}
 </style>
+<script>
+/* ===== v033 화면 색 고르기 (Color Hunt 팔레트) : 이 휴대폰에만 저장 (tmapgo_theme) ===== */
+var TH_KEY='tmapgo_theme',TH_MY='tmapgo_theme_my';
+var TH_ATT=["1a3263547792fab95be8e2db","001f3ded985ff7b980e6e6e6","050e3c002455dc0000ff3838","1d4533f7eae0f9d2ba5e3122"];
+var TH_LIST=["1a3263547792fab95be8e2db","001f3ded985ff7b980e6e6e6","050e3c002455dc0000ff3838","1d4533f7eae0f9d2ba5e3122","f9f7f7dbe2ef3f72af112d4e","1b262c0f4c753282b8bbe1fa","27374d526d829db2bfdde6ed","08d9d6252a34ff2e63eaeaea","7d5a50b4846ce5b299fcdec0","364f6b3fc1c9f5f5f5fc5185","2c36393f4e4fa27b5cdcd7c9","edf1d69dc08b60996640513b","2121213232320d737714ffec","f5f7f8f4ce14495e5745474b","f8ede3dfd3c3d0b8a87d6e83","e4f9f530e3ca11999e40514e","fff5e4ffc4c4ee6983850e35","222831393e46ffd369eeeeee","e5d9b6a4be7b5f8d4e285430","1a120b3c2a21d5cea3e5e5cb","faf3e0eabf9fb689731e212d","884a39c38154ffc26ff9e0bb","f1f6f914274e3948679ba4b4","9a3b3bc08261e2c799f2ecbe","f4eeffdcd6f7a6b1e1424874","fff8ea9e7676815b5b594545","867070d5b4b4e4d0d0f5ebeb","a75d5dd3756bf0997dffc3a1","f3eeeaebe3d5b0a695776b5d","2c3333395b64a5c9cae7f6f2","f0ebe3e4dccf7d9d9c576f72","a9907ef3debaabc4aa675d50","f8ede3dfd3c3d0b8a885586f","5f6f52a9b388fefae0b99470","feffdeddffbc91c78852734d","5f71616d8b74efead8d0c9c0"];
+var TH_BASE=(document.querySelector('style')||{}).textContent||'';
+function thRgb(h){h=h.replace('#','');return [0,2,4].map(function(i){return parseInt(h.substr(i,2),16)})}
+function thHex(a){return '#'+a.map(function(v){v=Math.max(0,Math.min(255,Math.round(v)));return v.toString(16).padStart(2,'0')}).join('')}
+function thMix(a,b,t){var A=thRgb(a),B=thRgb(b);return thHex(A.map(function(v,i){return v+(B[i]-v)*t}))}
+function thLum(h){var c=thRgb(h).map(function(v){v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4)});return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2]}
+function thCr(a,b){var x=thLum(a),y=thLum(b);return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05)}
+function thDark(h,t){var k=0;while(thCr(h,'#ffffff')<t&&k<30){h=thMix(h,'#000000',0.07);k++}return h}
+function thLight(h,l){var k=0;while(thLum(h)<l&&k<40){h=thMix(h,'#ffffff',0.06);k++}return h}
+function thSat(h){var c=thRgb(h);return (Math.max.apply(0,c)-Math.min.apply(0,c))/255}
+function thSplit(code){return [0,6,12,18].map(function(i){return '#'+code.substr(i,6).toLowerCase()})}
+function thRoles(code){var o=thSplit(code),c=o.slice().sort(function(a,b){return thLum(a)-thLum(b)});
+  var M=thCr(o[0],'#ffffff')>=3?o[0]:c[0]; /* Color Hunt 맨 위(가장 넓은) 색이 진하면 대표색으로 */
+  var L=c[3]===M?c[2]:c[3],rest=c.filter(function(x){return x!==M&&x!==L}),m1=rest[0],m2=rest[1]||rest[0];
+  var A=thSat(m2)>thSat(m1)?m2:m1,S=A===m1?m2:m1; /* 가운데 두 색: 더 선명한 쪽=포인트색, 나머지=보조색 */
+  return {M:thDark(M,7),S:thDark(S,4.6),A:A,L:L}}
+function thName(h){var c=thRgb(h).map(function(v){return v/255}),mx=Math.max.apply(0,c),mn=Math.min.apply(0,c),l=(mx+mn)/2,d=mx-mn,s=d?d/(1-Math.abs(2*l-1)):0,hu=0;
+  if(d){if(mx===c[0])hu=((c[1]-c[2])/d+6)%6;else if(mx===c[1])hu=(c[2]-c[0])/d+2;else hu=(c[0]-c[1])/d+4;hu*=60}
+  if(s<0.15||d<0.08)return l<0.22?'검정':l<0.75?'회색':'흰색';
+  if(hu<12||hu>=345)return l<0.3?'자주':l>0.78?'분홍':'빨강';
+  if(hu<42)return l<0.32?'갈색':l>0.8?'살구':'주황';
+  if(hu<68)return l<0.32?'올리브':l>0.85?'크림':'노랑';
+  if(hu<165)return l<0.25?'진초록':l>0.8?'연두':'초록';
+  if(hu<200)return l<0.3?'짙은 청록':l>0.8?'민트':'청록';
+  if(hu<255)return l<0.3?'남색':l>0.8?'하늘':'파랑';
+  if(hu<295)return l<0.3?'짙은 보라':l>0.8?'연보라':'보라';
+  return l<0.3?'자주':l>0.8?'분홍':'분홍'}
+function thLabel(code){var r=thRoles(code),o=thSplit(code);var M=thCr(o[0],'#ffffff')>=3?o[0]:o.slice().sort(function(a,b){return thLum(a)-thLum(b)})[0];var a=thName(M),b=thName(r.A);if(a===b)b=thName(r.L);return a===b?a:a+' · '+b}
+function thBuild(code){var r=thRoles(code),M=r.M,S=r.S,A=r.A,L=r.L;
+  var M2=thDark(thMix(M,S,0.55),4.6), MT=thDark(M,5.5), SD=thMix(S,'#000000',0.45);
+  var T1=thMix(M,'#ffffff',0.9),T3=thMix(M,'#ffffff',0.7),ST=thLight(thMix(L,S,0.04),0.86),SB=thMix(S,'#ffffff',0.62),BG=thLight(thMix(L,'#ffffff',0.25),0.82);
+  var AL=thLum(A)>0.45?thMix(A,S,0.25):A; /* 밝은 포인트색은 줄로 보이게 조금 진하게 */
+  var mp={'2b3bcf':M,'1f4fe0':M,'3a33d0':thMix(M,M2,0.5),'5a2bc8':M2,'6a2bc0':M2,'1f3fbf':MT,'1f4fbf':MT,'1550d6':MT,'173c8a':thMix(MT,'#000000',0.25),
+    'eef3ff':T1,'eaf0ff':T1,'e6eeff':T1,'eef4ff':T1,'c4d6ff':T3,'b9cdf5':T3,
+    '7a4a23':S,'3a2614':SD,'6b4a2a':SD,'6b4a1a':SD,'8a7a6a':thMix(S,'#888888',0.5),
+    'fbf6f0':ST,'f4ede6':ST,'fff7ee':ST,'d9c6b3':SB,'d8cbbd':SB,'e3d3b5':SB,'b9a48f':thMix(S,'#ffffff',0.45),'f3f3f5':BG};
+  var css=TH_BASE.replace(/#([0-9a-fA-F]{6})\b/g,function(x,h){var v=mp[h.toLowerCase()];return v||x});
+  css+='\nheader{border-bottom:5px solid '+A+'}'
+    +'\n.hlogo{border-color:'+A+'!important}'
+    +'\nh2.sec{border-left-color:'+AL+'!important}'
+    +'\n#tabs button.on{border-top:4px solid '+A+'!important}'
+    +'\n[style*="#1F3FBF"]{color:'+MT+'!important}';
+  return {css:css,M:M}}
+function thApply(code){var st=document.getElementById('thCss'),mt=document.querySelector('meta[name=theme-color]');
+  if(!code||!/^[0-9a-f]{24}$/i.test(code)){if(st)st.remove();if(mt)mt.setAttribute('content','#2B3BCF');return}
+  var b=thBuild(code);if(!st){st=document.createElement('style');st.id='thCss'}st.textContent=b.css;document.head.appendChild(st);if(mt)mt.setAttribute('content',b.M)}
+function thCur(){return localStorage.getItem(TH_KEY)||''}
+function thSet(code){if(code)localStorage.setItem(TH_KEY,code);else localStorage.removeItem(TH_KEY);thApply(code);thRowDraw();thDraw()}
+function thMyList(){try{return JSON.parse(localStorage.getItem(TH_MY)||'[]')}catch(e){return []}}
+function thParse(t){t=String(t||'').replace(/\s/g,'');var m=t.match(/[0-9a-f]{24}/i);if(m)return m[0].toLowerCase();
+  var a=(t.match(/#?[0-9a-f]{6}/gi)||[]).map(function(x){return x.replace('#','')});return a.length>=4?a.slice(0,4).join('').toLowerCase():''}
+function thCard(code){var on=thCur()===code;return '<button class="thc'+(on?' on':'')+'" data-th="'+code+'"><div class="ths">'+thSplit(code).map(function(c){return '<i style="background:'+c+'"></i>'}).join('')+'</div><div class="thn"><span>'+thLabel(code)+'</span>'+(on?'<em>사용 중</em>':'')+'</div></button>'}
+function thDraw(){var b=document.getElementById('thBody');if(!b)return;var my=thMyList();
+  b.innerHTML='<button class="thdef'+(thCur()?'':' on')+'" data-th="">처음 색으로 (파랑·브라운 기본)'+(thCur()?'':' · 사용 중')+'</button>'
+   +(my.length?'<div class="thsub">내가 넣은 색</div><div class="thg">'+my.map(thCard).join('')+'</div>':'')
+   +'<div class="thsub">추천 색 묶음</div><div class="thg">'+TH_ATT.map(thCard).join('')+'</div>'
+   +'<div class="thsub">Color Hunt 인기 색 묶음</div><div class="thg">'+TH_LIST.filter(function(c){return TH_ATT.indexOf(c)<0}).map(thCard).join('')+'</div>';
+  b.querySelectorAll('[data-th]').forEach(function(x){x.onclick=function(){thSet(x.getAttribute('data-th'));var g=document.getElementById('thMsg');if(g){g.className='thmsg';g.textContent=x.getAttribute('data-th')?'바꿨어요. 화면 뒤쪽 색을 확인해 보세요.':'처음 색으로 돌렸어요.'}}})}
+function thRowDraw(){var r=document.getElementById('thRow');if(!r)return;var c=thCur();
+  r.innerHTML='화면 색: <b>'+(c?thLabel(c):'기본')+'</b>'+(c?'<span class="thmini">'+thSplit(c).map(function(x){return '<i style="background:'+x+'"></i>'}).join('')+'</span>':'')+'<button id="thOpen">바꾸기</button>';
+  document.getElementById('thOpen').onclick=thOpen}
+function thOpen(){var s=document.getElementById('thSh');if(!s)return;thDraw();var g=document.getElementById('thMsg');if(g)g.textContent='';s.classList.add('on')}
+function thClose(){var s=document.getElementById('thSh');if(s)s.classList.remove('on')}
+thApply(thCur());
+document.addEventListener('DOMContentLoaded',function(){thRowDraw();
+  var s=document.getElementById('thSh');if(!s)return;
+  s.addEventListener('click',function(e){if(e.target===s)thClose()});
+  document.getElementById('thX').onclick=thClose;
+  document.getElementById('thGo').onclick=function(){var i=document.getElementById('thIn'),g=document.getElementById('thMsg'),code=thParse(i.value);
+    if(!code){g.className='thmsg bad';g.textContent='색 코드를 못 찾았어요. Color Hunt 색 묶음 주소(colorhunt.co/palette/...)를 그대로 붙여 넣어 주세요.';return}
+    var my=thMyList().filter(function(c){return c!==code});my.unshift(code);localStorage.setItem(TH_MY,JSON.stringify(my.slice(0,8)));
+    i.value='';thSet(code);g.className='thmsg';g.textContent='넣었어요. 「내가 넣은 색」에도 저장했어요.'}});
+</script>
 </head>
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v032 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
+  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v033 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -321,8 +420,8 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
     <h2 class="sec">배송 전달사항 <span class="cnt" id="mcnt"></span></h2>
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">배송 목록 링크 보내기 (카톡·문자)</button>
-    <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div></div>
-    <div class="ver">v031 · 출발 버튼 TMAP 로고 · 이모티콘 정리 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div><div class="nmrow" id="thRow" style="margin-top:10px"></div></div>
+    <div class="ver">v033 · 화면 색 고르기(Color Hunt) · 출발 버튼 TMAP 로고 · 이모티콘 정리 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="gsheet"><div class="sh">
@@ -355,6 +454,17 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
   <div class="sh-h"><b style="flex:1">코스 바꾸기</b><button id="eX">닫기</button></div>
   <div class="sh-l" id="eL"></div>
   <div class="sh-f"><button class="btn br" id="eDone" style="margin-top:0">다 했어요</button></div>
+</div></div>
+<div class="thsh" id="thSh"><div class="thp">
+  <div class="thh"><b>화면 색 고르기</b><button id="thX">닫기</button></div>
+  <div class="hint">마음에 드는 색 묶음을 누르면 바로 바뀌어요. 이 휴대폰에만 적용되고, 배송 기록에는 영향이 없어요. 완료(초록)·경고(빨강) 색은 그대로 둬요.</div>
+  <div class="thmsg" id="thMsg"></div>
+  <div id="thBody"></div>
+  <div class="thm"><b>Color Hunt에서 더 고르기</b>
+    <div class="hint" style="margin-top:6px">① 아래 버튼으로 Color Hunt를 열고 ② 마음에 드는 색 묶음을 누른 뒤 ③ 주소를 복사해서 여기에 붙여 넣고 「적용」을 누르세요.</div>
+    <a href="https://colorhunt.co" target="_blank" rel="noopener">Color Hunt 열기</a>
+    <div class="thr"><input id="thIn" placeholder="colorhunt.co/palette/... 붙여 넣기" autocomplete="off"><button id="thGo">적용</button></div>
+  </div>
 </div></div>
 <nav id="tabs"><div class="ti"><button id="tb1" class="on">오늘 배송</button><button id="tb4">예정 코스</button><button id="tb2">거래처</button><button id="tb3">사무실<span class="dot" id="tdot"></span></button></div></nav>
 <div class="upd" id="upd"></div>
@@ -1180,7 +1290,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v032';
+const APP_VER='v033';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

@@ -168,6 +168,10 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .sb.ok{font-family:inherit;background:#fff}
 .sb.ok.undo{background:#fff;color:var(--or);border:2px solid var(--or)}
 .go{font-family:inherit}
+.nvl{padding:16px 16px 18px}.nvt{font-size:20px;font-weight:800}.nvd{font-size:16px;color:#555;margin-top:4px;word-break:keep-all}
+.nvb{gap:10px;min-height:60px;font-size:19px}.nvb .tlogo{width:34px;height:34px}.nvk{background:#FEE500!important;color:#191919!important}
+.nvr{display:flex;gap:10px;align-items:flex-start;margin:14px 2px 2px;font-size:17px;word-break:keep-all}.nvr input{width:24px;height:24px;flex:none;margin-top:2px}.nvr small{font-size:14px;color:#666}
+.nvo span{display:flex;flex-direction:column;align-items:center}.nvo small{font-size:14px;font-weight:600;opacity:.85;margin-top:2px}
 .ofc{display:flex;align-items:center;gap:12px;min-height:64px;padding:10px 14px;margin:0 0 14px;border:2px solid #2B3BCF;border-radius:12px;background:#fff;text-decoration:none;color:#222}
 .ofc b{display:block;font-size:20px;font-weight:800;color:#2B3BCF;line-height:1.25}
 .ofc small{display:block;font-size:15px;color:#555;margin-top:2px;word-break:keep-all}
@@ -370,7 +374,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v035 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
+  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v036 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -424,8 +428,8 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
     <h2 class="sec">배송 전달사항 <span class="cnt" id="mcnt"></span></h2>
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">배송 목록 링크 보내기 (카톡·문자)</button>
-    <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div><div class="nmrow" id="thRow" style="margin-top:10px"></div></div>
-    <div class="ver">v035 · 맨 위 「사무실로 길안내」 · v034 갈 곳 펼치면 「오늘 배송에서 빼기」 · v033 화면 색 고르기(Color Hunt) · 출발 버튼 TMAP 로고 · 이모티콘 정리 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div><div class="nmrow" id="thRow" style="margin-top:10px"></div><div class="nmrow" id="navRow" style="margin-top:10px"></div></div>
+    <div class="ver">v036 · 길안내 앱 고르기(티맵·카카오내비·매번 고르기) · v035 맨 위 「사무실로 길안내」 · v034 갈 곳 펼치면 「오늘 배송에서 빼기」 · v033 화면 색 고르기(Color Hunt) · 출발 버튼 TMAP 로고 · 이모티콘 정리 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="gsheet"><div class="sh">
@@ -545,7 +549,67 @@ function tmapQuery(s){
 function tmapHref(s){const q=tmapQuery(s);return isAndroid?'intent://'+q+'#Intent;scheme=tmap;package=com.skt.tmap.ku;end':'tmap://'+q}
 // v035 사무실(빵을그리다 1공장) 고정 위치: 카카오맵 주소 검색 좌표(경기 광주시 곤지암읍 만선로 75-1). 최적 코스의 회사 출발·복귀(CO)도 이 좌표를 씀
 const OFFICE={n:'빵을그리다 1공장',a:'경기도 광주시 곤지암읍 만선로 75-1',y:37.369853,x:127.406468};
-(function(){const o=document.getElementById('ofcGo');if(!o)return;o.href=tmapHref(OFFICE);o.addEventListener('click',()=>{if(isIOS){const t=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t<3000)toast('티맵이 안 열리면 앱스토어에서 「TMAP」을 설치해 주세요.')},2000)}})})();
+/* ===== v036 길안내 앱 고르기: 티맵 / 카카오내비 / 매번 고르기 (이 휴대폰에만 저장, 기본 티맵) =====
+   카카오내비는 카카오 JS SDK(Navi.start). 웹 키는 v025 카카오톡 공유용 KAKAO_JS(등록 주소에서만 동작)를 같이 쓰고, 없으면 바로연락 앱과 같은 Apps Script 서버(act kjs)에서 받음 */
+const NAVK='tmapgo_nav', NAVKN={tmap:'티맵',kakao:'카카오내비',ask:'매번 고르기'};
+function NAV(){const v=localStorage.getItem(NAVK);return v==='kakao'||v==='ask'?v:'tmap'}
+function navLogo(){return NAV()==='tmap'?'<i class="tlogo" aria-label="TMAP"></i>':''}
+function navLbl(dep){const n=NAV();const a=n==='tmap'?'티맵 ':n==='kakao'?'카카오내비 ':'';return dep?(a||'길안내 ')+'다시 열기':'출발 · '+a+'길안내'}
+function navShort(){const n=NAV();return n==='tmap'?'티맵':n==='kakao'?'카카오내비':'길안내'}
+const KNV={k:null,sdk:false,busy:false};
+const KNV_URL='https://script.google.com/macros/s/AKfycbyd7xpHYYQs_qEvUvi1G8TuRotUry38pDevJxFJ7jnp9e6I9r4Qd_ooEGNoHNgtzFM/exec';
+function knLoad(src){return new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('load'));document.head.appendChild(s)})}
+async function knPrep(){if(KNV.sdk||KNV.busy)return;KNV.busy=true;try{
+  if(!KNV.k){KNV.k=(typeof KAKAO_JS!=='undefined'&&KAKAO_JS)||localStorage.getItem('tmapgo_kjs')||null}
+  if(!KNV.k){const r=await (await fetch(KNV_URL,{method:'POST',body:JSON.stringify({k:'brl-ocr-v1',act:'kjs'})})).json();if(r&&r.ok&&r.k){KNV.k=r.k;localStorage.setItem('tmapgo_kjs',r.k)}}
+  if(KNV.k){if(!window.Kakao)await knLoad('https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js');if(!Kakao.isInitialized())Kakao.init(KNV.k);KNV.sdk=!!(Kakao.Navi&&Kakao.Navi.start)}
+}catch(e){}KNV.busy=false}
+function navDest(a){const h=(a&&a.getAttribute('href'))||'';const q=h.replace(/^[a-z]+:\/\//i,'').split('#')[0];const kind=q.split('?')[0];const p=new URLSearchParams(q.split('?')[1]||'');
+  if(kind==='route')return {n:p.get('goalname')||'목적지',x:+p.get('goalx'),y:+p.get('goaly'),tm:h};
+  return {n:p.get('name')||'',a:p.get('name')||'',tm:h}}
+const isMob=isAndroid||isIOS;
+function kakaoMapRoute(d){const nm=encodeURIComponent((d.n||'목적지').replace(/,/g,' '));
+  if(d.y&&d.x){const web='https://map.kakao.com/link/to/'+nm+','+d.y+','+d.x;
+    if(isAndroid)location.href='intent://route?ep='+d.y+','+d.x+'&by=CAR#Intent;scheme=kakaomap;package=net.daum.android.map;S.browser_fallback_url='+encodeURIComponent(web)+';end';
+    else if(isMob)location.href=web;else window.open(web,'_blank')}
+  else{const web='https://map.kakao.com/link/search/'+encodeURIComponent(d.a||d.n);if(isMob)location.href=web;else window.open(web,'_blank')}}
+function kakaoNaviGo(d){
+  if(!(d.y&&d.x)){toast('주소만 있는 곳이라 카카오맵에서 찾아요');kakaoMapRoute(d);return}
+  if(!isMob||!KNV.sdk){if(isMob)toast('카카오내비 준비가 안 돼서 카카오맵 길찾기로 열어요');kakaoMapRoute(d);if(isMob===false)return;knPrep();return}
+  try{Kakao.Navi.start({name:(d.n||'목적지').slice(0,40),x:d.x,y:d.y,coordType:'wgs84'})}catch(e){kakaoMapRoute(d);return}
+  const t=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t<4000){toast('카카오내비가 안 열려서 카카오맵 길찾기로 열어요');kakaoMapRoute(d)}},2500)}
+function tmapGo(d){location.href=d.tm;if(isIOS){const t=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t<3000)toast('티맵이 안 열리면 앱스토어에서 「TMAP」을 설치해 주세요.')},2000)}}
+function navSheet(html){let s=document.getElementById('navSh');if(!s){s=document.createElement('div');s.className='sheet';s.id='navSh';document.body.appendChild(s);s.addEventListener('click',e=>{if(e.target===s)s.classList.remove('on')})}
+  if(html===null){s.classList.remove('on');return s}s.innerHTML='<div class="sh"><div class="sh-l nvl">'+html+'</div></div>';s.classList.add('on');return s}
+function navPick(d,after){knPrep();
+  const s=navSheet('<div class="nvt">어떤 앱으로 길안내할까요?</div><div class="nvd">'+esc(d.n||d.a||'')+'</div>'
+   +'<button class="btn br nvb" id="nvT"><i class="tlogo" aria-label="TMAP"></i>티맵으로 길안내</button>'
+   +'<button class="btn br nvb nvk" id="nvK">카카오내비로 길안내</button>'
+   +'<label class="nvr"><input type="checkbox" id="nvRem"><span>다음부터 고른 앱으로 바로 열기<br><small>사무실 탭 「길안내 앱」에서 다시 바꿀 수 있어요</small></span></label>'
+   +'<button class="btn ln" id="nvM">카카오맵 길찾기</button><button class="btn ln" id="nvX">닫기</button>');
+  const rem=v=>{if(document.getElementById('nvRem').checked){localStorage.setItem(NAVK,v);navRedraw();toast('다음부터 '+NAVKN[v]+'(으)로 바로 열어요')}};
+  s.querySelector('#nvT').onclick=()=>{rem('tmap');navSheet(null);if(after)after();tmapGo(d)};
+  s.querySelector('#nvK').onclick=()=>{rem('kakao');navSheet(null);if(after)after();kakaoNaviGo(d)};
+  s.querySelector('#nvM').onclick=()=>{navSheet(null);if(after)after();kakaoMapRoute(d)};
+  s.querySelector('#nvX').onclick=()=>navSheet(null)}
+function navSetOpen(){const c=NAV();const b=(v,t,sub)=>'<button class="btn '+(c===v?'br':'ln')+' nvo" data-nv="'+v+'"><span>'+t+(c===v?' (지금)':'')+'<small>'+sub+'</small></span></button>';
+  const s=navSheet('<div class="nvt">길안내 앱 고르기</div><div class="nvd">출발 버튼과 사무실로 길안내를 누르면 이 앱이 열려요. 이 휴대폰에만 저장돼요.</div>'
+   +b('tmap','티맵','기본')+b('kakao','카카오내비','안 깔려 있으면 카카오맵 길찾기로 열어요')+b('ask','매번 고르기','누를 때마다 티맵·카카오내비 중에 골라요')+'<button class="btn ln" id="nvX">닫기</button>');
+  s.querySelectorAll('[data-nv]').forEach(x=>x.onclick=()=>{localStorage.setItem(NAVK,x.dataset.nv);navSheet(null);navRedraw();if(x.dataset.nv!=='tmap')knPrep();toast('길안내 앱: '+NAVKN[x.dataset.nv])});
+  s.querySelector('#nvX').onclick=()=>navSheet(null)}
+function ofcDraw(){const o=document.getElementById('ofcGo');if(!o)return;o.href=tmapHref(OFFICE);const n=NAV();
+  const lg=o.querySelector('.tlogo');if(lg)lg.style.display=n==='tmap'?'':'none';o.setAttribute('aria-label','사무실로 길안내, '+navShort())}
+function navRowDraw(){const r=document.getElementById('navRow');if(!r)return;r.innerHTML='길안내 앱: <b>'+NAVKN[NAV()]+'</b><button id="navBtn">바꾸기</button>';document.getElementById('navBtn').onclick=navSetOpen}
+function navRedraw(){ofcDraw();navRowDraw();try{render()}catch(e){}try{if(typeof renderFind==='function')renderFind()}catch(e){}}
+// 모든 길안내 버튼(data-act="go", 사무실로 길안내)을 먼저 받아서 설정대로 연다. 티맵이면 원래 흐름 그대로
+document.addEventListener('click',e=>{const a=e.target.closest('a[data-act="go"],#ofcGo');if(!a)return;
+  const n=NAV();if(n==='tmap'&&a.id!=='ofcGo')return;
+  e.preventDefault();e.stopPropagation();const d=a.id==='ofcGo'?{n:OFFICE.n,a:OFFICE.a,x:OFFICE.x,y:OFFICE.y,tm:a.getAttribute('href')}:navDest(a);
+  const i=a.dataset.i!==undefined?+a.dataset.i:-1;const after=()=>{if(i>=0&&S.stops[i])try{tripGo(i)}catch(_){}};
+  if(n==='tmap'){tmapGo(d);return}
+  if(n==='kakao'){after();kakaoNaviGo(d);return}
+  navPick(d,after)},true);
+setTimeout(()=>{ofcDraw();navRowDraw();if(NAV()!=='tmap')knPrep()},0);
 function kakaoHref(s){
   if(s.y&&s.x) return 'https://map.kakao.com/link/to/'+encodeURIComponent(s.n)+','+s.y+','+s.x;
   return 'https://map.kakao.com/link/search/'+encodeURIComponent(s.a||s.n);
@@ -556,7 +620,7 @@ const OPEN=new Set();
 const chipOf=s=>s.done?['dn','완료'+((s.fin||s.arr)?' '+esc(s.fin||s.arr):'')]:s.arr?['ar','도착 '+esc(s.arr)]:s.dep?['mv','이동 중']:['wt','대기'];
 function msgBtn2(s){const p=pidOf(s),n=msgCount(p),u=unread(p);return '<button class="sb mb2'+(u?' unread':n?' has':'')+'" data-act="msg" data-pid="'+esc(p)+'" data-pn="'+esc(s.n)+'">'+(u?'새 전달 '+u+'개':n?'전달사항 '+n:'전달사항')+'</button>'}
 function stopBody(s,i){return `<div class="ad">${esc(s.a)}</div>${ctRow(s)}${s.m?`<div class="memo">${esc(s.m)}</div>`:''}${msgPrev(s)}${tripLine(s)}
-  <a class="go" href="${tmapHref(s)}" data-act="go" data-i="${i}"><i class="tlogo" aria-label="TMAP"></i>${s.dep&&!s.done?'티맵 다시 열기':'출발 · 티맵 길안내'}</a>
+  <a class="go" href="${tmapHref(s)}" data-act="go" data-i="${i}">${navLogo()}${navLbl(s.dep&&!s.done)}</a>
   <div class="subs"><button class="sb ok${s.done?' undo':''}" data-act="done" data-i="${i}">${s.done?'완료 취소':'배송 완료'}</button>${msgBtn2(s)}</div>${typeof signBtn==='function'?signBtn(s):''}
   <div class="lkrow"><a class="lk" href="${kakaoHref(s)}" target="_blank" rel="noopener">카카오맵</a><button class="lk" data-act="copy" data-i="${i}">주소 복사</button><button class="lk" data-act="del" data-i="${i}" style="color:var(--rd)">오늘 배송에서 빼기</button></div>`}
 function nextIdx(){let k=S.stops.findIndex(s=>s.dep&&!s.done);if(k<0)k=S.stops.findIndex(s=>!s.done);return k}
@@ -592,7 +656,7 @@ function renderEdit(){const e=$('esheet');if(!e||!e.classList.contains('on'))ret
   $('eL').scrollTop=sc;const r=$('eRoute');if(r)r.onclick=()=>{if(S.stops.length<2){toast('2곳 이상 있어야 해요');return}$('esheet').classList.remove('on');openRoute()}}
 function renderFav(){
   $('favs').innerHTML=FAV.length?'<div class="fav">'+FAV.map((f,i)=>`<div class="fv"><div class="t"><b>${esc(f.n)}</b><span>${esc(f.a||'주소 미확인 · 티맵에서 이름으로 찾기')}</span></div>
-    <div class="r2">${addBtn(f.id,i)}<a class="fgo" href="${tmapHref(f)}" data-act="go">티맵</a></div>
+    <div class="r2">${addBtn(f.id,i)}<a class="fgo" href="${tmapHref(f)}" data-act="go">${navShort()}</a></div>
     <div class="lkrow"><button class="lk" data-act="msg" data-pid="${esc(pidOf(f))}" data-pn="${esc(f.n)}">전달사항${msgCount(pidOf(f))?' '+msgCount(pidOf(f)):''}</button><button class="lk" data-act="fdel" data-i="${i}">삭제</button></div></div>`).join('')+'</div>'
     :'<div class="card empty">아직 등록된 곳이 없어요.<br>거래처를 찾아서 <b>빠른 등록</b>을 누르면 여기 들어와요.</div>';
 }
@@ -668,7 +732,7 @@ function renderFind(){
     return `<div class="fr"><div class="t"><div class="fn">${esc(c.n)}</div>
     <div class="fs">${c.r?esc(c.r)+' · ':''}${c.a?esc(c.a):'<span style="color:var(--or)">주소 미확인</span>'}</div>${ctMini(c)}</div>
     <button class="star${inF?' in':''}" data-act="fadd" data-id="${c.id}">${inF?'등록됨':'빠른 등록'}</button>
-    <div class="r2">${addBtn(c.id)}<a class="fgo" href="${tmapHref(toStop(c))}" data-act="go">티맵</a></div>
+    <div class="r2">${addBtn(c.id)}<a class="fgo" href="${tmapHref(toStop(c))}" data-act="go">${navShort()}</a></div>
     <div class="lkrow"><button class="lk" data-act="msg" data-pid="${esc(c.id)}" data-pn="${esc(c.n)}">전달사항${mc?' '+mc:''}</button></div></div>`}).join('')
     :'<div class="hint" style="margin-top:10px">「'+esc($('fq').value)+'」 거래처가 없어요. 아래 「직접 넣기」를 눌러 주세요.</div>';
 }
@@ -814,7 +878,7 @@ async function openSheet(pid,pn){
   if(!localStorage.getItem('tmapgo_k')){(showTab(1),keyBox(),toast('맨 위에 직원 암호를 넣어 주세요'));return}
   SHP=pid;SHN=pn||'거래처';
   const st=(C.list&&C.list.find(c=>c.id===pid))||S.stops.find(s=>pidOf(s)===pid)||FAV.find(f=>pidOf(f)===pid);
-  if(st){$('shGo').href=tmapHref(st.a!==undefined&&st.l!==undefined?toStop(st):st);$('shGo').style.display='flex'}else $('shGo').style.display='none';
+  if(st){$('shGo').href=tmapHref(st.a!==undefined&&st.l!==undefined?toStop(st):st);$('shGo').style.display='flex';$('shGo').textContent=navShort()}else $('shGo').style.display='none';
   renderSheet();ctSheet();$('sheet').classList.add('on');ctPull();
   SEEN[pid]=Date.now();localStorage.setItem('tmapgo_seen',JSON.stringify(SEEN));render();
   if(me())storeCall({op:'merge',key:'msgr',value:{[pid]:{[me()]:Date.now()}},by:me()}).catch(()=>{});
@@ -1023,7 +1087,7 @@ function applyRes(which){const R=RS[which];if(!R)return;
   S.plan={t:Date.now(),txt:''+md(R.t0)+' '+hhmm(R.t0)+' '+R.orgN+' 출발 · '+R.optT+' 기준으로 정한 순서예요. 번호 아래 시간 = 도착 예정'};
   save();closeRoute();render();renderFind();
   window.scrollTo({top:Math.max(0,$('dayTitle').offsetTop-8),behavior:'smooth'});
-  toast('순서를 정했어요. 1번 「티맵 길안내 시작」을 누르면 바로 출발해요');
+  toast('순서를 정했어요. 1번 「출발」을 누르면 바로 길안내가 시작돼요');
 }
 $('rCalc').addEventListener('click',()=>calcRoute(false));
 $('rX').addEventListener('click',closeRoute);
@@ -1297,7 +1361,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v035';
+const APP_VER='v036';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

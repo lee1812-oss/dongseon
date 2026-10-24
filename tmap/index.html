@@ -169,7 +169,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .sb.ok.undo{background:#fff;color:var(--or);border:2px solid var(--or)}
 .go{font-family:inherit}
 .dn .go{opacity:.6}
-.lkrow{display:flex;gap:18px;justify-content:center;flex:1 0 100%}
+.lkrow{display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:center;flex:1 0 100%}
 .lk,.fr .lkrow .lk,.fv .lkrow .lk{min-height:44px;padding:0 6px;border:0;background:none;color:#555;font-size:15px;text-decoration:underline;font-family:inherit;display:inline-flex;align-items:center}
 .rl{font-size:16px;font-weight:700;color:var(--mu);margin:14px 2px 8px}
 .rw{background:#fff;border:1px solid var(--ln);border-radius:14px;margin-bottom:8px}
@@ -367,7 +367,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v033 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
+  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v034 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
     <div class="rbar" id="rbar"></div>
     <div id="nextCard"></div>
     <div id="list"></div>
-    <div id="tabBtns" class="two"><button class="btn ln" id="eOpen">코스 바꾸기</button><button class="btn ln" id="eAdd">＋ 거래처 넣기</button></div>
+    <div id="tabBtns" class="two"><button class="btn ln" id="eOpen">순서 바꾸기 · 빼기</button><button class="btn ln" id="eAdd">＋ 거래처 넣기</button></div>
     <button class="btn ln" id="loadOpen" style="margin-top:10px">차에 싣는 순서 보기</button>
     <div id="tripEnd"></div>
   </section>
@@ -421,7 +421,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div><div class="nmrow" id="thRow" style="margin-top:10px"></div></div>
-    <div class="ver">v033 · 화면 색 고르기(Color Hunt) · 출발 버튼 TMAP 로고 · 이모티콘 정리 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="ver">v034 · 갈 곳 펼치면 「오늘 배송에서 빼기」 · v033 화면 색 고르기(Color Hunt) · 출발 버튼 TMAP 로고 · 이모티콘 정리 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="gsheet"><div class="sh">
@@ -551,7 +551,7 @@ function msgBtn2(s){const p=pidOf(s),n=msgCount(p),u=unread(p);return '<button c
 function stopBody(s,i){return `<div class="ad">${esc(s.a)}</div>${ctRow(s)}${s.m?`<div class="memo">${esc(s.m)}</div>`:''}${msgPrev(s)}${tripLine(s)}
   <a class="go" href="${tmapHref(s)}" data-act="go" data-i="${i}"><i class="tlogo" aria-label="TMAP"></i>${s.dep&&!s.done?'티맵 다시 열기':'출발 · 티맵 길안내'}</a>
   <div class="subs"><button class="sb ok${s.done?' undo':''}" data-act="done" data-i="${i}">${s.done?'완료 취소':'배송 완료'}</button>${msgBtn2(s)}</div>${typeof signBtn==='function'?signBtn(s):''}
-  <div class="lkrow"><a class="lk" href="${kakaoHref(s)}" target="_blank" rel="noopener">카카오맵</a><button class="lk" data-act="copy" data-i="${i}">주소 복사</button></div>`}
+  <div class="lkrow"><a class="lk" href="${kakaoHref(s)}" target="_blank" rel="noopener">카카오맵</a><button class="lk" data-act="copy" data-i="${i}">주소 복사</button><button class="lk" data-act="del" data-i="${i}" style="color:var(--rd)">오늘 배송에서 빼기</button></div>`}
 function nextIdx(){let k=S.stops.findIndex(s=>s.dep&&!s.done);if(k<0)k=S.stops.findIndex(s=>!s.done);return k}
 function render(){
   const n=S.stops.length, dn=S.stops.filter(s=>s.done).length;
@@ -706,7 +706,7 @@ document.addEventListener('click',e=>{
     s.done=true;if(!s.fin)s.fin=hhmm(new Date());tripMark();save();render();toast('배송 완료! 잘못 눌렀으면 「완료 취소」를 눌러 주세요');return}
   if(act==='up'&&i>0){[S.stops[i-1],S.stops[i]]=[S.stops[i],S.stops[i-1]];delete S.preset;noPlan();save();render();return}
   if(act==='down'&&i<S.stops.length-1){[S.stops[i+1],S.stops[i]]=[S.stops[i],S.stops[i+1]];delete S.preset;noPlan();save();render();return}
-  if(act==='del'){if(confirm('「'+s.n+'」을(를) 배송 목록에서 지울까요?')){S.stops.splice(i,1);delete S.preset;noPlan();save();render()}return}
+  if(act==='del'){if(!s)return;if(confirm('「'+s.n+'」을(를) 오늘 배송 목록에서 뺄까요?\n(거래처 정보는 그대로 남아요. 다시 넣으려면 「＋ 거래처 넣기」)')){OPEN.delete(pidOf(s));S.stops.splice(i,1);delete S.preset;noPlan();save();render();if(typeof renderFind==='function')renderFind();toast('「'+s.n+'」을(를) 오늘 배송에서 뺐어요')}return}
 });
 
 
@@ -1290,7 +1290,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v033';
+const APP_VER='v034';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

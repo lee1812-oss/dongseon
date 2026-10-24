@@ -168,6 +168,9 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .sb.ok{font-family:inherit;background:#fff}
 .sb.ok.undo{background:#fff;color:var(--or);border:2px solid var(--or)}
 .go{font-family:inherit}
+.ofc{display:flex;align-items:center;gap:12px;min-height:64px;padding:10px 14px;margin:0 0 14px;border:2px solid #2B3BCF;border-radius:12px;background:#fff;text-decoration:none;color:#222}
+.ofc b{display:block;font-size:20px;font-weight:800;color:#2B3BCF;line-height:1.25}
+.ofc small{display:block;font-size:15px;color:#555;margin-top:2px;word-break:keep-all}
 .dn .go{opacity:.6}
 .lkrow{display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:center;flex:1 0 100%}
 .lk,.fr .lkrow .lk,.fv .lkrow .lk{min-height:44px;padding:0 6px;border:0;background:none;color:#555;font-size:15px;text-decoration:underline;font-family:inherit;display:inline-flex;align-items:center}
@@ -367,12 +370,13 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v034 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
+  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 티맵 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v035 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
   <div class="notice" id="notice"></div>
   <section class="tab" id="tab1">
+    <a class="ofc" id="ofcGo" href="#" aria-label="사무실로 길안내, 티맵"><i class="tlogo" aria-label="TMAP"></i><span><b>사무실로 길안내</b><small>빵을그리다 1공장 · 곤지암읍 만선로 75-1</small></span></a>
     <div class="inst" id="inst"></div>
     <div id="pToday"></div><div class="prog" id="dayTitle">오늘 배송</div>
     <div class="rbar" id="rbar"></div>
@@ -421,7 +425,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div><div class="nmrow" id="thRow" style="margin-top:10px"></div></div>
-    <div class="ver">v034 · 갈 곳 펼치면 「오늘 배송에서 빼기」 · v033 화면 색 고르기(Color Hunt) · 출발 버튼 TMAP 로고 · 이모티콘 정리 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="ver">v035 · 맨 위 「사무실로 길안내」 · v034 갈 곳 펼치면 「오늘 배송에서 빼기」 · v033 화면 색 고르기(Color Hunt) · 출발 버튼 TMAP 로고 · 이모티콘 정리 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="gsheet"><div class="sh">
@@ -539,6 +543,9 @@ function tmapQuery(s){
   return 'search?name='+encodeURIComponent(s.a||s.n);
 }
 function tmapHref(s){const q=tmapQuery(s);return isAndroid?'intent://'+q+'#Intent;scheme=tmap;package=com.skt.tmap.ku;end':'tmap://'+q}
+// v035 사무실(빵을그리다 1공장) 고정 위치: 카카오맵 주소 검색 좌표(경기 광주시 곤지암읍 만선로 75-1). 최적 코스의 회사 출발·복귀(CO)도 이 좌표를 씀
+const OFFICE={n:'빵을그리다 1공장',a:'경기도 광주시 곤지암읍 만선로 75-1',y:37.369853,x:127.406468};
+(function(){const o=document.getElementById('ofcGo');if(!o)return;o.href=tmapHref(OFFICE);o.addEventListener('click',()=>{if(isIOS){const t=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t<3000)toast('티맵이 안 열리면 앱스토어에서 「TMAP」을 설치해 주세요.')},2000)}})})();
 function kakaoHref(s){
   if(s.y&&s.x) return 'https://map.kakao.com/link/to/'+encodeURIComponent(s.n)+','+s.y+','+s.x;
   return 'https://map.kakao.com/link/search/'+encodeURIComponent(s.a||s.n);
@@ -833,7 +840,7 @@ setInterval(()=>{if(!document.hidden)msgPull()},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)msgPull()});
 
 // ===== 최적 코스 (v016): 「최적 코스 계산」을 누를 때만 TMAP에 물어봄 (열쇠는 기기에만, 코드에 없음) =====
-const CO={n:'빵을그리다(주) 곤지암',y:37.369855,x:127.40655};
+const CO={n:'빵을그리다(주) 곤지암',y:OFFICE.y,x:OFFICE.x};
 const OKEY='tmapgo_opt', TKEY='tmapgo_tkey';
 // o: 경유지 최적화 searchOption, q: 다중 경유지(순서 고정) searchOption ('' = 지원 안 해서 추천(0)으로)
 const ROPT={rec:{t:'티맵 추천',o:'0',q:'0'},fast:{t:'최소 시간',o:'2',q:'2'},short:{t:'최단 거리',o:'10',q:''},free:{t:'무료 도로 우선',o:'1',q:'1'},hwy:{t:'고속도로 우선',o:'4',q:''}};
@@ -1290,7 +1297,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v034';
+const APP_VER='v035';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

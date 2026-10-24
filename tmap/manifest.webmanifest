@@ -1,8 +1,8 @@
 {
  "id": "/dongseon/tmap/",
- "name": "티맵 바로가기 (빵을그리다 배송)",
- "short_name": "티맵 바로가기",
- "description": "빵을그리다 배송지를 누르면 티맵 길안내가 바로 시작돼요",
+ "name": "빵을그리다 배송앱",
+ "short_name": "배송앱",
+ "description": "빵을그리다 배송지를 누르면 길안내가 바로 시작돼요",
  "lang": "ko",
  "start_url": "./",
  "scope": "./",

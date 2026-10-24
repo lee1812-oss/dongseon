@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>티맵 바로가기 · 빵을그리다 배송</title>
+<title>빵을그리다 배송앱</title>
 <meta name="theme-color" content="#2B3BCF">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon_192.png">
 <link rel="apple-touch-icon" href="apple_180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="티맵 바로가기">
+<meta name="apple-mobile-web-app-title" content="배송앱">
 <style>
 :root{--tm1:#1F4FE0;--tm2:#5A2BC8;--br:#7A4A23;--br2:#F4EDE6;--tx:#1d1d1f;--mu:#5b5b60;--ln:#dcdce0;--bl:#1550d6;--gr:#1F6B45;--rd:#c62828;--or:#b45309}
 *{box-sizing:border-box}
@@ -374,7 +374,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <div><h1>티맵 바로가기</h1><div class="sub">빵을그리다 배송 · 누르면 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v037 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
+  <div><h1>빵을그리다 배송앱</h1><div class="sub">거래처를 누르면 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v038 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div><div class="nmrow" id="thRow" style="margin-top:10px"></div><div class="nmrow" id="navRow" style="margin-top:10px"></div></div>
-    <div class="ver">v037 · 「사무실로 길안내」도 길안내 앱 설정대로 · v036 길안내 앱 고르기(티맵·카카오내비·매번 고르기) · v035 맨 위 「사무실로 길안내」 · v034 갈 곳 펼치면 「오늘 배송에서 빼기」 · v033 화면 색 고르기(Color Hunt) · 출발 버튼 TMAP 로고 · 이모티콘 정리 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="ver">v038 · 앱 이름 「배송앱」으로 변경 · v037 「사무실로 길안내」도 길안내 앱 설정대로 · v036 길안내 앱 고르기(티맵·카카오내비·매번 고르기) · v035 맨 위 「사무실로 길안내」 · v034 갈 곳 펼치면 「오늘 배송에서 빼기」 · v033 화면 색 고르기(Color Hunt) · 출발 버튼 TMAP 로고 · 이모티콘 정리 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
   </section>
 </main>
 <div class="sheet" id="gsheet"><div class="sh">
@@ -802,8 +802,8 @@ $('share').addEventListener('click',async()=>{
   else if(S.stops.every(s=>s.id)) url=base+'?c='+S.stops.map(s=>s.id).join('.')+(S.day?'&day='+S.day.replace(/-/g,''):'')+kh;
   else url=base+'#p='+encodeURIComponent(JSON.stringify({d:S.day||'',s:S.stops.map(s=>[s.n,s.a,s.y?+(+s.y).toFixed(6):0,s.x?+(+s.x).toFixed(6):0,s.m||''])}));
   const dd=S.day?S.day.slice(5).replace('-','/')+' ':'';
-  const text=dd+'배송지 '+S.stops.length+'곳 ('+S.stops.map(s=>s.n).join(', ')+')\n링크를 열고 「티맵 길안내 시작」을 누르세요.';
-  if(navigator.share){try{await navigator.share({title:'티맵 바로가기',text,url});return}catch(e){if(e.name==='AbortError')return}}
+  const text=dd+'배송지 '+S.stops.length+'곳 ('+S.stops.map(s=>s.n).join(', ')+')\n링크를 열고 「출발」을 누르세요.';
+  if(navigator.share){try{await navigator.share({title:'빵을그리다 배송앱',text,url});return}catch(e){if(e.name==='AbortError')return}}
   try{await navigator.clipboard.writeText(text+'\n'+url);toast('링크를 복사했어요. 카톡에 붙여넣기 하세요')}catch(e){prompt('이 링크를 복사하세요',url)}
 });
 
@@ -1364,7 +1364,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v037';
+const APP_VER='v038';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

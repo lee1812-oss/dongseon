@@ -261,6 +261,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .pchk{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:17px;font-weight:700}.pchk input{width:24px;height:24px}
 .ptoday{background:#FFF8E6;border:2px solid #f1c24a;border-radius:14px;padding:12px;margin-bottom:12px}
 .ptoday b{font-size:17.5px}.ptoday .btn{margin-top:8px}
+.ptoday .prow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #f1dca0}.ptoday .prow:first-of-type{margin-top:6px}.ptoday .prow .t{flex:1;min-width:0}.ptoday .prow .t b{display:block;font-size:18px}.ptoday .prow small{display:block;color:#444;font-size:15px;line-height:1.35}.ptoday .pin{flex:0 0 auto;min-height:54px;min-width:86px;border-radius:12px;border:0;background:#2B3BCF;color:#fff;font-size:17px;font-weight:800;font-family:inherit}.ptoday .prow.in{opacity:.6}.ptoday .prow.in .pin{background:#e4e4ea;color:#333}
 /* v032 거래명세표 사인 사진 */
 .sb.sg{background:#EEF4FF;color:#1F4FBF;border:1.5px solid #b9cdf5;font-weight:800;font-family:inherit}
 .sb.sg.has{background:#EAF6EF;color:var(--gr);border-color:#9fd0b3}
@@ -405,7 +406,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v042 · 10/25</span><span class="hd" id="hdrInfo"></span></div>
+  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v043 · 10/26</span><span class="hd" id="hdrInfo"></span></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -461,7 +462,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div><div class="nmrow" id="thRow" style="margin-top:10px"></div><div class="nmrow" id="navRow" style="margin-top:10px"></div></div>
-    <div class="ver">v042</div>
+    <div class="ver">v043</div>
   </section>
 </main>
 <div class="sheet" id="gsheet"><div class="sh">
@@ -1429,7 +1430,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v042';
+const APP_VER='v043';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){
@@ -1509,7 +1510,10 @@ function pLbl(d){return (d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')'}
 function pRuns(key){const v=(PC.data[key]||{});return Object.entries(v.runs||{}).filter(([k,r])=>r&&Array.isArray(r.ids)).map(([k,r])=>Object.assign({rid:k},r)).sort((a,b)=>(a.o||0)-(b.o||0)||(a.at||0)-(b.at||0))}
 function pEff(ds){const d=new Date(ds+'T00:00:00');const pk='plan:'+ds,wk='wk:'+d.getDay();const p=PC.data[pk]||{};
   const own=pRuns(pk);const wkr=p.off?[]:pRuns(wk).filter(r=>!(p.skip||{})[r.rid]);return {own,wkr,off:!!p.off}}
-function pName(id,r){const c=C.list&&C.list.find(x=>x.id===id);return c?c.n:((r&&r.nm&&r.nm[id])||'거래처')}
+function pName(id,r){const c=C.list&&C.list.find(x=>x.id===id);if(c)return c.n;const e=(r&&r.ex&&r.ex[id])||(PE&&PE.ex&&PE.ex[id]);return (e&&e.n)||(r&&r.nm&&r.nm[id])||'거래처'}
+// v043 사무실이 보낸 배송지: 거래처 목록에 없는 곳은 run.ex[id]={n,a,y,x,m}로 같이 저장
+function pStop(id,r){const c=C.list&&C.list.find(x=>x.id===id);if(c)return toStop(c);const e=r&&r.ex&&r.ex[id];if(e&&(e.a||e.n))return {id,n:e.n||e.a,a:e.a||e.n,y:e.y?+e.y:null,x:e.x?+e.x:null,m:e.m||''};const n=pName(id,r);return {id,n,a:n,y:null,x:null,m:'주소 미확인 · 티맵에서 이름으로 찾아요'}}
+function pInL(st){const k=pidOf(st);return S.stops.some(s=>pidOf(s)===k)}
 async function pcLoad(force){if(!localStorage.getItem('tmapgo_k')){pcRender();return}
   const W=pWeek();const today=new Date();const keys=new Set(W.map(d=>'plan:'+pYmd(d)));keys.add('plan:'+pYmd(today));for(let k=0;k<7;k++)keys.add('wk:'+k);
   try{const j=await storeCall({op:'get',keys:[...keys].join(',')});const D=j.data||{};[...keys].forEach(k=>{PC.data[k]=(D[k]||{}).value||{}});PC.at=Date.now();
@@ -1527,33 +1531,60 @@ function pcRender(){const box=$('pDays');if(!box||!PC||!PC.data)return;const W=p
       +(past?'':'<button class="padd" data-pe="'+ds+'" data-wk="0" data-rid="">＋ 코스 등록</button>')+'</div>'}).join('');
 }
 function pcTodayBar(){const b=$('pToday');if(!b||!PC||!PC.data)return;if(!localStorage.getItem('tmapgo_k')){b.innerHTML='';return}
-  const ds=pYmd(new Date());const E=pEff(ds);const runs=E.own.concat(E.wkr);
-  const todo=runs.filter(r=>S.pfrom!==ds+'|'+r.rid);
-  if(!todo.length){b.innerHTML='';return}
-  b.innerHTML='<div class="ptoday"><b>오늘 예정 코스가 있어요</b>'+todo.map(r=>'<button class="btn br" data-pl="'+esc(r.rid)+'">「'+esc(r.n||'코스')+'」 '+r.ids.length+'곳 불러오기</button>').join('')+'</div>';
-  b.querySelectorAll('[data-pl]').forEach(x=>x.onclick=()=>pcApply(ds,runs.find(r=>r.rid===x.dataset.pl)));
+  const ds=pYmd(new Date());const E=pEff(ds);const runs=E.own.concat(E.wkr);const items=[];
+  runs.forEach(r=>r.ids.forEach(id=>{if(!items.some(o=>o.id===id))items.push({id,r})}));
+  const st=items.map(o=>pStop(o.id,o.r));const left=st.filter(s=>!pInL(s));
+  if(!left.length){b.innerHTML='';return}
+  b.innerHTML='<div class="ptoday"><b>사무실에서 보낸 오늘 배송지 '+st.length+'곳</b>'+st.map((s,j)=>{const inl=pInL(s);
+      return '<div class="prow'+(inl?' in':'')+'"><div class="t"><b>'+esc(s.n)+'</b><small>'+esc(s.a)+(s.m&&!/^주소 미확인/.test(s.m)?' · '+esc(s.m):'')+'</small></div><button class="pin" data-pin="'+j+'"'+(inl?' disabled':'')+'>'+(inl?'넣었어요':'넣기')+'</button></div>'}).join('')
+    +(left.length>1?'<button class="btn br" id="pAll">남은 '+left.length+'곳 모두 넣기</button>':'')+'</div>';
+  b.querySelectorAll('[data-pin]').forEach(x=>x.onclick=()=>pcTake([st[+x.dataset.pin]]));
+  const al=$('pAll');if(al)al.onclick=()=>pcTake(left);
 }
+function pcTake(list){const ds=pYmd(new Date());
+  if(S.stops.length&&S.day&&S.day<ds){const d=new Date(S.day+'T00:00:00');
+    if(confirm('지난 '+(d.getMonth()+1)+'/'+d.getDate()+' 배송 목록은 정리하고 오늘 배송으로 새로 시작할까요?\n(취소를 누르면 지난 목록 뒤에 이어서 넣어요)')){localStorage.setItem(KEY+'_prev',JSON.stringify(S));S={stops:[],day:ds}}}
+  if(!S.stops.length)S.day=ds;
+  let n=0;list.forEach(s=>{if(s&&!pInL(s)){S.stops.push(Object.assign({},s));n++}});
+  delete S.preset;noPlan();save();render();showTab(1);toast(n?(list.length===1?'「'+list[0].n+'」을(를) 오늘 배송 '+S.stops.length+'번에 넣었어요':n+'곳을 오늘 배송에 넣었어요'):'이미 오늘 배송에 있어요')}
 function pcApply(ds,r){if(!r)return;
   if(S.stops.length&&!confirm('지금 배송 목록('+S.stops.length+'곳)을 「'+(r.n||'코스')+'」 '+r.ids.length+'곳으로 바꿀까요?'))return;
-  const st=r.ids.map(id=>{const c=C.list&&C.list.find(x=>x.id===id);return c?toStop(c):{id,n:pName(id,r),a:pName(id,r),y:null,x:null,m:'주소 미확인 · 티맵에서 이름으로 찾아요'}});
+  const st=r.ids.map(id=>pStop(id,r));
   if(S.stops.length)localStorage.setItem(KEY+'_prev',JSON.stringify(S));
   S={stops:st,day:ds,pfrom:ds+'|'+r.rid};save();OPEN.clear();render();showTab(1);toast('「'+(r.n||'코스')+'」 '+st.length+'곳을 불러왔어요')}
 var PE=null;
 function pcEdit(ds,wk,rid){const d=new Date(ds+'T00:00:00');const key=wk?'wk:'+d.getDay():'plan:'+ds;
   const r=rid?pRuns(key).find(x=>x.rid===rid):null;
-  PE={ds,key,wk:!!wk,rid:rid||('r'+Date.now().toString(36)),n:r?r.n:(pEff(ds).own.length?'코스 '+(pEff(ds).own.length+1):'코스 1'),ids:r?r.ids.slice():[],rep:!!wk,isNew:!r,q:''};
+  PE={ds,key,wk:!!wk,rid:rid||('r'+Date.now().toString(36)),n:r?r.n:(pEff(ds).own.length?'코스 '+(pEff(ds).own.length+1):'코스 1'),ids:r?r.ids.slice():[],ex:r&&r.ex?JSON.parse(JSON.stringify(r.ex)):{},rep:!!wk,isNew:!r,q:'',pl:null,plq:''};
   let b=$('psheet');if(!b){b=document.createElement('div');b.className='sheet';b.id='psheet';document.body.appendChild(b);b.addEventListener('click',e=>{if(e.target.id==='psheet')b.classList.remove('on')})}
   pcEditDraw();b.classList.add('on')}
 function pcResDraw(){const box=$('pRes');if(!box)return;const q=norm(PE.q||'');
   const res=q&&C.list?C.list.filter(c=>!PE.ids.includes(c.id)&&norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(q)).slice(0,12):[];
-  box.innerHTML=res.map(c=>'<button data-pa="'+esc(c.id)+'">＋ <b>'+esc(c.n)+'</b> <span style="color:#666;font-size:14px">'+esc(c.r||'')+'</span></button>').join('')+(q&&!C.list?'<div class="pnone">거래처 목록이 아직 안 열렸어요</div>':'')+(q&&C.list&&!res.length?'<div class="pnone">찾는 거래처가 없어요</div>':'');
-  box.querySelectorAll('[data-pa]').forEach(x=>x.onclick=()=>{PE.ids.push(x.dataset.pa);PE.q='';pcEditDraw();toast('넣었어요 ('+PE.ids.length+'번)')})}
+  const pl=(PE.pl&&PE.plq===PE.q)?PE.pl:null;
+  box.innerHTML=res.map(c=>'<button data-pa="'+esc(c.id)+'">＋ <b>'+esc(c.n)+'</b> <span style="color:#666;font-size:14px">'+esc(c.r||'')+'</span></button>').join('')+(q&&!C.list?'<div class="pnone">거래처 목록이 아직 안 열렸어요</div>':'')+(q&&C.list&&!res.length?'<div class="pnone">등록된 거래처에 없어요</div>':'')
+    +(q?'<button id="pPlGo" style="border:1.5px dashed #9aa3e0;background:#F3F5FF;font-weight:800;color:#2B3BCF">목록에 없는 곳 찾기 · 「'+esc(PE.q)+'」 (상호·주소)</button>':'')
+    +(pl?(pl.length?'<div class="pnone">찾은 곳 · 누르면 코스에 넣어요</div>'+pl.map((x,j)=>'<button data-pex="'+j+'" style="background:#fff;border-color:#c9cfee">＋ <b>'+esc(x.name)+'</b><br><span style="color:#555;font-size:14px">'+esc(x.addr||x.jibun||'')+'</span></button>').join(''):'<div class="pnone">장소를 못 찾았어요. 도로명 주소로 넣어 보세요</div>'):'');
+  box.querySelectorAll('[data-pa]').forEach(x=>x.onclick=()=>{PE.ids.push(x.dataset.pa);PE.q='';PE.pl=null;pcEditDraw();toast('넣었어요 ('+PE.ids.length+'번)')});
+  const pg=$('pPlGo');if(pg)pg.onclick=pcPlSearch;
+  box.querySelectorAll('[data-pex]').forEach(x=>x.onclick=()=>{const p=pl[+x.dataset.pex];if(!p)return;const st=plStop(p);
+    if(PE.ids.includes(st.id)){toast('이미 넣었어요');return}
+    const nm=(prompt('기사님 앱에 보일 이름',p.name)||'').trim();if(!nm)return;
+    const mm=(prompt('기사님께 남길 메모 (예: 지하 하역장, 4층 404호) · 없으면 비워 두세요','')||'').trim();
+    PE.ex[st.id]={n:nm.slice(0,30),a:st.a,y:+(+st.y).toFixed(6),x:+(+st.x).toFixed(6),m:mm.slice(0,60)};PE.ids.push(st.id);PE.q='';PE.pl=null;pcEditDraw();toast('「'+nm+'」 넣었어요 ('+PE.ids.length+'번)')});
+}
+async function pcPlSearch(){const q=(PE.q||'').trim();if(!q)return;const R=$('pRes');const g0=$('pPlGo');if(g0){g0.disabled=true;g0.textContent='「'+q+'」 찾는 중이에요…'}
+  try{const c={lat:OFFICE.y,lng:OFFICE.x};
+    const [p,g]=await Promise.all([plSrv({act:'place',q,lat:c.lat,lng:c.lng}).catch(()=>null),/\d/.test(q)?plSrv({act:'geo',addr:q}).catch(()=>null):null]);
+    let L=(p&&p.ok&&p.list)?p.list.slice(0,10):[];
+    if(g&&g.ok&&g.lat&&!L.some(x=>Math.abs(x.lat-g.lat)<0.0003&&Math.abs(x.lng-g.lng)<0.0003))L.unshift({name:q,addr:q,lat:g.lat,lng:g.lng});
+    PE.pl=L;PE.plq=PE.q}catch(e){PE.pl=[];PE.plq=PE.q}
+  pcResDraw()}
 function pcEditDraw(){const b=$('psheet');const d=new Date(PE.ds+'T00:00:00');const q=norm(PE.q||'');
   b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">'+pLbl(d)+' 코스</b><button id="pX">닫기</button></div><div class="sh-l" id="pL">'
    +'<label class="hint" style="margin:0">코스 이름</label><input class="rin" id="pN" value="'+esc(PE.n)+'" placeholder="예) 오전 코스, 화성 코스">'
    +'<div class="qk" style="margin-top:6px"><button data-pn="오전 코스">오전 코스</button><button data-pn="오후 코스">오후 코스</button></div>'
    +'<div class="rq">배송 순서 ('+PE.ids.length+'곳)</div>'
-   +(PE.ids.length?PE.ids.map((id,i)=>'<div class="pst"><div class="no">'+(i+1)+'</div><b>'+esc(pName(id))+'</b><button data-pm="up" data-i="'+i+'">▲</button><button data-pm="down" data-i="'+i+'">▼</button><button data-pm="del" data-i="'+i+'" style="color:var(--rd)">빼기</button></div>').join(''):'<div class="pnone">아래에서 거래처를 찾아 넣어 주세요</div>')
+   +(PE.ids.length?PE.ids.map((id,i)=>'<div class="pst"><div class="no">'+(i+1)+'</div><b style="flex:1;min-width:0">'+esc(pName(id))+(PE.ex[id]?'<br><span style="font-weight:400;color:#666;font-size:14px">'+esc(PE.ex[id].a+(PE.ex[id].m?' · '+PE.ex[id].m:''))+'</span>':'')+'</b><button data-pm="up" data-i="'+i+'">▲</button><button data-pm="down" data-i="'+i+'">▼</button><button data-pm="del" data-i="'+i+'" style="color:var(--rd)">빼기</button></div>').join(''):'<div class="pnone">아래에서 거래처를 찾아 넣어 주세요</div>')
    +'<div class="rq">＋ 거래처 넣기</div><input class="rin" id="pQ" type="search" placeholder="거래처 이름·지역" value="'+esc(PE.q||'')+'" autocomplete="off">'
    +'<div class="pres" id="pRes"></div>'
    +'<label class="pchk"><input type="checkbox" id="pRep"'+(PE.rep?' checked':'')+'> 매주 '+WD[d.getDay()]+'요일마다 반복</label>'
@@ -1581,7 +1612,8 @@ async function pcPut(key,val,msg,also){if(!me()&&!askName())return;
 function pcSave(){PE.n=($('pN').value||'').trim().slice(0,20)||'코스';
   if(!PE.ids.length){toast('거래처를 한 곳 이상 넣어 주세요');return}
   const d=new Date(PE.ds+'T00:00:00');const nm={};PE.ids.forEach(id=>nm[id]=pName(id));
-  const run={n:PE.n,ids:PE.ids,nm,by:me()||'',at:Date.now()};
+  const ex={};PE.ids.forEach(id=>{if(PE.ex[id]&&!(C.list&&C.list.find(x=>x.id===id)))ex[id]=PE.ex[id]});
+  const run={n:PE.n,ids:PE.ids,nm,ex,by:me()||'',at:Date.now()};
   const target=PE.rep?'wk:'+d.getDay():'plan:'+PE.ds;
   let also=null;
   if(target!==PE.key&&!PE.isNew)also=[PE.key,{runs:{[PE.rid]:null}}]; // 이 날만 매주 바꾸면 원래 자리에서 빼기
@@ -1590,6 +1622,8 @@ document.addEventListener('click',e=>{const x=e.target.closest('[data-pe]');if(!
 (()=>{const pv=$('pPrev'),nx=$('pNext');if(pv)pv.onclick=()=>{PC.off--;pcLoad()};if(nx)nx.onclick=()=>{PC.off++;pcLoad()}})();
 try{PC.data=JSON.parse(localStorage.getItem('tmapgo_plan'))||{}}catch(e){}
 hdrUpd();setTimeout(()=>pcLoad(),1500);
+render=(f=>function(){const v=f.apply(this,arguments);try{pcTodayBar()}catch(e){}return v})(render);
+setInterval(()=>{if(!document.hidden&&localStorage.getItem('tmapgo_k'))pcLoad()},180000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-PC.at>60000)pcLoad()});
 </script>
 </body>

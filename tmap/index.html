@@ -185,7 +185,11 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .oft{background-color:#2B3BCF;background-image:linear-gradient(90deg,#1F4FE0,#5A2BC8);color:#fff}.oft .tlogo{width:34px;height:34px}
 .ofk{background:#FEE500;color:#191919}
 .klogo{flex:none;width:34px;height:34px;border-radius:9px;background:#191919;color:#FEE500;font-style:normal;font-weight:900;font-size:20px;display:inline-flex;align-items:center;justify-content:center}
-.dn .go{opacity:.6}
+.dn .go,.dn .gob{opacity:.6}
+/* v044 거래처마다 티맵·카카오내비 두 버튼 */
+.gol{margin-top:12px;font-size:15.5px;font-weight:800;color:var(--mu)}.gob{margin-top:6px}.gob .oft,.gob .ofk{min-height:60px;font-size:19px}
+.fgo.k{background:#FEE500;background-image:none;color:#191919}
+.fr .r2 a.fgo,.fv .r2 a.fgo{flex:0 0 25%;padding:0 6px;justify-content:center}
 .lkrow{display:flex;flex-wrap:wrap;gap:4px 18px;justify-content:center;flex:1 0 100%}
 .lk,.fr .lkrow .lk,.fv .lkrow .lk{min-height:44px;padding:0 6px;border:0;background:none;color:#555;font-size:15px;text-decoration:underline;font-family:inherit;display:inline-flex;align-items:center}
 .rl{font-size:16px;font-weight:700;color:var(--mu);margin:14px 2px 8px}
@@ -406,7 +410,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v043 · 10/26</span><span class="hd" id="hdrInfo"></span></div>
+  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v044 · 10/26</span><span class="hd" id="hdrInfo"></span></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -462,7 +466,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div><div class="nmrow" id="thRow" style="margin-top:10px"></div><div class="nmrow" id="navRow" style="margin-top:10px"></div></div>
-    <div class="ver">v043</div>
+    <div class="ver">v044</div>
   </section>
 </main>
 <div class="sheet" id="gsheet"><div class="sh">
@@ -632,11 +636,11 @@ function navSetOpen(){const c=NAV();const b=(v,t,sub)=>'<button class="btn '+(c=
   s.querySelectorAll('[data-nv]').forEach(x=>x.onclick=()=>{localStorage.setItem(NAVK,x.dataset.nv);navSheet(null);navRedraw();if(x.dataset.nv!=='tmap')knPrep();toast('길안내 앱: '+NAVKN[x.dataset.nv])});
   s.querySelector('#nvX').onclick=()=>navSheet(null)}
 function ofcDraw(){const o=document.getElementById('ofcTm');if(o)o.href=tmapHref(OFFICE)}
-function navRowDraw(){const r=document.getElementById('navRow');if(!r)return;r.innerHTML='길안내 앱: <b>'+NAVKN[NAV()]+'</b><button id="navBtn">바꾸기</button>';document.getElementById('navBtn').onclick=navSetOpen}
+function navRowDraw(){const r=document.getElementById('navRow');if(!r)return;r.style.display='none';return;r.innerHTML='길안내 앱: <b>'+NAVKN[NAV()]+'</b><button id="navBtn">바꾸기</button>';document.getElementById('navBtn').onclick=navSetOpen}
 function navRedraw(){ofcDraw();navRowDraw();try{render()}catch(e){}try{if(typeof renderFind==='function')renderFind()}catch(e){}}
 // 모든 길안내 버튼(data-act="go", 사무실로 길안내)을 먼저 받아서 설정대로 연다. 티맵이면 원래 흐름 그대로
 function navClick(e){const a=e.target.closest('a[data-act="go"]');if(!a||e._nv)return;e._nv=1;
-  const n=NAV();if(n==='tmap')return;
+  const n=a.dataset.nv||NAV();if(n==='tmap')return;
   e.preventDefault();e.stopPropagation();const d=navDest(a);
   const i=a.dataset.i!==undefined?+a.dataset.i:-1;const after=()=>{if(i>=0&&S.stops[i])try{tripGo(i)}catch(_){}};
   if(n==='tmap'){tmapGo(d);return}
@@ -657,7 +661,7 @@ const OPEN=new Set();
 const chipOf=s=>s.done?['dn','완료'+((s.fin||s.arr)?' '+esc(s.fin||s.arr):'')]:s.arr?['ar','도착 '+esc(s.arr)]:s.dep?['mv','이동 중']:['wt','대기'];
 function msgBtn2(s){const p=pidOf(s),n=msgCount(p),u=unread(p);return '<button class="sb mb2'+(u?' unread':n?' has':'')+'" data-act="msg" data-pid="'+esc(p)+'" data-pn="'+esc(s.n)+'">'+(u?'새 전달 '+u+'개':n?'전달사항 '+n:'전달사항')+'</button>'}
 function stopBody(s,i){return `<div class="ad">${esc(s.a)}</div>${ctRow(s)}${s.m?`<div class="memo">${esc(s.m)}</div>`:''}${msgPrev(s)}${tripLine(s)}
-  <a class="go" href="${navA(s)}" data-tm="${tmapHref(s)}" data-act="go" data-i="${i}">${navLogo()}${navLbl(s.dep&&!s.done)}</a>
+  <div class="gol">${s.dep&&!s.done?'길안내 다시 열기':'출발 · 길안내 앱 고르기'}</div><div class="ofb gob"><a class="oft" href="${tmapHref(s)}" data-tm="${tmapHref(s)}" data-act="go" data-nv="tmap" data-i="${i}"><i class="tlogo" aria-label="TMAP"></i>티맵</a><a class="ofk" href="${kakaoHref(s)}" data-tm="${tmapHref(s)}" data-act="go" data-nv="kakao" data-i="${i}"><i class="klogo" aria-hidden="true">K</i>카카오내비</a></div>
   <div class="subs"><button class="sb ok${s.done?' undo':''}" data-act="done" data-i="${i}">${s.done?'완료 취소':'배송 완료'}</button>${msgBtn2(s)}</div>${typeof signBtn==='function'?signBtn(s):''}
   <div class="lkrow"><a class="lk" href="${kakaoHref(s)}" target="_blank" rel="noopener">카카오맵</a><button class="lk" data-act="copy" data-i="${i}">주소 복사</button><button class="lk" data-act="del" data-i="${i}" style="color:var(--rd)">오늘 배송에서 빼기</button></div>`}
 function nextIdx(){let k=S.stops.findIndex(s=>s.dep&&!s.done);if(k<0)k=S.stops.findIndex(s=>!s.done);return k}
@@ -693,7 +697,7 @@ function renderEdit(){const e=$('esheet');if(!e||!e.classList.contains('on'))ret
   $('eL').scrollTop=sc;const r=$('eRoute');if(r)r.onclick=()=>{if(S.stops.length<2){toast('2곳 이상 있어야 해요');return}$('esheet').classList.remove('on');openRoute()}}
 function renderFav(){
   $('favs').innerHTML=FAV.length?'<div class="fav">'+FAV.map((f,i)=>`<div class="fv"><div class="t"><b>${esc(f.n)}</b><span>${esc(f.a||'주소 미확인 · 티맵에서 이름으로 찾기')}</span></div>
-    <div class="r2">${addBtn(f.id,i)}<a class="fgo" href="${navA(f)}" data-tm="${tmapHref(f)}" data-act="go">${navShort()}</a></div>
+    <div class="r2">${addBtn(f.id,i)}<a class="fgo" href="${tmapHref(f)}" data-tm="${tmapHref(f)}" data-act="go" data-nv="tmap">티맵</a><a class="fgo k" href="${kakaoHref(f)}" data-tm="${tmapHref(f)}" data-act="go" data-nv="kakao">카카오</a></div>
     <div class="lkrow"><button class="lk" data-act="msg" data-pid="${esc(pidOf(f))}" data-pn="${esc(f.n)}">전달사항${msgCount(pidOf(f))?' '+msgCount(pidOf(f)):''}</button><button class="lk" data-act="fdel" data-i="${i}">삭제</button></div></div>`).join('')+'</div>'
     :'<div class="card empty">아직 등록된 곳이 없어요.</div>';
 }
@@ -769,7 +773,7 @@ function renderFind(){
     return `<div class="fr"><div class="t"><div class="fn">${esc(c.n)}</div>
     <div class="fs">${c.r?esc(c.r)+' · ':''}${c.a?esc(c.a):'<span style="color:var(--or)">주소 미확인</span>'}</div>${ctMini(c)}</div>
     <button class="star${inF?' in':''}" data-act="fadd" data-id="${c.id}">${inF?'등록됨':'빠른 등록'}</button>
-    <div class="r2">${addBtn(c.id)}<a class="fgo" href="${navA(toStop(c))}" data-tm="${tmapHref(toStop(c))}" data-act="go">${navShort()}</a></div>
+    <div class="r2">${addBtn(c.id)}<a class="fgo" href="${tmapHref(toStop(c))}" data-tm="${tmapHref(toStop(c))}" data-act="go" data-nv="tmap">티맵</a><a class="fgo k" href="${kakaoHref(toStop(c))}" data-tm="${tmapHref(toStop(c))}" data-act="go" data-nv="kakao">카카오</a></div>
     <div class="lkrow"><button class="lk" data-act="msg" data-pid="${esc(c.id)}" data-pn="${esc(c.n)}">전달사항${mc?' '+mc:''}</button></div></div>`}).join('')
     :'<div class="hint" style="margin-top:10px">「'+esc($('fq').value)+'」 등록된 거래처가 없어요. 아래 「장소 검색」을 눌러 보세요.</div>';
 }
@@ -846,7 +850,7 @@ function plDraw(){const R=$('plRes');const L=PL.list||[];
   R.innerHTML='<div class="hint" style="margin-top:10px">'+esc(PL.from)+'에서 가까운 순 · '+L.length+'곳</div>'+L.map((x,j)=>{const st=plStop(x),inL=S.stops.some(s=>s.id===st.id),inF=FAV.some(f=>f.id===st.id);
    const km=x.dist!=null&&x.dist!==''?(x.dist<1000?Math.round(x.dist)+'m':(x.dist/1000).toFixed(1)+'km'):'';
    return '<div class="fr plr"><div class="t"><div class="fn">'+esc(x.name)+'</div><div class="fs">'+esc(x.addr||x.jibun||'')+'</div><div class="fs">'+[km,x.cat?esc(String(x.cat).split(' > ').pop()):'',x.tel?'<a href="tel:'+esc(x.tel)+'">'+esc(x.tel)+'</a>':''].filter(Boolean).join(' · ')+'</div></div>'
-   +'<div class="plb3"><a class="fgo" href="'+navA(st)+'" data-tm="'+tmapHref(st)+'" data-act="go">'+navShort()+' 길안내</a>'
+   +'<div class="plb3"><a class="fgo" href="'+tmapHref(st)+'" data-tm="'+tmapHref(st)+'" data-act="go" data-nv="tmap">티맵</a><a class="fgo k" href="'+kakaoHref(st)+'" data-tm="'+tmapHref(st)+'" data-act="go" data-nv="kakao">카카오내비</a>'
    +'<button class="plx'+(inL?' in':'')+'" data-pl="stop" data-j="'+j+'">'+(inL?'넣었어요':'오늘 배송에 넣기')+'</button>'
    +'<button class="plx'+(inF?' in':'')+'" data-pl="fav" data-j="'+j+'">'+(inF?'저장됨':'자주 가는 곳에 저장')+'</button></div></div>'}).join('')}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-pl]');if(!b)return;const x=(PL.list||[])[+b.dataset.j];if(!x)return;const st=plStop(x);
@@ -1430,7 +1434,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v043';
+const APP_VER='v044';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

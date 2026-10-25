@@ -168,6 +168,11 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .sb.ok{font-family:inherit;background:#fff}
 .sb.ok.undo{background:#fff;color:var(--or);border:2px solid var(--or)}
 .go{font-family:inherit}
+#plW{margin-top:10px}
+.plb{display:flex;gap:10px}.plg,.plt{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px;border-radius:12px;font-size:18px;font-weight:800;font-family:inherit;text-decoration:none;border:0}
+.plg{background:var(--br);color:#fff}.plt{background-color:#2B3BCF;background-image:linear-gradient(90deg,#1F4FE0,#5A2BC8);color:#fff}.plt .tlogo{width:30px;height:30px}
+.plr .fs a{color:#1F4FBF}.plb3{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;flex:1 0 100%}.plb3>*{flex:1 1 30%;min-height:54px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:16px;font-weight:700;border-radius:10px;word-break:keep-all;padding:0 6px}
+.plx{border:1px solid var(--ln);background:#fff;font-family:inherit;color:var(--tx)}.plx.in{background:#EAF6EE;border-color:#1F6B45;color:#1F6B45}
 .nvl{padding:16px 16px 18px}.nvt{font-size:20px;font-weight:800}.nvd{font-size:16px;color:#555;margin-top:4px;word-break:keep-all}
 .nvb{gap:10px;min-height:60px;font-size:19px}.nvb .tlogo{width:34px;height:34px}.nvk{background:#FEE500!important;color:#191919!important}
 .nvr{display:flex;gap:10px;align-items:flex-start;margin:14px 2px 2px;font-size:17px;word-break:keep-all}.nvr input{width:24px;height:24px;flex:none;margin-top:2px}.nvr small{font-size:14px;color:#666}
@@ -400,7 +405,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v041 · 10/25</span><span class="hd" id="hdrInfo"></span></div>
+  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v042 · 10/25</span><span class="hd" id="hdrInfo"></span></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -432,6 +437,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
         <button class="btn br" id="fpwok">확인</button>
       </div>
       <div id="fres"></div>
+      <div id="plW" style="display:none"><div class="plb"><button class="plg" id="plGo">장소 검색</button><a class="plt" id="plTm" href="#"><i class="tlogo" aria-label="TMAP"></i>티맵 앱에서 검색</a></div><div id="plRes"></div></div>
       <div id="manW" style="display:none">
         <button class="manb" id="manOpen">찾는 곳이 없으면 직접 넣기</button>
         <div id="manBox" style="display:none">
@@ -455,7 +461,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div><div class="nmrow" id="thRow" style="margin-top:10px"></div><div class="nmrow" id="navRow" style="margin-top:10px"></div></div>
-    <div class="ver">v041</div>
+    <div class="ver">v042</div>
   </section>
 </main>
 <div class="sheet" id="gsheet"><div class="sh">
@@ -752,7 +758,7 @@ async function custLoad(){
   C.state='idle';renderFind();applyPending();
 }
 function renderFind(){
-  const R=$('fres'), q=norm($('fq').value);
+  const R=$('fres'), q=norm($('fq').value);if(typeof plShow==='function')plShow();
   $('manW').style.display=q?'block':'none';if(!q)$('manBox').style.display='none';
   $('favWrap').style.display=q?'none':'block';
   if(!q){R.innerHTML='';return}
@@ -764,7 +770,7 @@ function renderFind(){
     <button class="star${inF?' in':''}" data-act="fadd" data-id="${c.id}">${inF?'등록됨':'빠른 등록'}</button>
     <div class="r2">${addBtn(c.id)}<a class="fgo" href="${navA(toStop(c))}" data-tm="${tmapHref(toStop(c))}" data-act="go">${navShort()}</a></div>
     <div class="lkrow"><button class="lk" data-act="msg" data-pid="${esc(c.id)}" data-pn="${esc(c.n)}">전달사항${mc?' '+mc:''}</button></div></div>`}).join('')
-    :'<div class="hint" style="margin-top:10px">「'+esc($('fq').value)+'」 거래처가 없어요. 아래 「직접 넣기」를 눌러 주세요.</div>';
+    :'<div class="hint" style="margin-top:10px">「'+esc($('fq').value)+'」 등록된 거래처가 없어요. 아래 「장소 검색」을 눌러 보세요.</div>';
 }
 function applyPending(){
   if(!C.pending||!C.list)return;
@@ -815,6 +821,38 @@ $('fq').addEventListener('input',renderFind);
 $('fq').addEventListener('focus',()=>{if(!C.list&&C.state!=='loading')custLoad()});
 $('fpwok').addEventListener('click',()=>{const v=$('fpw').value.trim();if(!v){toast('암호를 넣어 주세요');return}localStorage.setItem(PKEY,v);C.badPass=false;$('fpw').value='';custLoad()});
 $('manOpen').addEventListener('click',()=>{const b=$('manBox');const on=b.style.display==='none';b.style.display=on?'block':'none';if(on){if(!$('fn').value)$('fn').value=$('fq').value.trim();$('fa').focus()}});
+/* ===== v040 장소 검색: 등록 안 된 곳을 이름·주소로 찾기 (카카오 장소 검색, 열쇠는 서버에만 있음. 바로연락 앱과 같은 서버 act place/geo) ===== */
+const PL={q:'',list:null,busy:false,pos:null};
+function plShow(){const w=$('plW');if(!w)return;const q=$('fq').value.trim();w.style.display=q?'block':'none';
+  const t=$('plTm');if(t){const h='search?name='+encodeURIComponent(q);t.href=isAndroid?'intent://'+h+'#Intent;scheme=tmap;package=com.skt.tmap.ku;end':'tmap://'+h}
+  if(PL.q&&PL.q!==q){PL.q='';PL.list=null;$('plRes').innerHTML=''}}
+function plPos(){return new Promise(ok=>{if(PL.pos&&Date.now()-PL.pos.t<300000)return ok(PL.pos);if(!navigator.geolocation)return ok(null);
+  navigator.geolocation.getCurrentPosition(p=>{PL.pos={lat:+p.coords.latitude.toFixed(6),lng:+p.coords.longitude.toFixed(6),t:Date.now()};ok(PL.pos)},()=>ok(null),{enableHighAccuracy:false,timeout:6000,maximumAge:300000})})}
+async function plSrv(b){const r=await fetch(KNV_URL,{method:'POST',body:JSON.stringify(Object.assign({k:'brl-ocr-v1'},b))});return r.json()}
+async function plSearch(){const q=$('fq').value.trim();if(!q){toast('찾을 이름이나 주소를 넣어 주세요');return}if(PL.busy)return;PL.busy=true;
+  const R=$('plRes');R.innerHTML='<div class="hint" style="margin-top:10px">「'+esc(q)+'」 찾는 중이에요…</div>';
+  try{const pos=await plPos();const c=pos||{lat:OFFICE.y,lng:OFFICE.x};
+    const [p,g]=await Promise.all([plSrv({act:'place',q,lat:c.lat,lng:c.lng}).catch(()=>null),/\d/.test(q)?plSrv({act:'geo',addr:q}).catch(()=>null):null]);
+    let L=(p&&p.ok&&p.list)?p.list.slice(0,15):[];
+    if(g&&g.ok&&g.lat&&!L.some(x=>Math.abs(x.lat-g.lat)<0.0003&&Math.abs(x.lng-g.lng)<0.0003)){const d=Math.round(plDist(c.lat,c.lng,g.lat,g.lng));L.unshift({name:q,addr:q,lat:g.lat,lng:g.lng,cat:'주소',dist:d,adr:1})}
+    PL.q=q;PL.list=L;PL.from=pos?'현재 위치':'회사';plDraw()}
+  catch(e){R.innerHTML='<div class="hint" style="margin-top:10px;color:var(--rd)">검색을 못 했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.</div>'}
+  PL.busy=false}
+function plDist(a,b,c,d){const r=Math.PI/180,x=(d-b)*r*Math.cos((a+c)/2*r),y=(c-a)*r;return Math.sqrt(x*x+y*y)*6371000}
+function plStop(x){const k=(String(x.url||'').match(/(\d+)$/)||[])[1];return {id:k?'k'+k:'p'+(+x.lat).toFixed(5)+'_'+(+x.lng).toFixed(5),n:x.name,a:x.addr||x.jibun||x.name,y:+x.lat,x:+x.lng}}
+function plDraw(){const R=$('plRes');const L=PL.list||[];
+  if(!L.length){R.innerHTML='<div class="hint" style="margin-top:10px">「'+esc(PL.q)+'」 장소를 못 찾았어요. 이름을 짧게 하거나 「티맵 앱에서 검색」을 눌러 보세요.</div>';return}
+  R.innerHTML='<div class="hint" style="margin-top:10px">'+esc(PL.from)+'에서 가까운 순 · '+L.length+'곳</div>'+L.map((x,j)=>{const st=plStop(x),inL=S.stops.some(s=>s.id===st.id),inF=FAV.some(f=>f.id===st.id);
+   const km=x.dist!=null&&x.dist!==''?(x.dist<1000?Math.round(x.dist)+'m':(x.dist/1000).toFixed(1)+'km'):'';
+   return '<div class="fr plr"><div class="t"><div class="fn">'+esc(x.name)+'</div><div class="fs">'+esc(x.addr||x.jibun||'')+'</div><div class="fs">'+[km,x.cat?esc(String(x.cat).split(' > ').pop()):'',x.tel?'<a href="tel:'+esc(x.tel)+'">'+esc(x.tel)+'</a>':''].filter(Boolean).join(' · ')+'</div></div>'
+   +'<div class="plb3"><a class="fgo" href="'+navA(st)+'" data-tm="'+tmapHref(st)+'" data-act="go">'+navShort()+' 길안내</a>'
+   +'<button class="plx'+(inL?' in':'')+'" data-pl="stop" data-j="'+j+'">'+(inL?'넣었어요':'오늘 배송에 넣기')+'</button>'
+   +'<button class="plx'+(inF?' in':'')+'" data-pl="fav" data-j="'+j+'">'+(inF?'저장됨':'자주 가는 곳에 저장')+'</button></div></div>'}).join('')}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-pl]');if(!b)return;const x=(PL.list||[])[+b.dataset.j];if(!x)return;const st=plStop(x);
+  if(b.dataset.pl==='stop'){if(S.stops.some(s=>s.id===st.id)){toast('이미 오늘 배송에 있어요');return}S.stops.push(st);delete S.preset;noPlan();save();render();plDraw();toast('「'+st.n+'」을(를) 배송 목록 '+S.stops.length+'번에 넣었어요')}
+  if(b.dataset.pl==='fav'){if(FAV.some(f=>f.id===st.id)){toast('이미 자주 가는 곳에 있어요');return}FAV.push({id:st.id,n:st.n,a:st.a,y:st.y,x:st.x});saveFav();renderFav();plDraw();toast('「'+st.n+'」을(를) 자주 가는 곳에 저장했어요')}});
+setTimeout(()=>{const g=$('plGo');if(g)g.onclick=plSearch;const t=$('plTm');if(t)t.addEventListener('click',()=>{if(isIOS){const t0=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t0<3000)toast('티맵이 안 열리면 앱스토어에서 「TMAP」을 설치해 주세요.')},2000)}});
+  const f=$('fq');if(f)f.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){const ql=norm(f.value);const has=C.list&&C.list.some(c=>norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(ql));if(!has)plSearch()}})},0);
 function manRead(){const n=$('fn').value.trim(), a=$('fa').value.trim();if(!n&&!a){toast('이름이나 주소를 넣어 주세요');return null}return {id:'m'+Date.now(),n:n||a,a:a||n}}
 function manDone(){$('fn').value=$('fa').value='';$('manBox').style.display='none'}
 $('addManual').addEventListener('click',()=>{const m=manRead();if(!m)return;
@@ -1391,7 +1429,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v041';
+const APP_VER='v042';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

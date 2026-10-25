@@ -15,9 +15,9 @@
 :root{--tm1:#1F4FE0;--tm2:#5A2BC8;--br:#7A4A23;--br2:#F4EDE6;--tx:#1d1d1f;--mu:#5b5b60;--ln:#dcdce0;--bl:#1550d6;--gr:#1F6B45;--rd:#c62828;--or:#b45309}
 *{box-sizing:border-box}
 body{margin:0;font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;background:#f3f3f5;color:var(--tx);font-size:17px;word-break:keep-all;overflow-wrap:break-word;-webkit-tap-highlight-color:transparent}
-header{background-color:#2B3BCF;background-image:linear-gradient(115deg,#1F4FE0 0%,#3A33D0 58%,#6A2BC0 100%);color:#fff;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));border-bottom:5px solid #7A4A23}
-.hb{display:flex;align-items:center;gap:12px;max-width:640px;margin:0 auto}.hlogo{flex:0 0 52px;height:52px;border-radius:14px;background:#FFF7EE;border:3px solid #7A4A23;display:flex;align-items:center;justify-content:center}.hlogo img{width:38px;display:block}
-header h1{margin:0;font-size:21px}
+header{background-color:#2B3BCF;background-image:linear-gradient(115deg,#1F4FE0 0%,#3A33D0 58%,#6A2BC0 100%);color:#fff;padding:7px 12px;padding-top:calc(7px + env(safe-area-inset-top));border-bottom:5px solid #7A4A23}
+.hb{display:flex;align-items:center;gap:9px;max-width:640px;margin:0 auto}.hlogo{flex:0 0 40px;height:40px;border-radius:11px;background:#FFF7EE;border:2px solid #7A4A23;display:flex;align-items:center;justify-content:center}.hlogo img{width:29px;display:block}
+header h1{margin:0;font-size:18.5px;letter-spacing:-.3px;white-space:nowrap;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
 header .sub{margin-top:4px;font-size:15px;opacity:.9}
 main{max-width:640px;margin:0 auto;padding:12px 12px 60px}
 h2.sec{font-size:19px;margin:16px 2px 10px;display:flex;align-items:center;gap:6px;border-left:5px solid #7A4A23;padding-left:8px;color:#3a2614}
@@ -233,9 +233,10 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .cted input{width:100%;min-height:52px;font-size:18px;padding:8px 12px;border:1.5px solid #c9c9ce;border-radius:10px;box-sizing:border-box;font-family:inherit}
 
 /* v027 상단 정보 + 예정 코스 캘린더 */
-.hinfo{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.hinfo span{background:rgba(255,255,255,.95);color:#1d1d63;border-radius:8px;padding:3px 9px;font-size:14.5px;font-weight:900;white-space:nowrap}
-.hinfo .hv{background:#FFE07A;color:#3a2a00}
+.hinfo{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px;margin-left:auto}
+.hinfo span{white-space:nowrap;font-weight:900;font-size:14px;letter-spacing:-.2px;line-height:1.25}
+.hinfo .hv{background:#FFE07A;color:#3a2a00;border-radius:7px;padding:1px 7px}
+.hinfo .hd{color:inherit}
 #tabs button{font-size:15.5px}
 .pwk{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 10px}.pwk b{font-size:17px}
 .pwk button{min-height:46px;padding:0 12px;border-radius:10px;border:1.5px solid var(--ln);background:#fff;font-size:16px;font-weight:800;font-family:inherit}
@@ -298,9 +299,9 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 #thRow button{margin-left:10px}
 #thRow .thmini{display:inline-flex;vertical-align:middle;margin-left:6px;border-radius:5px;overflow:hidden;border:1px solid #ccc}#thRow .thmini i{width:14px;height:18px;display:block}
 
-/* v040 컴팩트 */
-header{padding:9px 14px;padding-top:calc(9px + env(safe-area-inset-top))}
-.hinfo{margin-top:4px}
+/* v040 컴팩트 (v041 머리글 한 줄) */
+header{padding:7px 12px;padding-top:calc(7px + env(safe-area-inset-top))}
+.hinfo{margin-top:0}
 main{padding-top:10px;padding-left:10px;padding-right:10px}
 .card{padding:12px;margin-bottom:10px}
 .box{padding:12px;margin-top:10px}
@@ -399,7 +400,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <div><h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v040 · 10/25 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
+  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v041 · 10/25</span><span class="hd" id="hdrInfo"></span></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -454,7 +455,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div><div class="nmrow" id="thRow" style="margin-top:10px"></div><div class="nmrow" id="navRow" style="margin-top:10px"></div></div>
-    <div class="ver">v040</div>
+    <div class="ver">v041</div>
   </section>
 </main>
 <div class="sheet" id="gsheet"><div class="sh">
@@ -1390,7 +1391,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v040';
+const APP_VER='v041';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){
@@ -1462,7 +1463,7 @@ setTimeout(ctPull,1200);
 // ===== v027 상단 정보 + 요일별 배송 예정 코스 (공유 저장 plan:날짜 / wk:요일, backend v6) =====
 var APP_DATE='10/24';
 function hdrUpd(){const e=$('hdrInfo');if(!e)return;const d=new Date();const n=(typeof C!=='undefined'&&C&&C.list)?C.list.length:0;
-  e.textContent='오늘 '+(d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')'+(n?' · 거래처 '+n+'곳':'')}
+  e.textContent=(d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')'+(n?' · '+n+'곳':'')}
 var PC={off:0,data:{},at:0};
 function pYmd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function pWeek(){const d=new Date();d.setHours(0,0,0,0);const dw=(d.getDay()+6)%7;d.setDate(d.getDate()-dw+PC.off*7);return [...Array(7)].map((_,k)=>{const x=new Date(d);x.setDate(d.getDate()+k);return x})}

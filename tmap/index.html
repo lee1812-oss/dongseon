@@ -297,6 +297,26 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .thmsg{margin-top:8px;font-size:15.5px;font-weight:700;color:#1F6B45}.thmsg.bad{color:#c62828}
 #thRow button{margin-left:10px}
 #thRow .thmini{display:inline-flex;vertical-align:middle;margin-left:6px;border-radius:5px;overflow:hidden;border:1px solid #ccc}#thRow .thmini i{width:14px;height:18px;display:block}
+
+/* v040 컴팩트 */
+header{padding:9px 14px;padding-top:calc(9px + env(safe-area-inset-top))}
+.hinfo{margin-top:4px}
+main{padding-top:10px;padding-left:10px;padding-right:10px}
+.card{padding:12px;margin-bottom:10px}
+.box{padding:12px;margin-top:10px}
+.box h3{margin-bottom:6px}
+.btn{margin-top:8px}
+.sec{margin:12px 2px 8px}
+.prog{margin:2px 2px 8px}
+.ofc{padding:10px 12px 12px;margin:0 0 10px}
+.inst{padding:10px 12px;margin-bottom:10px}
+.instrow{display:flex;align-items:center;gap:10px}
+.instrow b{flex:1}
+.instrow .btn{margin:0;width:auto;padding:0 22px;min-height:54px}
+.empty{padding:12px 4px}
+.card.empty{padding:12px 14px}
+.hint{margin-top:6px}
+.ver{margin-top:12px}
 </style>
 <script>
 /* ===== v033 화면 색 고르기 (Color Hunt 팔레트) : 이 휴대폰에만 저장 (tmapgo_theme) ===== */
@@ -379,7 +399,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <div><h1>빵을그리다 배송앱</h1><div class="sub">거래처를 누르면 길안내가 바로 시작돼요</div><div class="hinfo"><span class="hv" id="hdrVer">v039 · 10/24 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
+  <div><h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v040 · 10/25 업데이트</span><span class="hd" id="hdrInfo"></span></div></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -397,14 +417,14 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
   </section>
   <section class="tab" id="tab4">
     <h2 class="sec" style="margin-top:4px">배송 예정 코스</h2>
-    <div class="hint" style="margin:-4px 2px 8px">날짜를 눌러 코스를 미리 등록해 두면, 그날 「오늘 배송」 맨 위에 「불러오기」가 떠요. 「매주 반복」으로 요일 기본 코스도 만들 수 있어요.</div>
+    
     <div class="pwk"><button id="pPrev">지난주</button><b id="pRange"></b><button id="pNext">다음주</button></div>
     <div id="pDays"></div>
   </section>
   <section class="tab" id="tab2">
     <div class="box" id="findBox" style="margin:0 0 6px">
       <input id="fq" type="search" placeholder="거래처 이름·지역 (예: 바다백미, 곤지암)" autocomplete="off">
-      <div class="hint" id="fmsg">2026년 이카운트 판매 거래처에서 찾아요.</div>
+      <div class="hint" id="fmsg"></div>
       <div id="fpass" style="display:none">
         <label for="fpw">직원 암호 (「내 동선」 앱과 같은 암호)</label>
         <input id="fpw" type="text" inputmode="numeric" autocomplete="off" style="-webkit-text-security:disc" data-lpignore="true" data-1p-ignore="true">
@@ -420,7 +440,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
           <input id="fa" placeholder="예) 경기 화성시 서신면 백미길 210-35">
           <button class="btn br" id="addManual">빠른 찾기에 등록</button>
           <button class="btn ol" id="addManualStop">오늘 배송에 넣기</button>
-          <div class="hint">주소로 넣은 곳은 티맵이 열리면 검색 결과에서 한 번 더 눌러 주세요.</div>
+          
         </div>
       </div>
     </div>
@@ -429,12 +449,12 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
   <section class="tab" id="tab3">
     <h2 class="sec">오늘 배송 현황</h2>
     <div id="tL"></div>
-    <div class="hint" style="margin:-4px 2px 10px">기사님이 「출발」을 누르면 여기에 자동으로 보여요 · 30초마다 새로 읽어요</div>
+    
     <h2 class="sec">배송 전달사항 <span class="cnt" id="mcnt"></span></h2>
     <div id="mbox" class="fav"></div>
     <button class="btn gr" id="share">배송 목록 링크 보내기 (카톡·문자)</button>
     <div class="box"><div class="nmrow">내 이름: <b id="myName"></b><button id="nameBtn">바꾸기</button></div><div class="nmrow" id="ttsRow" style="margin-top:10px"></div><div class="nmrow" id="thRow" style="margin-top:10px"></div><div class="nmrow" id="navRow" style="margin-top:10px"></div></div>
-    <div class="ver">v039 · 사무실로 길안내에 티맵·카카오내비 두 버튼 · v038 앱 이름 「배송앱」으로 변경 · v037 「사무실로 길안내」도 길안내 앱 설정대로 · v036 길안내 앱 고르기(티맵·카카오내비·매번 고르기) · v035 맨 위 「사무실로 길안내」 · v034 갈 곳 펼치면 「오늘 배송에서 빼기」 · v033 화면 색 고르기(Color Hunt) · 출발 버튼 TMAP 로고 · 이모티콘 정리 · 예정 코스 캘린더 · 담당자 연락처 · 출발·도착 기록은 오늘 배송 현황에 공유돼요</div>
+    <div class="ver">v040</div>
   </section>
 </main>
 <div class="sheet" id="gsheet"><div class="sh">
@@ -443,7 +463,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
   <div class="sh-f" id="gF">
     <label class="gbtn cam">카메라로 찍기<input type="file" accept="image/*" capture="environment" id="gCam"></label>
     <label class="gbtn lib">휴대폰 사진에서 불러오기<input type="file" accept="image/*" multiple id="gLib"></label>
-    <div class="hint" style="text-align:center">명세표 전체와 사인이 잘 보이게 찍어 주세요. 여러 장도 돼요.</div>
+    
   </div></div></div>
 <div class="pv" id="gV"><img id="gVi" alt="명세표 사진"><div class="pvb"><a id="gVs" href="#" download="명세표.jpg">휴대폰에 저장</a><button id="gVx">닫기</button></div></div>
 <div class="sheet" id="sheet"><div class="sh">
@@ -461,7 +481,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <div class="sheet" id="rsheet"><div class="sh">
   <div class="sh-h"><b>최적 코스 정하기</b><button id="rX">닫기</button></div>
   <div class="sh-l" id="rL"></div>
-  <div class="sh-f"><button class="rbtn" id="rCalc">최적 코스 계산</button><div class="hint" style="margin-top:6px;text-align:center">누를 때만 티맵에 물어봐요 (하루 무료 횟수가 있어요)</div></div>
+  <div class="sh-f"><button class="rbtn" id="rCalc">최적 코스 계산</button></div>
 </div></div>
 <div class="sheet" id="esheet"><div class="sh">
   <div class="sh-h"><b style="flex:1">코스 바꾸기</b><button id="eX">닫기</button></div>
@@ -470,11 +490,11 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 </div></div>
 <div class="thsh" id="thSh"><div class="thp">
   <div class="thh"><b>화면 색 고르기</b><button id="thX">닫기</button></div>
-  <div class="hint">마음에 드는 색 묶음을 누르면 바로 바뀌어요. 이 휴대폰에만 적용되고, 배송 기록에는 영향이 없어요. 완료(초록)·경고(빨강) 색은 그대로 둬요.</div>
+  
   <div class="thmsg" id="thMsg"></div>
   <div id="thBody"></div>
   <div class="thm"><b>Color Hunt에서 더 고르기</b>
-    <div class="hint" style="margin-top:6px">① 아래 버튼으로 Color Hunt를 열고 ② 마음에 드는 색 묶음을 누른 뒤 ③ 주소를 복사해서 여기에 붙여 넣고 「적용」을 누르세요.</div>
+    <div class="hint" style="margin-top:6px">Color Hunt 주소를 붙여 넣고 「적용」</div>
     <a href="https://colorhunt.co" target="_blank" rel="noopener">Color Hunt 열기</a>
     <div class="thr"><input id="thIn" placeholder="colorhunt.co/palette/... 붙여 넣기" autocomplete="off"><button id="thGo">적용</button></div>
   </div>
@@ -599,7 +619,7 @@ function navPick(d,after){knPrep();
   s.querySelector('#nvM').onclick=()=>{navSheet(null);if(after)after();kakaoMapRoute(d)};
   s.querySelector('#nvX').onclick=()=>navSheet(null)}
 function navSetOpen(){const c=NAV();const b=(v,t,sub)=>'<button class="btn '+(c===v?'br':'ln')+' nvo" data-nv="'+v+'"><span>'+t+(c===v?' (지금)':'')+'<small>'+sub+'</small></span></button>';
-  const s=navSheet('<div class="nvt">길안내 앱 고르기</div><div class="nvd">출발 버튼과 사무실로 길안내를 누르면 이 앱이 열려요. 이 휴대폰에만 저장돼요.</div>'
+  const s=navSheet('<div class="nvt">길안내 앱 고르기</div>'
    +b('tmap','티맵','기본')+b('kakao','카카오내비','안 깔려 있으면 카카오맵 길찾기로 열어요')+b('ask','매번 고르기','누를 때마다 티맵·카카오내비 중에 골라요')+'<button class="btn ln" id="nvX">닫기</button>');
   s.querySelectorAll('[data-nv]').forEach(x=>x.onclick=()=>{localStorage.setItem(NAVK,x.dataset.nv);navSheet(null);navRedraw();if(x.dataset.nv!=='tmap')knPrep();toast('길안내 앱: '+NAVKN[x.dataset.nv])});
   s.querySelector('#nvX').onclick=()=>navSheet(null)}
@@ -649,7 +669,7 @@ function render(){
     }else N.innerHTML='<div class="tend">오늘 배송을 모두 마쳤어요</div>';
     const rows=S.stops.map((s,i)=>i===ni?'':(()=>{const k=pidOf(s),op=OPEN.has(k),c=chipOf(s);
       return `<div class="rw${s.done?' dn':''}${op?' open':''}"><div class="rh" data-tg="${esc(k)}"><div class="no" style="${s.done?'background:var(--gr)':''}">${s.done?'✓':i+1}</div><div class="nm">${esc(s.n)}</div><span class="chip ${c[0]}">${c[1]}</span><span class="ar2">${op?'▴':'▾'}</span></div>${op?'<div class="rb">'+stopBody(s,i)+'</div>':''}</div>`})()).join('');
-    L.innerHTML=rows?'<div class="rl">'+(ni>=0?'나머지 곳':'전체 목록')+' (눌러서 펼치기)</div>'+rows:'';
+    L.innerHTML=rows?'<div class="rl">'+(ni>=0?'나머지 곳':'전체 목록')+'</div>'+rows:'';
   }
   renderFav();
   if(typeof renderRouteBar==='function')renderRouteBar();
@@ -660,14 +680,14 @@ function render(){
   if(typeof hdrUpd==='function')hdrUpd();
 }
 function renderEdit(){const e=$('esheet');if(!e||!e.classList.contains('on'))return;const sc=$('eL').scrollTop,m=S.stops.length;
-  $('eL').innerHTML='<button class="rbtn" id="eRoute">최적 코스 자동으로 정하기</button>'+UNDO_BTN()+'<div class="hint" style="text-align:center">아래에서 직접 순서를 바꾸거나 뺄 수도 있어요</div>'
+  $('eL').innerHTML='<button class="rbtn" id="eRoute">최적 코스 자동으로 정하기</button>'+UNDO_BTN()+''
    +(m?S.stops.map((s,i)=>`<div class="er"><div class="eh"><div class="no">${i+1}</div><b>${esc(s.n)}</b></div><div class="eb"><button data-act="up" data-i="${i}" style="${i?'':'opacity:.35'}">▲ 위로</button><button data-act="down" data-i="${i}" style="${i<m-1?'':'opacity:.35'}">▼ 아래로</button><button class="del" data-act="del" data-i="${i}">삭제</button></div></div>`).join(''):'<div class="empty">배송 목록이 비어 있어요.</div>');
   $('eL').scrollTop=sc;const r=$('eRoute');if(r)r.onclick=()=>{if(S.stops.length<2){toast('2곳 이상 있어야 해요');return}$('esheet').classList.remove('on');openRoute()}}
 function renderFav(){
   $('favs').innerHTML=FAV.length?'<div class="fav">'+FAV.map((f,i)=>`<div class="fv"><div class="t"><b>${esc(f.n)}</b><span>${esc(f.a||'주소 미확인 · 티맵에서 이름으로 찾기')}</span></div>
     <div class="r2">${addBtn(f.id,i)}<a class="fgo" href="${navA(f)}" data-tm="${tmapHref(f)}" data-act="go">${navShort()}</a></div>
     <div class="lkrow"><button class="lk" data-act="msg" data-pid="${esc(pidOf(f))}" data-pn="${esc(f.n)}">전달사항${msgCount(pidOf(f))?' '+msgCount(pidOf(f)):''}</button><button class="lk" data-act="fdel" data-i="${i}">삭제</button></div></div>`).join('')+'</div>'
-    :'<div class="card empty">아직 등록된 곳이 없어요.<br>거래처를 찾아서 <b>빠른 등록</b>을 누르면 여기 들어와요.</div>';
+    :'<div class="card empty">아직 등록된 곳이 없어요.</div>';
 }
 
 // ---- 거래처 명단 (암호화 파일, 매일 06:30 갱신 · 신규 거래처 자동 추가) ----
@@ -697,7 +717,7 @@ function showPass(on){$('fpass').style.display=on?'block':'none'}
 function loaded(D,list){
   C.list=list;C.at=D.updated||'';
   localStorage.setItem(CKEY,JSON.stringify({at:C.at,list:C.list}));showPass(false);
-  fmsg('2026년 이카운트 판매 거래처 '+C.list.length+'곳'+(C.at?' · '+C.at+' 기준':''));
+  fmsg('거래처 '+C.list.length+'곳');
 }
 async function custLoad(){
   if(C.state==='loading')return;
@@ -833,7 +853,7 @@ function setupInstall(){
 }
 window.addEventListener('beforeinstallprompt',e=>{
   e.preventDefault();deferredPrompt=e;
-  instShow('<b>홈 화면에 앱으로 설치하기</b><div class="hint">한 번 설치하면 아이콘을 눌러 바로 열 수 있어요.</div><button class="btn br" id="doInst">앱 설치</button>');
+  instShow('<div class="instrow"><b>홈 화면에 설치</b><button class="btn br" id="doInst">앱 설치</button></div>');
   $('doInst').onclick=async()=>{deferredPrompt.prompt();const r=await deferredPrompt.userChoice;deferredPrompt=null;if(r.outcome==='accepted'){$('inst').style.display='none';toast('설치했어요. 홈 화면 아이콘으로 열어 주세요')}};
 });
 window.addEventListener('appinstalled',()=>{$('inst').style.display='none'});
@@ -870,7 +890,7 @@ function renderMsgs(){
   $('tdot').style.display=nu?'block':'none';$('mcnt').innerHTML=nu?'<span class="new">새 글 '+nu+'</span>':'';
   if(!localStorage.getItem('tmapgo_k')){box.innerHTML='<div class="empty">맨 위 「직원 암호로 열기」에 암호를 넣으면 전달사항을 보고 쓸 수 있어요.</div>';return}
   box.innerHTML=T.length?T.slice(0,8).map(x=>{const u=unread(x.pid);return '<div class="mt" data-act="msg" data-pid="'+esc(x.pid)+'" data-pn="'+esc(x.last.pn||'')+'"><div class="t"><b>'+esc(x.last.pn||'거래처')+'</b>'+(u?'<span class="new">새 글 '+u+'</span>':'')+'<div class="p">'+kl(kOf(x.last))+esc(x.last.x)+'</div><div class="w">'+esc(x.last.by||'')+' · '+hm(x.last.t)+' · '+x.L.length+'개</div></div></div>'}).join('')
-    :'<div class="empty">아직 전달사항이 없어요.<br>거래처 옆 <b>전달사항</b> 버튼을 누르면 배송 전달사항을 남길 수 있어요.</div>';
+    :'<div class="empty">아직 전달사항이 없어요.</div>';
 }
 let MW=0;
 async function msgPull(){const st=Date.now();try{const j=await storeCall({op:'get',keys:'msg,msgr'});if(st<MW)return;M={msg:(j.data.msg||{}).value||{},msgr:(j.data.msgr||{}).value||{}};localStorage.setItem('tmapgo_msg',JSON.stringify(M));render();renderFind();if(SHP)renderSheet()}catch(e){renderMsgs()}}
@@ -880,7 +900,7 @@ function renderSheet(){
   $('shT').textContent=''+SHN; $('shMe').textContent=me()||'(이름 없음)';
   $('shL').innerHTML=L.length?L.map(m=>{const mine=m.by===me();const readers=Object.entries(rd).filter(([n,t])=>n!==m.by&&t>=m.t).map(([n])=>n);
     return '<div class="bub '+(mine?'me':'')+'" style="border-left:4px solid '+({office:'#1F4FBF',cust:'#C26A0A',driver:'#1F6B45'}[kOf(m)])+'"><small>'+kl(kOf(m))+esc(m.by||'')+' · '+hm(m.t)+(mine?'<button class="del" data-act="mdel" data-pid="'+esc(SHP)+'" data-mid="'+esc(m.id)+'">지우기</button>':'')+'</small>'+esc(m.x)+(readers.length?'<small style="margin:4px 0 0;color:#1F6B45">읽음: '+esc(readers.join(', '))+'</small>':'')+'</div>'}).join('')
-    :'<div class="empty" style="text-align:center">아직 전달사항이 없어요.<br>아래에 써서 보내 주세요.</div>';
+    :'<div class="empty" style="text-align:center">아직 전달사항이 없어요.</div>';
   setTimeout(()=>{$('shL').scrollTop=1e6},30);
 }
 async function openSheet(pid,pn){
@@ -951,7 +971,7 @@ function closeRoute(){$('rsheet').classList.remove('on')}
 function segB(r,v,t,on){return '<button data-r="'+r+'" data-v="'+v+'" class="'+(on?'on':'')+'">'+t+'</button>'}
 function renderRoute(){
   const L=$('rL'), key=tKey(); let h='';
-  if(!key||RS.keyBad||RS.keyAsk) h+='<div class="kbox"><b>'+(RS.keyBad?'티맵 열쇠가 맞지 않아요':key?'새 티맵 열쇠 넣기':'티맵 열쇠가 필요해요')+'</b><div class="hint">최적 코스 계산은 티맵에 물어봐야 해서 열쇠가 있어야 해요.<br><b>사무실(이혜영)에게 열쇠를 받아 한 번만 넣어 주세요.</b> 이 휴대폰에만 저장돼요. (열쇠가 없어도 다른 기능은 그대로 써요)</div><input class="rin" id="rKey" type="text" style="-webkit-text-security:disc" data-lpignore="true" data-1p-ignore="true" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="여기에 열쇠 붙여넣기"><button class="btn br" data-r="key" style="min-height:54px">열쇠 저장</button></div>';
+  if(!key||RS.keyBad||RS.keyAsk) h+='<div class="kbox"><b>'+(RS.keyBad?'티맵 열쇠가 맞지 않아요':key?'새 티맵 열쇠 넣기':'티맵 열쇠가 필요해요')+'</b><div class="hint">사무실(이혜영)에게 받아 한 번만 넣어 주세요.</div><input class="rin" id="rKey" type="text" style="-webkit-text-security:disc" data-lpignore="true" data-1p-ignore="true" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="여기에 열쇠 붙여넣기"><button class="btn br" data-r="key" style="min-height:54px">열쇠 저장</button></div>';
   h+='<div class="rq">① 어디서 출발해요?</div><div class="seg">'+segB('from','co','회사(빵을그리다)',O.from==='co')+segB('from','gps','현재 위치',O.from==='gps')+'</div>';
   const tm=O.when!=='now';
   h+='<div class="rq">② 언제 출발해요?</div><div class="seg">'+segB('when','now','지금 출발',!tm)+segB('when','set','시간 정하기',tm)+'</div>'+(tm?'<input class="rin" type="time" data-r="whent" value="'+esc(O.when)+'" aria-label="출발 시각">'+(S.day&&S.day>ymd(new Date())?'<div class="hint">'+md(new Date(S.day+'T00:00:00'))+' 배송 날짜 기준이에요.</div>':''):'');
@@ -960,7 +980,7 @@ function renderRoute(){
   const nC=S.stops.filter(s=>{const c=per(pidOf(s));return c.pin||c.frz||c.until||c.stay}).length;
   h+='<button class="rmore" data-r="more">'+(O.more?'조건 접기 ▴':'조건 더 보기 ▾')+(nC?' · 정해 둔 곳 '+nC+'곳':'')+'</button>';
   if(O.more){
-    h+='<div class="hint"><b>먼저 가기</b>: 누른 순서대로 맨 앞에 가요. <b>냉동 먼저</b>: 먼저 가기 다음, 나머지보다 앞에 가요. <b>몇 시까지</b>를 넣으면 늦을 때 빨갛게 알려 드려요.</div>';
+    
     const pins=pinRank();
     h+=S.stops.map((s,i)=>{const p=esc(pidOf(s)),c=per(pidOf(s)),st=stayOf(s);
       return '<div class="pc"><b>'+(i+1)+'. '+esc(s.n)+(hasLoc(s)?'':' <span class="tag">위치 없음 — 맨 뒤</span>')+(s.done?' <span class="tag">배송 완료 · 계산 안 함</span>':'')+'</b><div class="seg">'
@@ -1194,7 +1214,7 @@ function showTab(t){TAB=t;for(let k=1;k<=4;k++){$('tab'+k).style.display=k===t?'
 async function tripPull(){
   try{const j=await storeCall({op:'get',keys:'trip:'+TODAY()+',sign:'+TODAY()});if(window.SG&&j.data['sign:'+TODAY()]){SG.rem=j.data['sign:'+TODAY()].value||{};SG.remAt=Date.now()}const all=((j.data['trip:'+TODAY()]||{}).value)||{};
     const ps=Object.values(all).filter(p=>p&&p.list&&p.list.length).sort((a,b)=>b.at-a.at);
-    $('tL').innerHTML=ps.length?ps.map(tripCard).join(''):'<div class="card empty">아직 오늘 기록이 없어요.<br>기사님이 「출발」을 누르면 여기에 보여요.</div>';
+    $('tL').innerHTML=ps.length?ps.map(tripCard).join(''):'<div class="card empty">아직 오늘 기록이 없어요.</div>';
   }catch(e){$('tL').innerHTML='<div class="card empty">현황을 못 불러왔어요. 인터넷 연결을 확인하고 잠시 뒤 다시 열어 주세요.</div>'}
 }
 function tripCard(p){
@@ -1237,7 +1257,7 @@ function sgClose(){$('gsheet').classList.remove('on');SG.pid=null}
 function sgDraw(){const L=sgList(SG.pid);$('gT').textContent=SG.pn+' · 명세표 사진';
   const SL={ok:'저장됨',up:'올리는 중…',err:'아직 못 올림 · 인터넷 되면 다시 보내요'};
   $('gL').innerHTML=L.length?'<div class="ggrid">'+L.map(x=>{const k=x.fid||x.lid;return '<div class="gt"><div class="gim" data-act="sgview" data-k="'+esc(k)+'">'+(SGIMG[k]?'<img src="'+SGIMG[k]+'" alt="">':'불러오는 중')+'</div><div class="gm">'+esc(hm(x.t))+' · '+esc(x.by||'')+(x.src==='lib'?' · 사진첩':'')+'<br><span class="gs '+x.st+'">'+SL[x.st]+'</span></div>'+(SG.ro?'':'<button class="gdel" data-act="sgdel" data-k="'+esc(k)+'">지우기</button>')+'</div>'}).join('')+'</div>'
-    :'<div class="empty" style="text-align:center">아직 사진이 없어요.<br>사인 받은 거래명세표를<br>아래 버튼으로 찍어 주세요.</div>';
+    :'<div class="empty" style="text-align:center">아직 사진이 없어요.</div>';
   L.forEach(x=>{const k=x.fid||x.lid;if(SGIMG[k])return;sgImg(x).then(u=>{if(!u)return;const el=document.querySelector('#gL .gim[data-k="'+CSS.escape(k)+'"]');if(el)el.innerHTML='<img src="'+u+'" alt="">'}).catch(()=>{const el=document.querySelector('#gL .gim[data-k="'+CSS.escape(k)+'"]');if(el)el.textContent='사진을 못 불러왔어요'})})}
 async function sgImg(x){const k=x.fid||x.lid;if(SGIMG[k])return SGIMG[k];
   const o=SG.loc.find(z=>(x.lid&&z.lid===x.lid)||(x.fid&&z.fid===x.fid));if(o&&o.buf)return SGIMG[k]=URL.createObjectURL(new Blob([o.buf],{type:'image/jpeg'}));
@@ -1316,7 +1336,7 @@ async function shareEta(s){const t=etaOf(s);
   b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">도착 알리기</b><button id="aX">닫기</button></div><div class="sh-l">'
    +'<div class="hint" style="margin:0 0 6px">보낼 글 (고쳐도 돼요)</div><textarea id="aTx" style="width:100%;min-height:96px;font-size:17px;padding:10px;border:1.5px solid var(--ln);border-radius:10px;box-sizing:border-box">'+esc(txt)+'</textarea>'
    +'<button class="btn" id="aKa" style="background:#FEE500;color:#191919;font-weight:800;margin-top:10px">카카오톡으로 보내기</button>'
-   +(pc?'<div class="hint" id="aPc" style="margin-top:6px">PC에서는 <b>카카오톡 공유 창</b>이 열려요. 보낼 방(사람)을 고르고 「보내기」를 누르면 돼요. (처음 한 번은 카카오 로그인)</div>':'<div class="hint" style="margin-top:6px">카톡이 열리면 보낼 방(사람)을 고르면 돼요</div>')
+   +''
    +(!pc?'<button class="btn ln" id="aSm" style="margin-top:8px">문자로 보내기</button>':'')
    +'<button class="btn ln" id="aCp" style="margin-top:8px">글만 복사</button></div></div>';
   b.classList.add('on');if(pc)kakaoLoad();
@@ -1344,7 +1364,7 @@ const LKEY=()=>'tmapgo_load_'+TODAY();
 function loadGet(){try{return JSON.parse(localStorage.getItem(LKEY())||'{}')}catch(e){return {}}}
 function renderLoad(){const L=$('lL');if(!L)return;const ck=loadGet(),list=S.stops.map((s,i)=>({s,i})).filter(o=>!o.s.done).reverse();
   const n=list.filter(o=>ck[pidOf(o.s)]).length;
-  L.innerHTML='<div class="hint" style="text-align:center;margin:0 0 8px">맨 위부터 차 안쪽에 실어요 · 마지막에 갈 곳이 먼저예요<br><b>'+n+' / '+list.length+'곳 실었어요</b></div>'
+  L.innerHTML='<div class="hint" style="text-align:center;margin:0 0 8px">맨 위부터 차 안쪽에 · <b>'+n+' / '+list.length+'곳 실었어요</b></div>'
    +(list.length?list.map((o,k)=>{const on=!!ck[pidOf(o.s)];return '<button class="lrow'+(on?' on':'')+'" data-ld="'+esc(pidOf(o.s))+'"><span class="lc">'+(on?'✔':'')+'</span><span class="lt"><small>'+(k+1)+'번째로 싣기 · 배송 '+(o.i+1)+'번</small><b>'+esc(o.s.n)+'</b></span></button>'}).join(''):'<div class="empty">실을 곳이 없어요</div>')}
 function openLoad(){$('lsheet').classList.add('on');renderLoad()}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-ld]');if(!b)return;const ck=loadGet(),k=b.dataset.ld;if(ck[k])delete ck[k];else ck[k]=1;localStorage.setItem(LKEY(),JSON.stringify(ck));renderLoad()});
@@ -1357,7 +1377,7 @@ setTimeout(()=>{ttsRow();wake();const lo=$('loadOpen');if(lo)lo.onclick=openLoad
 // k.enc.json = 링크 열쇠를 직원 암호(PBKDF2 20만 회 + AES-GCM)로 잠근 파일. 암호를 바꾸면 이 파일도 다시 만들어야 함.
 function keyBox(){const b=$('keyBox');if(!b)return;if(localStorage.getItem('tmapgo_k')){b.innerHTML='';b.style.display='none';return}
   b.style.display='block';
-  b.innerHTML='<div class="kb"><b>직원 암호로 열기</b><div class="hint">처음 한 번만 넣으면 거래처 찾기·전달사항·사무실 현황이 열려요</div>'
+  b.innerHTML='<div class="kb"><b>직원 암호로 열기</b>'
    +'<div class="kr"><input id="kbIn" type="text" style="-webkit-text-security:disc" data-lpignore="true" data-1p-ignore="true" inputmode="numeric" maxlength="12" placeholder="직원 암호" autocomplete="off"><button id="kbGo">열기</button></div><div id="kbMsg" class="hint"></div></div>';
   const go=()=>keyUnlock($('kbIn').value.trim());$('kbGo').onclick=go;$('kbIn').onkeydown=e=>{if(e.key==='Enter')go()}}
 async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 넣어 주세요';return}
@@ -1370,7 +1390,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v039';
+const APP_VER='v040';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){
@@ -1413,7 +1433,7 @@ function ctEdit(pid,pn){
   const {ct,ed}=ctOf(pid), base=ctBase(pid);
   const rows=(ct.length?ct:[{t:'',p:''}]).map(o=>({t:o.t||'',p:o.p||''}));
   const draw=()=>{b.innerHTML='<div class="sh"><div class="sh-h"><b style="flex:1">'+esc(pn||'거래처')+' 담당자</b><button id="ctX">닫기</button></div><div class="sh-l">'
-    +'<div class="hint" style="margin:0 0 4px">이름·직책과 전화번호를 고치면 모든 직원 휴대폰에 같이 바뀌어요. (이카운트에는 안 바뀌어요)</div>'
+    +'<div class="hint" style="margin:0 0 4px">고치면 모든 직원 폰에 같이 바뀌어요 (이카운트는 그대로)</div>'
     +rows.map((o,k)=>'<div class="cted"><input data-k="'+k+'" data-f="t" placeholder="이름·직책 (예: 홍길동 실장님)" value="'+esc(o.t)+'"><input data-k="'+k+'" data-f="p" inputmode="tel" placeholder="전화번호 (예: 010-1234-5678)" value="'+esc(o.p)+'">'
       +(rows.length>1?'<button class="lk" data-k="'+k+'" data-rm="1" style="align-self:flex-end">이 사람 빼기</button>':'')+'</div>').join('')
     +(rows.length<3?'<button class="btn ln" id="ctAdd" style="margin-top:6px">＋ 한 사람 더</button>':'')

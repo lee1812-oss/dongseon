@@ -410,7 +410,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v044 · 10/26</span><span class="hd" id="hdrInfo"></span></div>
+  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v045 · 10/27</span><span class="hd" id="hdrInfo"></span></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -1434,7 +1434,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v044';
+const APP_VER='v045';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){
@@ -1522,7 +1522,14 @@ async function pcLoad(force){if(!localStorage.getItem('tmapgo_k')){pcRender();re
   const W=pWeek();const today=new Date();const keys=new Set(W.map(d=>'plan:'+pYmd(d)));keys.add('plan:'+pYmd(today));for(let k=0;k<7;k++)keys.add('wk:'+k);
   try{const j=await storeCall({op:'get',keys:[...keys].join(',')});const D=j.data||{};[...keys].forEach(k=>{PC.data[k]=(D[k]||{}).value||{}});PC.at=Date.now();
     localStorage.setItem('tmapgo_plan',JSON.stringify(PC.data))}catch(e){try{PC.data=Object.assign(JSON.parse(localStorage.getItem('tmapgo_plan'))||{},PC.data)}catch(_){}}
-  pcRender();pcTodayBar()}
+  pcRender();pcTodayBar();pushTake()}
+// v045 내 휴대폰으로 보낸 코스: plan:오늘.push[내 이름]={t,by,s:[[이름,주소,y,x,메모]]} 가 새로 오면 확인 없이 오늘 배송에 바로 넣음 (다른 직원 폰에는 안 뜸)
+function pushTake(){try{const nm=me();if(!nm)return;const ds=pYmd(new Date());const o=((PC.data['plan:'+ds]||{}).push||{})[nm];if(!o||!Array.isArray(o.s)||!o.s.length)return;
+  const seen=+localStorage.getItem('tmapgo_push')||0;if(!(+o.t>seen))return;localStorage.setItem('tmapgo_push',String(o.t));
+  const list=o.s.map(r=>({n:r[0]||'',a:r[1]||'',y:r[2]?+r[2]:null,x:r[3]?+r[3]:null,m:r[4]||''})).filter(s=>s.n||s.a);if(!list.length)return;
+  if(S.stops.length&&S.day&&S.day<ds){localStorage.setItem(KEY+'_prev',JSON.stringify(S));S={stops:[],day:ds}}
+  if(!S.stops.length)S.day=ds;let n=0;list.forEach(s=>{if(!pInL(s)){S.stops.push(s);n++}});if(!n)return;
+  delete S.preset;noPlan();save();render();showTab(1);note((o.by||'사무실')+'이(가) 보낸 코스 '+n+'곳을 오늘 배송에 넣었어요.');toast(n+'곳을 오늘 배송에 넣었어요')}catch(e){}}
 function pcRender(){const box=$('pDays');if(!box||!PC||!PC.data)return;const W=pWeek();
   $('pRange').textContent=pLbl(W[0])+' ~ '+pLbl(W[6]);
   if(!localStorage.getItem('tmapgo_k')){box.innerHTML='<div class="empty">맨 위 「직원 암호로 열기」를 먼저 해 주세요.</div>';return}

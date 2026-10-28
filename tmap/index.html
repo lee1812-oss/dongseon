@@ -191,6 +191,7 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .capsel i[data-h=n],.capsel i[data-h=s]{width:34px;height:14px;border-radius:8px;left:50%;margin-left:-17px}.capsel i[data-h=n]{top:-8px}.capsel i[data-h=s]{bottom:-8px}
 .capsel i[data-h=w],.capsel i[data-h=e]{width:14px;height:34px;border-radius:8px;top:50%;margin-top:-17px}.capsel i[data-h=w]{left:-8px}.capsel i[data-h=e]{right:-8px}
 .capsel.thin i[data-h=w],.capsel.thin i[data-h=e],.capsel.narrow i[data-h=n],.capsel.narrow i[data-h=s]{display:none}
+.capwt{color:#8a6a4f;font-weight:700;margin-top:2px}.capl{margin-top:14px}.capcl{width:100%;margin-top:10px}.capst.run{background:#eef3fb;color:#1d3f75}
 .capst{margin-top:8px;padding:10px 12px;border-radius:10px;font-size:16px;font-weight:700;line-height:1.45;background:#f3ece4;color:#5a3b22}.capst.ok{background:#e8f5e9;color:#1b5e20}.capst.no{background:#fff3e0;color:#8a4b00}.capst b{display:block;font-size:17px;margin-top:2px;word-break:keep-all}
 .capsel i[data-h=nw]{left:-16px;top:-16px}.capsel i[data-h=ne]{right:-16px;top:-16px}.capsel i[data-h=sw]{left:-16px;bottom:-16px}.capsel i[data-h=se]{right:-16px;bottom:-16px}
 .cap2{display:flex;gap:8px}.cap2 .capx{flex:1}
@@ -437,7 +438,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v049 · 10/28</span><span class="hd" id="hdrInfo"></span></div>
+  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v050 · 10/28</span><span class="hd" id="hdrInfo"></span></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -888,7 +889,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-pl]');if(!
 setTimeout(()=>{const g=$('plGo');if(g)g.onclick=plSearch;const t=$('plTm');if(t)t.addEventListener('click',()=>{if(isIOS){const t0=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t0<3000)toast('티맵이 안 열리면 앱스토어에서 「TMAP」을 설치해 주세요.')},2000)}});
   const f=$('fq');if(f)f.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){const ql=norm(f.value);const has=C.list&&C.list.some(c=>norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(ql));if(!has)plSearch()}})},0);
 
-/* ===== v046 캡처 사진으로 주소 찾기 (v047: 미리보기에서 주소 부분만 네모로 골라 읽기, v048: 주소로 보이는 줄을 자동으로 찾아 네모를 미리 놓기, v049: 고른 부분 크게 보기): 휴대폰 화면 캡처(카톡·문자·지도 앱) → 구글 글자인식(바로연락과 같은 서버, 사진은 읽은 뒤 서버에서 바로 지움) → 주소를 골라 좌표 찾기 → 티맵·카카오내비 길안내 / 오늘 배송에 넣기 ===== */
+/* ===== v046 캡처 사진으로 주소 찾기 (v047: 미리보기에서 주소 부분만 네모로 골라 읽기, v048: 주소로 보이는 줄을 자동으로 찾아 네모를 미리 놓기, v049: 고른 부분 크게 보기, v050: 줄 지도 구조로 재설계 - 네모를 고치면 바로 다시 찾기·결과 바로 표시·좌표 기억): 휴대폰 화면 캡처(카톡·문자·지도 앱) → 구글 글자인식(바로연락과 같은 서버, 사진은 읽은 뒤 서버에서 바로 지움) → 주소를 골라 좌표 찾기 → 티맵·카카오내비 길안내 / 오늘 배송에 넣기 ===== */
 
 const CAP_SIDO='(?:서울특별시|서울시|서울|부산광역시|부산|대구광역시|대구|인천광역시|인천|광주광역시|대전광역시|대전|울산광역시|울산|세종특별자치시|세종시|세종|경기도|경기|강원특별자치도|강원도|강원|충청북도|충북|충청남도|충남|전북특별자치도|전라북도|전북|전라남도|전남|경상북도|경북|경상남도|경남|제주특별자치도|제주도|제주)';
 function capAddrs(t){
@@ -914,42 +915,14 @@ function capAddrs(t){
       const k=a.replace(/\s/g,'');if([...seen].some(s=>s.includes(k)||k.includes(s)))continue;seen.add(k);const dp=(det.match(/^\(([^)]+)\)$/)||[])[1];out.push({a,det,n:dp||nameAt(m.index)});if(out.length>=6)break}}
   return out}
 
-const CAP={list:[],text:'',q:''};
+const CAP={list:[],text:'',gen:0,L:null,akey:''};const capGeoC=new Map();
+/* v050 구조: 사진 1장 → 글자 줄 지도(줄 위치+글자) 한 번 만들기 → 주소 줄 자동 네모 → 결과 바로 표시.
+   네모를 고치면 서버에 다시 묻지 않고 줄 지도에서 바로 다시 찾음(줄 지도에 없을 때만 고른 부분을 서버에서 다시 읽음). 지도 좌표는 주소별로 기억. */
 function capPick(){const f=$('capF');if(!f)return;f.value='';f.click()}
 function capImg(file){return new Promise((ok,no)=>{const u=URL.createObjectURL(file);const im=new Image();im.onload=()=>{const w=im.naturalWidth,h=im.naturalHeight;const s=Math.min(1,1280/w,4200/h);const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*s));c.height=Math.max(1,Math.round(h*s));const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c)};im.onerror=()=>{URL.revokeObjectURL(u);no(new Error('img'))};im.src=u})}
 function capBox(h){const R=$('capRes');R.innerHTML='<div class="capw">'+h+'</div>';return R}
 function capEdit(v){return '<div class="cape"><label for="capQ">주소·이름이 틀렸으면 고쳐서 다시 찾기</label><input id="capQ" type="search" autocomplete="off" value="'+esc(v||'')+'" placeholder="예) 경기 화성시 서신면 궁평항로 1069-11"><button class="plg" data-cp="re">다시 찾기</button></div>'}
 function capText(){return CAP.text?'<details class="capt"><summary>사진에서 읽은 글자 보기</summary><pre>'+esc(CAP.text)+'</pre></details>':''}
-async function capRun(file){showTab(2);CAP.text='';CAP.list=[];
-  let cv;try{cv=await capImg(file)}catch(e){capBox('<div class="caph">사진을 열지 못했어요</div><div class="hint">다른 사진으로 다시 해 주세요.</div><button class="capx" data-cp="pick">다른 사진 고르기</button>');return}
-  CAP.cv=cv;CAP.sel={x:.04,y:.35,w:.92,h:.22};CAP.auto=null;CAP.touched=false;const gen=CAP.gen=(CAP.gen||0)+1;
-  const R=capView('<div class="capst" id="capSt">주소로 보이는 곳을 찾는 중이에요… (5~10초)</div>');
-  R.scrollIntoView({block:'start',behavior:'smooth'});capAuto(gen)}
-function capView(st){const cv=CAP.cv;const R=capBox('<div class="caph">주소 부분만 네모로 감싸 주세요</div><div class="hint">노란 점을 끌면 크기가, 네모 안을 끌면 위치가 바뀌어요. 다른 곳을 그으면 새로 그려져요.</div>'+(st||'')
-   +'<div class="capvw"><div class="capv" id="capV"><img id="capI" alt="캡처 사진" src="'+cv.toDataURL('image/jpeg',.85)+'"><div class="capsel" id="capSel"><i data-h="nw"></i><i data-h="n"></i><i data-h="ne"></i><i data-h="w"></i><i data-h="e"></i><i data-h="sw"></i><i data-h="s"></i><i data-h="se"></i></div></div></div>'
-   +'<div class="capzw" id="capZW"><div class="capzl">고른 부분 크게 보기<span id="capZT">누르면 화면 가득</span></div><canvas id="capZ"></canvas></div>'
-   +'<button class="capall" data-cp="crop">고른 부분만 읽기</button><div class="cap2"><button class="capx" data-cp="full">사진 전체 읽기</button><button class="capx" data-cp="pick">다른 사진</button></div>');
-  capSelDraw();capBind();return R}
-function capStMsg(){const a=CAP.auto;if(!a)return '';if(a.sel)return '<div class="capst ok" id="capSt">주소로 보이는 곳을 노란 네모로 골라 두었어요. 맞지 않으면 노란 점을 끌어 고쳐 주세요.<b>'+esc(a.A.map(x=>x.a).join(' / '))+'</b></div>';
-  return '<div class="capst no" id="capSt">'+(a.A&&a.A.length?'주소는 읽었는데 위치를 못 잡았어요. 「사진 전체 읽기」를 누르거나 네모를 직접 맞춰 주세요.':'주소로 보이는 곳을 찾지 못했어요. 노란 네모를 주소 위에 직접 맞춰 주세요.')+'</div>'}
-function capReShow(){const s=CAP.sel;CAP.sel=s;capView(capStMsg());$('capRes').scrollIntoView({block:'start',behavior:'smooth'})}
-function capSelDraw(){const s=CAP.sel,e=$('capSel');if(!e)return;e.style.left=s.x*100+'%';e.style.top=s.y*100+'%';e.style.width=s.w*100+'%';e.style.height=s.h*100+'%';const I=$('capI');if(I){const r=I.getBoundingClientRect();e.classList.toggle('thin',s.h*r.height<80);e.classList.toggle('narrow',s.w*r.width<110)}capZoom()}
-let capZR=0;function capZoom(){if(capZR)return;capZR=requestAnimationFrame(()=>{capZR=0;const z=$('capZ'),cv=CAP.cv,s=CAP.sel;if(!z||!cv||!s)return;
-  const sx=Math.max(0,Math.round(s.x*cv.width)),sy=Math.max(0,Math.round(s.y*cv.height)),sw=Math.max(4,Math.min(cv.width-sx,Math.round(s.w*cv.width))),sh=Math.max(4,Math.min(cv.height-sy,Math.round(s.h*cv.height)));
-  const W=Math.min(1400,Math.max(300,(z.parentNode.clientWidth||360)*(window.devicePixelRatio||1)));const k=Math.min(4,W/sw);z.width=Math.round(sw*k);z.height=Math.round(sh*k);
-  const g=z.getContext('2d');g.imageSmoothingQuality='high';g.fillStyle='#fff';g.fillRect(0,0,z.width,z.height);g.drawImage(cv,sx,sy,sw,sh,0,0,z.width,z.height)})}
-document.addEventListener('click',e=>{const w=e.target.closest('#capZW');if(!w)return;const b=w.classList.toggle('big');const t=$('capZT');if(t)t.textContent=b?'누르면 닫기':'누르면 화면 가득';if(!b)w.scrollIntoView({block:'nearest'})});
-function capBind(){const V=$('capV');if(!V)return;let d=null;const cl=v=>v<0?0:v>1?1:v;
-  const at=(e,r)=>[cl((e.clientX-r.left)/r.width),cl((e.clientY-r.top)/r.height)];
-  V.addEventListener('pointerdown',e=>{CAP.touched=true;const r=$('capI').getBoundingClientRect();const [px,py]=at(e,r);const h=e.target.dataset&&e.target.dataset.h;
-    d={m:h||(e.target.id==='capSel'?'move':'new'),px,py,s:Object.assign({},CAP.sel),r};try{V.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault()});
-  V.addEventListener('pointermove',e=>{if(!d)return;const [px,py]=at(e,d.r),s=d.s;let x1=s.x,y1=s.y,x2=s.x+s.w,y2=s.y+s.h;
-    if(d.m==='move'){x1=Math.min(Math.max(0,s.x+px-d.px),1-s.w);y1=Math.min(Math.max(0,s.y+py-d.py),1-s.h);x2=x1+s.w;y2=y1+s.h}
-    else if(d.m==='new'){x1=d.px;y1=d.py;x2=px;y2=py}
-    else{if(d.m.includes('n'))y1=py;if(d.m.includes('s'))y2=py;if(d.m.includes('w'))x1=px;if(d.m.includes('e'))x2=px}
-    CAP.sel={x:Math.min(x1,x2),y:Math.min(y1,y2),w:Math.abs(x2-x1),h:Math.abs(y2-y1)};capSelDraw();e.preventDefault()});
-  const up=()=>{if(!d)return;if(CAP.sel.w<.04||CAP.sel.h<.015)CAP.sel=d.s;d=null;capSelDraw()};
-  V.addEventListener('pointerup',up);V.addEventListener('pointercancel',up)}
 function capLines(cv){const W=cv.width,H=cv.height,f=Math.min(1,640/W),w=Math.max(2,Math.round(W*f)),h=Math.max(2,Math.round(H*f));
   const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(cv,0,0,w,h);const D=g.getImageData(0,0,w,h).data;
   const G=new Uint8Array(w*h);for(let i=0,j=0;i<G.length;i++,j+=4)G[i]=(D[j]*299+D[j+1]*587+D[j+2]*114)/1000;
@@ -980,56 +953,115 @@ function capHit(T,A){const nz=s=>String(s).replace(/\s/g,'');const hit=new Set()
 function capBoxOf(L,ix,cv){let x0=1e9,y0=1e9,x1=-1,y1=-1;for(const i of ix){const l=L[i];x0=Math.min(x0,l.x);y0=Math.min(y0,l.y);x1=Math.max(x1,l.x+l.w);y1=Math.max(y1,l.y+l.h)}
   const lh=L[ix[0]].h,px=Math.max(14,cv.width*.035),py=Math.max(12,lh*.75);x0=Math.max(0,x0-px);y0=Math.max(0,y0-py);x1=Math.min(cv.width,x1+px);y1=Math.min(cv.height,y1+py);
   return {x:x0/cv.width,y:y0/cv.height,w:(x1-x0)/cv.width,h:(y1-y0)/cv.height}}
-async function capAuto(gen){const cv=CAP.cv,ok=()=>gen===CAP.gen&&CAP.cv===cv;
-  let a={sel:null,A:[],text:''};
-  try{const L=capLines(cv);if(L.length){const b=capSheet(cv,L).toDataURL('image/jpeg',.9).split(',')[1];
-      const ac=new AbortController();const tm=setTimeout(()=>ac.abort(),45000);let j=null;
-      try{const r=await fetch(KNV_URL,{method:'POST',body:JSON.stringify({k:'brl-ocr-v1',img:b,mime:'image/jpeg'}),signal:ac.signal});j=await r.json()}finally{clearTimeout(tm)}
-      if(j&&j.ok){const T=capParse(j.text,L.length);a.text=T.filter(Boolean).join('\n');a.A=capAddrs(a.text);const ix=capHit(T,a.A);if(ix.length)a.sel=capBoxOf(L,ix,cv)}}}
-  catch(e){}
-  if(!ok())return;CAP.auto=a;if(a.sel&&!CAP.touched){CAP.sel=Object.assign({},a.sel);capSelDraw()}
-  const E=$('capSt');if(E)E.outerHTML=capStMsg()}
-function capSame(p,q){return !!(p&&q)&&['x','y','w','h'].every(k=>Math.abs(p[k]-q[k])<.002)}
 function capCut(){const cv=CAP.cv,s=CAP.sel;const sx=Math.round(s.x*cv.width),sy=Math.round(s.y*cv.height),sw=Math.max(8,Math.round(s.w*cv.width)),sh=Math.max(8,Math.round(s.h*cv.height));
   const k=Math.min(3,Math.max(1,900/sw)),P=16;const c=document.createElement('canvas');c.width=Math.round(sw*k)+P*2;c.height=Math.round(sh*k)+P*2;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.imageSmoothingQuality='high';g.drawImage(cv,sx,sy,sw,sh,P,P,c.width-P*2,c.height-P*2);return c}
-async function capRead(cv,cut){
-  const R=capBox('<div class="caph">'+(cut?'고른 부분':'사진')+'에서 주소 읽는 중이에요</div><div class="hint">보통 5~10초 걸려요.</div><div class="capbar"><i></i></div>');R.scrollIntoView({block:'start',behavior:'smooth'});
-  CAP.text='';CAP.list=[];
-  try{const b=cv.toDataURL('image/jpeg',.9).split(',')[1];
-    const ac=new AbortController();const tm=setTimeout(()=>ac.abort(),45000);let j=null;
-    try{const r=await fetch(KNV_URL,{method:'POST',body:JSON.stringify({k:'brl-ocr-v1',img:b,mime:'image/jpeg'}),signal:ac.signal});j=await r.json()}finally{clearTimeout(tm)}
-    if(!j||!j.ok)throw new Error((j&&j.err)||'ocr');
-    CAP.text=String(j.text||'').replace(/\r/g,'').trim();
-    let A=capAddrs(CAP.text);
-    if(!A.length&&cut&&CAP.text){const q=CAP.text.replace(/\s+/g,' ').replace(/^(주소|배송지|도착지)\s?[:：]\s?/,'').trim().slice(0,60);if(q)A=[{a:q,n:'',det:''}]}
-    if(!A.length){capBox('<div class="caph">사진에서 주소를 찾지 못했어요</div><div class="hint">주소 부분을 다시 골라 보거나, 아래 칸에 주소나 가게 이름을 넣어 주세요.</div>'+(CAP.cv?'<button class="capall" data-cp="again">사진에서 다시 고르기</button>':'')+capEdit('')+capText()+'<button class="capx" data-cp="close">닫기</button>');return}
-    await capFind(A)}
-  catch(e){capBox('<div class="caph">사진 글자를 읽지 못했어요</div><div class="hint">인터넷 연결을 확인하고 다시 해 주세요. 아래 칸에 주소를 직접 넣어도 돼요.</div>'+(CAP.cv?'<button class="capall" data-cp="again">사진에서 다시 고르기</button>':'')+capEdit('')+'<button class="capx" data-cp="close">닫기</button>')}}
-async function capFind(A){capBox('<div class="caph">주소 위치 찾는 중이에요</div><div class="capbar"><i></i></div>');
-  const L=await Promise.all(A.slice(0,6).map(async(o,i)=>{let g=null;try{g=await plSrv({act:'geo',addr:o.a})}catch(e){}
-    if(g&&g.ok&&g.lat)return {name:o.n||o.a.replace(new RegExp('^'+CAP_SIDO+'\\s?'),''),addr:o.a,lat:g.lat,lng:g.lng,det:o.det||''};
-    try{const pos=PL.pos||{lat:OFFICE.y,lng:OFFICE.x};const p=await plSrv({act:'place',q:o.a,lat:pos.lat,lng:pos.lng});const f=p&&p.ok&&p.list&&p.list[0];if(f)return {name:o.n||f.name,addr:f.addr||o.a,lat:f.lat,lng:f.lng,det:o.det||'',url:f.url}}catch(e){}
-    return {name:o.n||o.a,addr:o.a,det:o.det||'',nogeo:1}}));
-  CAP.list=L;capDraw()}
 function capStop(x,j){if(x.nogeo)return {id:'c'+norm(x.addr).replace(/[^0-9a-z가-힣]/g,'').slice(0,24),n:x.name,a:x.addr};return plStop(x)}
-function capDraw(){const L=CAP.list;
-  const rows=L.map((x,j)=>{const st=capStop(x,j),inL=S.stops.some(s=>s.id===st.id),inF=FAV.some(f=>f.id===st.id);
-    return '<div class="fr plr"><div class="t"><div class="fn">'+esc(x.name)+'</div><div class="fs">'+esc(x.addr)+(x.det?' '+esc(x.det):'')+'</div>'+(x.nogeo?'<div class="fs capw2">지도 위치를 못 찾아서 티맵에서 주소로 검색해요</div>':'')+'</div>'
+function capSelDraw(){const s=CAP.sel,e=$('capSel');if(!e)return;e.style.left=s.x*100+'%';e.style.top=s.y*100+'%';e.style.width=s.w*100+'%';e.style.height=s.h*100+'%';const I=$('capI');if(I){const r=I.getBoundingClientRect();e.classList.toggle('thin',s.h*r.height<80);e.classList.toggle('narrow',s.w*r.width<110)}capZoom()}
+let capZR=0;function capZoom(){if(capZR)return;capZR=requestAnimationFrame(()=>{capZR=0;const z=$('capZ'),cv=CAP.cv,s=CAP.sel;if(!z||!cv||!s)return;
+  const sx=Math.max(0,Math.round(s.x*cv.width)),sy=Math.max(0,Math.round(s.y*cv.height)),sw=Math.max(4,Math.min(cv.width-sx,Math.round(s.w*cv.width))),sh=Math.max(4,Math.min(cv.height-sy,Math.round(s.h*cv.height)));
+  const W=Math.min(1400,Math.max(300,(z.parentNode.clientWidth||360)*(window.devicePixelRatio||1)));const k=Math.min(4,W/sw);z.width=Math.round(sw*k);z.height=Math.round(sh*k);
+  const g=z.getContext('2d');g.imageSmoothingQuality='high';g.fillStyle='#fff';g.fillRect(0,0,z.width,z.height);g.drawImage(cv,sx,sy,sw,sh,0,0,z.width,z.height)})}
+document.addEventListener('click',e=>{const w=e.target.closest('#capZW');if(!w)return;const b=w.classList.toggle('big');const t=$('capZT');if(t)t.textContent=b?'누르면 닫기':'누르면 화면 가득';if(!b)w.scrollIntoView({block:'nearest'})});
+function capSt(k,m){const e=$('capSt');if(e){e.className='capst '+k;e.innerHTML=m}}
+async function capOcr(cv,sig){const b=cv.toDataURL('image/jpeg',.9).split(',')[1];let last=null;
+  for(let t=0;t<2;t++){const ac=new AbortController(),on=()=>ac.abort(),tm=setTimeout(on,40000);if(sig)sig.addEventListener('abort',on);
+    try{const r=await fetch(KNV_URL,{method:'POST',body:JSON.stringify({k:'brl-ocr-v1',img:b,mime:'image/jpeg'}),signal:ac.signal});const j=await r.json();if(j&&j.ok)return String(j.text||'').replace(/\r/g,'');last=new Error((j&&j.err)||'ocr')}
+    catch(e){last=e;if(sig&&sig.aborted)throw e}finally{clearTimeout(tm);if(sig)sig.removeEventListener('abort',on)}}
+  throw last}
+function capPanel(){const cv=CAP.cv;capBox('<div class="caph">캡처 사진에서 주소 찾기</div><div class="capst run" id="capSt"></div>'
+   +'<div class="capvw"><div class="capv" id="capV"><img id="capI" alt="캡처 사진" src="'+cv.toDataURL('image/jpeg',.85)+'"><div class="capsel" id="capSel"><i data-h="nw"></i><i data-h="n"></i><i data-h="ne"></i><i data-h="w"></i><i data-h="e"></i><i data-h="sw"></i><i data-h="s"></i><i data-h="se"></i></div></div></div>'
+   +'<div class="hint">노란 점을 끌면 크기가, 네모 안을 끌면 위치가 바뀌어요. 손을 떼면 고른 부분에서 주소를 바로 다시 찾아요.</div>'
+   +'<div class="capzw" id="capZW"><div class="capzl">고른 부분 크게 보기<span id="capZT">누르면 화면 가득</span></div><canvas id="capZ"></canvas></div>'
+   +'<div id="capList"></div>'
+   +'<div class="cap2"><button class="capx" data-cp="whole">사진 전체 고르기</button><button class="capx" data-cp="pick">다른 사진</button></div>'
+   +'<div id="capMore"></div><button class="capx capcl" data-cp="close">닫기</button>');capSelDraw();capBind()}
+function capMore(){const e=$('capMore');if(e)e.innerHTML=capEdit(CAP.list[0]?CAP.list[0].addr:'')+capText()}
+async function capRun(file){showTab(2);const gen=++CAP.gen;if(CAP.ac){CAP.ac.abort();CAP.ac=null}
+  Object.assign(CAP,{list:[],text:'',L:null,akey:'',touched:false,busy:true,cv:null});
+  let cv;try{cv=await capImg(file)}catch(e){if(gen===CAP.gen)capBox('<div class="caph">사진을 열지 못했어요</div><div class="hint">다른 사진으로 다시 해 주세요.</div><button class="capx" data-cp="pick">다른 사진 고르기</button>');return}
+  if(gen!==CAP.gen)return;CAP.cv=cv;CAP.sel={x:.04,y:.35,w:.92,h:.22};capPanel();
+  capSt('run','사진 글자를 읽는 중이에요… 보통 5~10초 걸려요.');$('capRes').scrollIntoView({block:'start',behavior:'smooth'});
+  try{await capAnalyze(gen)}finally{if(gen===CAP.gen)CAP.busy=false}}
+async function capAnalyze(gen){const cv=CAP.cv,ok=()=>gen===CAP.gen;let L=[];try{L=capLines(cv)}catch(e){L=[]}
+  if(L.length){const ch=[];for(let i=0;i<L.length;i+=40)ch.push(L.slice(i,i+40));
+    try{const T=await Promise.all(ch.map(async c=>capParse(await capOcr(capSheet(cv,c)),c.length)));if(!ok())return;let k=0;T.forEach(a=>a.forEach(t=>{L[k++].t=String(t||'').trim()}))}
+    catch(e){if(!ok())return;L=[]}}
+  if(!L.length||L.filter(l=>l.t).length<Math.max(1,L.length*.4)){
+    // 줄 지도를 못 만들면 사진 전체를 한 번에 읽기 (위치는 못 잡음)
+    let t='';try{t=(await capOcr(cv)).trim()}catch(e){if(!ok())return;capSt('no','사진 글자를 읽지 못했어요. 인터넷 연결을 확인하거나 아래 칸에 주소를 직접 넣어 주세요.');capMore();return}
+    if(!ok())return;CAP.L=null;CAP.text=t;const A=capAddrs(t);capMore();
+    if(!A.length){capSt('no','주소로 보이는 글자를 찾지 못했어요. 아래 칸에 주소나 가게 이름을 넣어 주세요.');return}
+    capSt('ok','사진에서 주소를 찾았어요. (사진 속 위치는 못 잡았어요)');capShow(A);capMore();return}
+  CAP.L=L;CAP.text=L.map(l=>l.t).filter(Boolean).join('\n');capMore();
+  if(CAP.touched){capEval();return}
+  const all=capFromLines(L.map((l,i)=>i));
+  if(!all.A.length||!all.ix.length){capSt('no','주소로 보이는 곳을 찾지 못했어요. 노란 네모를 주소 위에 맞추면 그 부분을 다시 읽어요.');return}
+  CAP.sel=capBoxOf(L,all.ix,cv);capSelDraw();capEval(1)}
+// 고른 줄에서 주소 찾기 (바로 윗줄은 가게 이름용으로만 같이 봄)
+function capFromLines(ix){const L=CAP.L;if(!L||!ix.length)return {A:[],ix:[]};
+  const T=ix.map(i=>L[i].t||''),p=ix[0]-1,pre=p>=0?(L[p].t||''):'';
+  const A=capAddrs((pre?pre+'\n':'')+T.join('\n')).filter(a=>capHit(T,[a]).length);
+  A.forEach(a=>{if(a.n&&!/^\d+\s?(층|호)|^(B|지하)\d|층$|호$/.test(a.n))return;const h=capHit(T,[a]);if(!h.length)return;const g=ix[h[0]];
+    for(const k of [g-1,g-2]){const v=capNm(L[k]&&L[k].t);if(v){a.n=v;break}}});
+  return {A,ix:capHit(T,A).map(k=>ix[k])}}
+function capNm(t){t=String(t||'').replace(/\(?0\d{1,2}\)?[-\s.]?\d{3,4}[-\s.]?\d{4}/g,' ').replace(/\d{1,2}:\d{2}/g,' ').replace(/^(받는\s?곳|배송지|도착지|상호|업체명|가게|거래처)\s?\d*\s?[:：]?/,'').replace(/[·•|,.:：\-]+\s*$/,'').replace(/^\s*[·•|\-]+/,'').replace(/\s+/g,' ').trim();
+  if(t.length<2||t.length>22||/(다|요|까)[.!?]?$/.test(t)||/(로|길)\s?\d/.test(t)||!/[가-힣A-Za-z]{2}/.test(t)||/^\d/.test(t))return '';return t}
+function capSelIx(){const L=CAP.L,s=CAP.sel,cv=CAP.cv;if(!L||!cv)return [];const W=cv.width,H=cv.height;const out=[];
+  L.forEach((l,i)=>{const cy=(l.y+l.h/2)/H,ox=Math.min(s.x+s.w,(l.x+l.w)/W)-Math.max(s.x,l.x/W);if(cy>=s.y&&cy<=s.y+s.h&&ox>0&&ox>=Math.min(l.w/W,s.w)*.3)out.push(i)});return out}
+function capEval(first){const gen=CAP.gen;if(CAP.ac){CAP.ac.abort();CAP.ac=null}
+  const ix=capSelIx(),r=capFromLines(ix);
+  if(r.A.length){capSt('ok',(first?'주소로 보이는 곳을 노란 네모로 골라 두었어요. ':'')+'고른 부분에서 주소 '+r.A.length+'곳을 찾았어요.'+(first?' 맞지 않으면 노란 점을 끌어 고쳐 주세요.':''));capShow(r.A);return}
+  if(ix.some(i=>CAP.L[i].t)){capShow([]);capSt('no','고른 부분에는 주소가 없어요. 노란 네모를 주소 위로 옮겨 주세요.');return}
+  // 줄 지도에 없는 곳을 골랐으면 그 부분만 서버에서 다시 읽기
+  const ac=CAP.ac=new AbortController();capSt('run','고른 부분 글자를 다시 읽는 중이에요…');capShow([]);
+  capOcr(capCut(),ac.signal).then(t=>{if(ac.signal.aborted||gen!==CAP.gen)return;CAP.ac=null;t=t.trim();let A=capAddrs(t);
+      if(!A.length&&t&&t.length<=25&&!/\d{1,2}\s?[:월일시]|(다|요|까)[.!?]?$/.test(t)){const q=t.replace(/\s+/g,' ').replace(/^(주소|배송지|도착지)\s?[:：]\s?/,'').trim();if(q)A=[{a:q,n:'',det:''}]}
+      if(!A.length){capSt('no','고른 부분에서 주소를 찾지 못했어요. 네모를 주소 위로 옮기거나 아래 칸에 직접 넣어 주세요.');return}
+      capSt('ok','고른 부분에서 주소 '+A.length+'곳을 찾았어요.');capShow(A)})
+    .catch(e=>{if(ac.signal.aborted||gen!==CAP.gen)return;CAP.ac=null;capSt('no','고른 부분을 읽지 못했어요. 인터넷 연결을 확인하고 네모를 다시 움직여 보세요.')})}
+// 결과: 바로 목록을 보여 주고, 지도 좌표는 뒤에서 채움(주소별로 기억해서 다시 찾지 않음)
+function capGeo(o){const k=o.a;if(!capGeoC.has(k))capGeoC.set(k,(async()=>{let g=null;try{g=await plSrv({act:'geo',addr:o.a})}catch(e){}
+    if(g&&g.ok&&g.lat)return {addr:o.a,lat:g.lat,lng:g.lng};
+    try{const pos=PL.pos||{lat:OFFICE.y,lng:OFFICE.x};const p=await plSrv({act:'place',q:o.a,lat:pos.lat,lng:pos.lng});const f=p&&p.ok&&p.list&&p.list[0];if(f)return {addr:f.addr||o.a,lat:f.lat,lng:f.lng,pn:f.name,url:f.url}}catch(e){}
+    capGeoC.delete(k);return {addr:o.a,nogeo:1}})());return capGeoC.get(k)}
+function capShow(A){A=(A||[]).slice(0,6);const key=A.map(a=>a.a+'|'+a.n).join(';');if(key===CAP.akey&&CAP.list.length===A.length)return;CAP.akey=key;
+  CAP.list=A.map(o=>({name:o.n||o.a.replace(new RegExp('^'+CAP_SIDO+'\\s?'),''),addr:o.a,det:o.det||'',wait:1,_n:!o.n}));capDraw();
+  A.forEach((o,j)=>capGeo(o).then(g=>{if(CAP.akey!==key)return;const x=CAP.list[j];if(!x)return;x.wait=0;x.addr=g.addr;
+    if(g.nogeo)x.nogeo=1;else{x.lat=g.lat;x.lng=g.lng;if(g.url)x.url=g.url;if(x._n&&g.pn)x.name=g.pn}capDraw()}))}
+function capFind(A){capShow(A)}
+function capDraw(){const L=CAP.list,box=$('capList');
+  const rows=L.map((x,j)=>{const head='<div class="t"><div class="fn">'+esc(x.name)+'</div><div class="fs">'+esc(x.addr)+(x.det?' '+esc(x.det):'')+'</div>';
+    if(x.wait)return '<div class="fr plr">'+head+'<div class="fs capwt">지도 위치 찾는 중…</div></div></div>';
+    const st=capStop(x,j),inL=S.stops.some(s=>s.id===st.id),inF=FAV.some(f=>f.id===st.id);
+    return '<div class="fr plr">'+head+(x.nogeo?'<div class="fs capw2">지도 위치를 못 찾아서 티맵에서 주소로 검색해요</div>':'')+'</div>'
      +'<div class="plb3"><a class="fgo" href="'+tmapHref(st)+'" data-tm="'+tmapHref(st)+'" data-act="go" data-nv="tmap">티맵</a><a class="fgo k" href="'+kakaoHref(st)+'" data-tm="'+tmapHref(st)+'" data-act="go" data-nv="kakao">카카오내비</a>'
      +'<button class="plx'+(inL?' in':'')+'" data-cp="stop" data-j="'+j+'">'+(inL?'넣었어요':'오늘 배송에 넣기')+'</button>'
      +'<button class="plx'+(inF?' in':'')+'" data-cp="fav" data-j="'+j+'">'+(inF?'저장됨':'자주 가는 곳에 저장')+'</button></div></div>'}).join('');
-  capBox('<div class="caph">사진에서 찾은 주소 '+L.length+'곳</div>'+(L.length>1?'<div class="hint">갈 곳의 티맵 또는 카카오내비를 누르세요. 여러 곳이면 「오늘 배송에 넣기」로 코스에 넣을 수 있어요.</div>':'')+rows+(L.length>1?'<button class="capall" data-cp="all">'+L.length+'곳 모두 오늘 배송에 넣기</button>':'')+capEdit(L[0]?L[0].addr:'')+capText()+'<div class="cap2">'+(CAP.cv?'<button class="capx" data-cp="again">사진에서 다시 고르기</button>':'')+'<button class="capx" data-cp="close">닫기</button></div>')}
+  const h=L.length?'<div class="caph capl">찾은 주소 '+L.length+'곳</div>'+rows+(L.length>1&&!L.some(x=>x.wait)?'<button class="capall" data-cp="all">'+L.length+'곳 모두 오늘 배송에 넣기</button>':''):'';
+  if(box)box.innerHTML=h;else capBox(h+capEdit(L[0]?L[0].addr:'')+'<button class="capx" data-cp="close">닫기</button>')}
+function capBind(){const V=$('capV');if(!V)return;let d=null;const cl=v=>v<0?0:v>1?1:v;
+  const at=(e,r)=>[cl((e.clientX-r.left)/r.width),cl((e.clientY-r.top)/r.height)];
+  V.addEventListener('pointerdown',e=>{const r=$('capI').getBoundingClientRect();const [px,py]=at(e,r);const h=e.target.dataset&&e.target.dataset.h;
+    d={m:h||(e.target.id==='capSel'?'move':'new'),px,py,s:Object.assign({},CAP.sel),r,mv:0};try{V.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault()});
+  V.addEventListener('pointermove',e=>{if(!d)return;const [px,py]=at(e,d.r),s=d.s;if(Math.abs(px-d.px)+Math.abs(py-d.py)>.006)d.mv=1;if(!d.mv)return;let x1=s.x,y1=s.y,x2=s.x+s.w,y2=s.y+s.h;
+    if(d.m==='move'){x1=Math.min(Math.max(0,s.x+px-d.px),1-s.w);y1=Math.min(Math.max(0,s.y+py-d.py),1-s.h);x2=x1+s.w;y2=y1+s.h}
+    else if(d.m==='new'){x1=d.px;y1=d.py;x2=px;y2=py}
+    else{if(d.m.includes('n'))y1=py;if(d.m.includes('s'))y2=py;if(d.m.includes('w'))x1=px;if(d.m.includes('e'))x2=px}
+    CAP.sel={x:Math.min(x1,x2),y:Math.min(y1,y2),w:Math.abs(x2-x1),h:Math.abs(y2-y1)};capSelDraw();e.preventDefault()});
+  const up=()=>{if(!d)return;const mv=d.mv;if(CAP.sel.w<.04||CAP.sel.h<.015)CAP.sel=d.s;d=null;capSelDraw();
+    if(mv){CAP.touched=true;if(!CAP.busy)capEval()}};
+  V.addEventListener('pointerup',up);V.addEventListener('pointercancel',up)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-cp]');if(!b)return;const k=b.dataset.cp;
-  if(k==='close'){$('capRes').innerHTML='';CAP.list=[];CAP.cv=null;return}
+  if(k==='close'){if(CAP.ac)CAP.ac.abort();CAP.gen++;$('capRes').innerHTML='';CAP.list=[];CAP.cv=null;CAP.L=null;CAP.akey='';return}
   if(k==='pick'){capPick();return}
-  if(k==='crop'){if(!CAP.cv)return;const a=CAP.auto;if(a&&a.sel&&a.A.length&&capSame(CAP.sel,a.sel)){CAP.text=a.text;CAP.list=[];capFind(a.A);return}capRead(capCut(),1);return}
-  if(k==='full'){if(!CAP.cv)return;const a=CAP.auto;if(a&&a.A.length){CAP.text=a.text;CAP.list=[];capFind(a.A);return}capRead(CAP.cv,0);return}
-  if(k==='again'){if(!CAP.cv)return;const s=CAP.sel;capBox('');const R=$('capRes');R.innerHTML='';CAP.sel=s;capReShow();return}
-  if(k==='re'){const q=($('capQ').value||'').trim();if(!q){toast('주소나 이름을 넣어 주세요');return}const A=capAddrs(q);capFind(A.length?A:[{a:q,n:'',det:''}]);return}
-  if(k==='all'){let n=0;CAP.list.forEach((x,j)=>{const st=capStop(x,j);if(!S.stops.some(s=>s.id===st.id)){S.stops.push(st);n++}});if(n){delete S.preset;noPlan();save();render()}capDraw();toast(n?n+'곳을 오늘 배송에 넣었어요':'이미 모두 오늘 배송에 있어요');return}
-  const x=CAP.list[+b.dataset.j];if(!x)return;const st=capStop(x,+b.dataset.j);
+  if(k==='whole'){if(!CAP.cv)return;CAP.sel={x:0,y:0,w:1,h:1};CAP.touched=true;capSelDraw();if(!CAP.busy)capEval();return}
+  if(k==='re'){const q=($('capQ').value||'').trim();if(!q){toast('주소나 이름을 넣어 주세요');return}const A=capAddrs(q);if(CAP.ac){CAP.ac.abort();CAP.ac=null}capSt('ok','넣은 글자로 다시 찾았어요.');capShow(A.length?A:[{a:q,n:'',det:''}]);const lb=$('capList');if(lb)lb.scrollIntoView({block:'start',behavior:'smooth'});return}
+  if(k==='all'){let n=0;CAP.list.forEach((x,j)=>{if(x.wait)return;const st=capStop(x,j);if(!S.stops.some(s=>s.id===st.id)){S.stops.push(st);n++}});if(n){delete S.preset;noPlan();save();render()}capDraw();toast(n?n+'곳을 오늘 배송에 넣었어요':'이미 모두 오늘 배송에 있어요');return}
+  const x=CAP.list[+b.dataset.j];if(!x||x.wait)return;const st=capStop(x,+b.dataset.j);
   if(k==='stop'){if(S.stops.some(s=>s.id===st.id)){toast('이미 오늘 배송에 있어요');return}S.stops.push(st);delete S.preset;noPlan();save();render();capDraw();toast('「'+st.n+'」을(를) 배송 목록 '+S.stops.length+'번에 넣었어요')}
   if(k==='fav'){if(FAV.some(f=>f.id===st.id)){toast('이미 자주 가는 곳에 있어요');return}FAV.push({id:st.id,n:st.n,a:st.a,y:st.y,x:st.x});saveFav();renderFav();capDraw();toast('「'+st.n+'」을(를) 자주 가는 곳에 저장했어요')}});
+// PC에서는 캡처를 복사한 뒤 Ctrl+V로 바로 붙여 넣기
+window.addEventListener('paste',e=>{const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'))return;const f=[...((e.clipboardData&&e.clipboardData.files)||[])].find(f=>/^image\//.test(f.type));if(f){e.preventDefault();capRun(f)}});
 setTimeout(()=>{['capOpen','capOpen1'].forEach(id=>{const b=$(id);if(b)b.addEventListener('click',capPick)});const f=$('capF');if(f)f.addEventListener('change',()=>{const x=f.files&&f.files[0];if(x)capRun(x)})},0);
 function manRead(){const n=$('fn').value.trim(), a=$('fa').value.trim();if(!n&&!a){toast('이름이나 주소를 넣어 주세요');return null}return {id:'m'+Date.now(),n:n||a,a:a||n}}
 function manDone(){$('fn').value=$('fa').value='';$('manBox').style.display='none'}
@@ -1607,7 +1639,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v049';
+const APP_VER='v050';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

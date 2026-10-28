@@ -180,6 +180,8 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .capall{width:100%;min-height:54px;margin-top:10px;border-radius:12px;border:0;background:var(--br);color:#fff;font-size:17px;font-weight:800;font-family:inherit}
 .cape{margin-top:12px}.cape label{display:block;font-size:15px;font-weight:700;color:#555;margin-bottom:6px}.cape input{width:100%;box-sizing:border-box}.cape .plg{width:100%;margin-top:8px}
 .capt{margin-top:10px;font-size:15px;color:#555}.capt summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer}.capt pre{white-space:pre-wrap;word-break:keep-all;font-family:inherit;font-size:15px;background:#fff;border-radius:8px;padding:10px;margin:6px 0 0;max-height:260px;overflow:auto}
+.capzw{margin-top:10px;padding:8px;border:3px solid #FFD400;border-radius:12px;background:#fff;cursor:zoom-in}.capzl{display:flex;justify-content:space-between;gap:8px;font-size:16px;font-weight:800;color:#5a3b22;margin-bottom:6px;line-height:1.3}.capzl span{font-size:14px;font-weight:700;color:#8a6a4f}#capZ{display:block;width:100%;height:auto;max-height:45vh;object-fit:contain;background:#fff;border-radius:6px}
+.capzw.big{position:fixed;left:0;top:0;right:0;bottom:0;z-index:9999;margin:0;border:0;border-radius:0;background:rgba(0,0,0,.92);display:flex;flex-direction:column;justify-content:center;padding:14px;cursor:zoom-out}.capzw.big .capzl{color:#fff}.capzw.big .capzl span{color:#FFD400}.capzw.big #capZ{max-height:86vh}
 .capvw{text-align:center;margin-top:10px;line-height:0}.capv{position:relative;display:inline-block;touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden;border-radius:8px;border:1px solid #d6c6b4}
 .capv img{display:block;max-width:100%;max-height:68vh;pointer-events:none;-webkit-user-drag:none}
 .capsel{position:absolute;border:3px solid #FFD400;box-shadow:0 0 0 9999px rgba(0,0,0,.45);box-sizing:border-box;cursor:move}
@@ -435,7 +437,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v048 · 10/28</span><span class="hd" id="hdrInfo"></span></div>
+  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v049 · 10/28</span><span class="hd" id="hdrInfo"></span></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -886,7 +888,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-pl]');if(!
 setTimeout(()=>{const g=$('plGo');if(g)g.onclick=plSearch;const t=$('plTm');if(t)t.addEventListener('click',()=>{if(isIOS){const t0=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t0<3000)toast('티맵이 안 열리면 앱스토어에서 「TMAP」을 설치해 주세요.')},2000)}});
   const f=$('fq');if(f)f.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){const ql=norm(f.value);const has=C.list&&C.list.some(c=>norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(ql));if(!has)plSearch()}})},0);
 
-/* ===== v046 캡처 사진으로 주소 찾기 (v047: 미리보기에서 주소 부분만 네모로 골라 읽기, v048: 주소로 보이는 줄을 자동으로 찾아 네모를 미리 놓기): 휴대폰 화면 캡처(카톡·문자·지도 앱) → 구글 글자인식(바로연락과 같은 서버, 사진은 읽은 뒤 서버에서 바로 지움) → 주소를 골라 좌표 찾기 → 티맵·카카오내비 길안내 / 오늘 배송에 넣기 ===== */
+/* ===== v046 캡처 사진으로 주소 찾기 (v047: 미리보기에서 주소 부분만 네모로 골라 읽기, v048: 주소로 보이는 줄을 자동으로 찾아 네모를 미리 놓기, v049: 고른 부분 크게 보기): 휴대폰 화면 캡처(카톡·문자·지도 앱) → 구글 글자인식(바로연락과 같은 서버, 사진은 읽은 뒤 서버에서 바로 지움) → 주소를 골라 좌표 찾기 → 티맵·카카오내비 길안내 / 오늘 배송에 넣기 ===== */
 
 const CAP_SIDO='(?:서울특별시|서울시|서울|부산광역시|부산|대구광역시|대구|인천광역시|인천|광주광역시|대전광역시|대전|울산광역시|울산|세종특별자치시|세종시|세종|경기도|경기|강원특별자치도|강원도|강원|충청북도|충북|충청남도|충남|전북특별자치도|전라북도|전북|전라남도|전남|경상북도|경북|경상남도|경남|제주특별자치도|제주도|제주)';
 function capAddrs(t){
@@ -925,12 +927,18 @@ async function capRun(file){showTab(2);CAP.text='';CAP.list=[];
   R.scrollIntoView({block:'start',behavior:'smooth'});capAuto(gen)}
 function capView(st){const cv=CAP.cv;const R=capBox('<div class="caph">주소 부분만 네모로 감싸 주세요</div><div class="hint">노란 점을 끌면 크기가, 네모 안을 끌면 위치가 바뀌어요. 다른 곳을 그으면 새로 그려져요.</div>'+(st||'')
    +'<div class="capvw"><div class="capv" id="capV"><img id="capI" alt="캡처 사진" src="'+cv.toDataURL('image/jpeg',.85)+'"><div class="capsel" id="capSel"><i data-h="nw"></i><i data-h="n"></i><i data-h="ne"></i><i data-h="w"></i><i data-h="e"></i><i data-h="sw"></i><i data-h="s"></i><i data-h="se"></i></div></div></div>'
+   +'<div class="capzw" id="capZW"><div class="capzl">고른 부분 크게 보기<span id="capZT">누르면 화면 가득</span></div><canvas id="capZ"></canvas></div>'
    +'<button class="capall" data-cp="crop">고른 부분만 읽기</button><div class="cap2"><button class="capx" data-cp="full">사진 전체 읽기</button><button class="capx" data-cp="pick">다른 사진</button></div>');
   capSelDraw();capBind();return R}
 function capStMsg(){const a=CAP.auto;if(!a)return '';if(a.sel)return '<div class="capst ok" id="capSt">주소로 보이는 곳을 노란 네모로 골라 두었어요. 맞지 않으면 노란 점을 끌어 고쳐 주세요.<b>'+esc(a.A.map(x=>x.a).join(' / '))+'</b></div>';
   return '<div class="capst no" id="capSt">'+(a.A&&a.A.length?'주소는 읽었는데 위치를 못 잡았어요. 「사진 전체 읽기」를 누르거나 네모를 직접 맞춰 주세요.':'주소로 보이는 곳을 찾지 못했어요. 노란 네모를 주소 위에 직접 맞춰 주세요.')+'</div>'}
 function capReShow(){const s=CAP.sel;CAP.sel=s;capView(capStMsg());$('capRes').scrollIntoView({block:'start',behavior:'smooth'})}
-function capSelDraw(){const s=CAP.sel,e=$('capSel');if(!e)return;e.style.left=s.x*100+'%';e.style.top=s.y*100+'%';e.style.width=s.w*100+'%';e.style.height=s.h*100+'%';const I=$('capI');if(I){const r=I.getBoundingClientRect();e.classList.toggle('thin',s.h*r.height<80);e.classList.toggle('narrow',s.w*r.width<110)}}
+function capSelDraw(){const s=CAP.sel,e=$('capSel');if(!e)return;e.style.left=s.x*100+'%';e.style.top=s.y*100+'%';e.style.width=s.w*100+'%';e.style.height=s.h*100+'%';const I=$('capI');if(I){const r=I.getBoundingClientRect();e.classList.toggle('thin',s.h*r.height<80);e.classList.toggle('narrow',s.w*r.width<110)}capZoom()}
+let capZR=0;function capZoom(){if(capZR)return;capZR=requestAnimationFrame(()=>{capZR=0;const z=$('capZ'),cv=CAP.cv,s=CAP.sel;if(!z||!cv||!s)return;
+  const sx=Math.max(0,Math.round(s.x*cv.width)),sy=Math.max(0,Math.round(s.y*cv.height)),sw=Math.max(4,Math.min(cv.width-sx,Math.round(s.w*cv.width))),sh=Math.max(4,Math.min(cv.height-sy,Math.round(s.h*cv.height)));
+  const W=Math.min(1400,Math.max(300,(z.parentNode.clientWidth||360)*(window.devicePixelRatio||1)));const k=Math.min(4,W/sw);z.width=Math.round(sw*k);z.height=Math.round(sh*k);
+  const g=z.getContext('2d');g.imageSmoothingQuality='high';g.fillStyle='#fff';g.fillRect(0,0,z.width,z.height);g.drawImage(cv,sx,sy,sw,sh,0,0,z.width,z.height)})}
+document.addEventListener('click',e=>{const w=e.target.closest('#capZW');if(!w)return;const b=w.classList.toggle('big');const t=$('capZT');if(t)t.textContent=b?'누르면 닫기':'누르면 화면 가득';if(!b)w.scrollIntoView({block:'nearest'})});
 function capBind(){const V=$('capV');if(!V)return;let d=null;const cl=v=>v<0?0:v>1?1:v;
   const at=(e,r)=>[cl((e.clientX-r.left)/r.width),cl((e.clientY-r.top)/r.height)];
   V.addEventListener('pointerdown',e=>{CAP.touched=true;const r=$('capI').getBoundingClientRect();const [px,py]=at(e,r);const h=e.target.dataset&&e.target.dataset.h;
@@ -1599,7 +1607,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v048';
+const APP_VER='v049';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

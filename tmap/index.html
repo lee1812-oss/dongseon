@@ -183,7 +183,13 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .capvw{text-align:center;margin-top:10px;line-height:0}.capv{position:relative;display:inline-block;touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden;border-radius:8px;border:1px solid #d6c6b4}
 .capv img{display:block;max-width:100%;max-height:68vh;pointer-events:none;-webkit-user-drag:none}
 .capsel{position:absolute;border:3px solid #FFD400;box-shadow:0 0 0 9999px rgba(0,0,0,.45);box-sizing:border-box;cursor:move}
-.capsel i{position:absolute;width:30px;height:30px;border-radius:50%;background:#FFD400;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);box-sizing:border-box}
+.capsel i{position:absolute;width:26px;height:26px;border-radius:50%;background:#FFD400;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45);box-sizing:border-box}
+.capsel i::before{content:'';position:absolute;left:-10px;top:-10px;right:-10px;bottom:-10px}
+.capsel i[data-h=nw]{left:-14px;top:-14px}.capsel i[data-h=ne]{right:-14px;top:-14px}.capsel i[data-h=sw]{left:-14px;bottom:-14px}.capsel i[data-h=se]{right:-14px;bottom:-14px}
+.capsel i[data-h=n],.capsel i[data-h=s]{width:34px;height:14px;border-radius:8px;left:50%;margin-left:-17px}.capsel i[data-h=n]{top:-8px}.capsel i[data-h=s]{bottom:-8px}
+.capsel i[data-h=w],.capsel i[data-h=e]{width:14px;height:34px;border-radius:8px;top:50%;margin-top:-17px}.capsel i[data-h=w]{left:-8px}.capsel i[data-h=e]{right:-8px}
+.capsel.thin i[data-h=w],.capsel.thin i[data-h=e],.capsel.narrow i[data-h=n],.capsel.narrow i[data-h=s]{display:none}
+.capst{margin-top:8px;padding:10px 12px;border-radius:10px;font-size:16px;font-weight:700;line-height:1.45;background:#f3ece4;color:#5a3b22}.capst.ok{background:#e8f5e9;color:#1b5e20}.capst.no{background:#fff3e0;color:#8a4b00}.capst b{display:block;font-size:17px;margin-top:2px;word-break:keep-all}
 .capsel i[data-h=nw]{left:-16px;top:-16px}.capsel i[data-h=ne]{right:-16px;top:-16px}.capsel i[data-h=sw]{left:-16px;bottom:-16px}.capsel i[data-h=se]{right:-16px;bottom:-16px}
 .cap2{display:flex;gap:8px}.cap2 .capx{flex:1}
 .capx{width:100%;min-height:48px;margin-top:10px;border-radius:12px;border:1.5px solid #c9c9cf;background:#fff;color:#444;font-size:16px;font-weight:700;font-family:inherit}
@@ -429,7 +435,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v047 · 10/28</span><span class="hd" id="hdrInfo"></span></div>
+  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v048 · 10/28</span><span class="hd" id="hdrInfo"></span></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -880,7 +886,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-pl]');if(!
 setTimeout(()=>{const g=$('plGo');if(g)g.onclick=plSearch;const t=$('plTm');if(t)t.addEventListener('click',()=>{if(isIOS){const t0=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t0<3000)toast('티맵이 안 열리면 앱스토어에서 「TMAP」을 설치해 주세요.')},2000)}});
   const f=$('fq');if(f)f.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){const ql=norm(f.value);const has=C.list&&C.list.some(c=>norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(ql));if(!has)plSearch()}})},0);
 
-/* ===== v046 캡처 사진으로 주소 찾기 (v047: 미리보기에서 주소 부분만 네모로 골라 읽기): 휴대폰 화면 캡처(카톡·문자·지도 앱) → 구글 글자인식(바로연락과 같은 서버, 사진은 읽은 뒤 서버에서 바로 지움) → 주소를 골라 좌표 찾기 → 티맵·카카오내비 길안내 / 오늘 배송에 넣기 ===== */
+/* ===== v046 캡처 사진으로 주소 찾기 (v047: 미리보기에서 주소 부분만 네모로 골라 읽기, v048: 주소로 보이는 줄을 자동으로 찾아 네모를 미리 놓기): 휴대폰 화면 캡처(카톡·문자·지도 앱) → 구글 글자인식(바로연락과 같은 서버, 사진은 읽은 뒤 서버에서 바로 지움) → 주소를 골라 좌표 찾기 → 티맵·카카오내비 길안내 / 오늘 배송에 넣기 ===== */
 
 const CAP_SIDO='(?:서울특별시|서울시|서울|부산광역시|부산|대구광역시|대구|인천광역시|인천|광주광역시|대전광역시|대전|울산광역시|울산|세종특별자치시|세종시|세종|경기도|경기|강원특별자치도|강원도|강원|충청북도|충북|충청남도|충남|전북특별자치도|전라북도|전북|전라남도|전남|경상북도|경북|경상남도|경남|제주특별자치도|제주도|제주)';
 function capAddrs(t){
@@ -914,18 +920,20 @@ function capEdit(v){return '<div class="cape"><label for="capQ">주소·이름�
 function capText(){return CAP.text?'<details class="capt"><summary>사진에서 읽은 글자 보기</summary><pre>'+esc(CAP.text)+'</pre></details>':''}
 async function capRun(file){showTab(2);CAP.text='';CAP.list=[];
   let cv;try{cv=await capImg(file)}catch(e){capBox('<div class="caph">사진을 열지 못했어요</div><div class="hint">다른 사진으로 다시 해 주세요.</div><button class="capx" data-cp="pick">다른 사진 고르기</button>');return}
-  CAP.cv=cv;CAP.sel={x:.04,y:.35,w:.92,h:.22};
-  const R=capBox('<div class="caph">주소 부분만 네모로 감싸 주세요</div><div class="hint">노란 점을 끌면 크기가, 네모 안을 끌면 위치가 바뀌어요. 다른 곳을 그으면 새로 그려져요.</div>'
-   +'<div class="capvw"><div class="capv" id="capV"><img id="capI" alt="캡처 사진" src="'+cv.toDataURL('image/jpeg',.85)+'"><div class="capsel" id="capSel"><i data-h="nw"></i><i data-h="ne"></i><i data-h="sw"></i><i data-h="se"></i></div></div></div>'
+  CAP.cv=cv;CAP.sel={x:.04,y:.35,w:.92,h:.22};CAP.auto=null;CAP.touched=false;const gen=CAP.gen=(CAP.gen||0)+1;
+  const R=capView('<div class="capst" id="capSt">주소로 보이는 곳을 찾는 중이에요… (5~10초)</div>');
+  R.scrollIntoView({block:'start',behavior:'smooth'});capAuto(gen)}
+function capView(st){const cv=CAP.cv;const R=capBox('<div class="caph">주소 부분만 네모로 감싸 주세요</div><div class="hint">노란 점을 끌면 크기가, 네모 안을 끌면 위치가 바뀌어요. 다른 곳을 그으면 새로 그려져요.</div>'+(st||'')
+   +'<div class="capvw"><div class="capv" id="capV"><img id="capI" alt="캡처 사진" src="'+cv.toDataURL('image/jpeg',.85)+'"><div class="capsel" id="capSel"><i data-h="nw"></i><i data-h="n"></i><i data-h="ne"></i><i data-h="w"></i><i data-h="e"></i><i data-h="sw"></i><i data-h="s"></i><i data-h="se"></i></div></div></div>'
    +'<button class="capall" data-cp="crop">고른 부분만 읽기</button><div class="cap2"><button class="capx" data-cp="full">사진 전체 읽기</button><button class="capx" data-cp="pick">다른 사진</button></div>');
-  capSelDraw();capBind();R.scrollIntoView({block:'start',behavior:'smooth'})}
-function capReShow(){const cv=CAP.cv,s=CAP.sel;capBox('<div class="caph">주소 부분만 네모로 감싸 주세요</div><div class="hint">노란 점을 끌면 크기가, 네모 안을 끌면 위치가 바뀌어요. 다른 곳을 그으면 새로 그려져요.</div>'
-   +'<div class="capvw"><div class="capv" id="capV"><img id="capI" alt="캡처 사진" src="'+cv.toDataURL('image/jpeg',.85)+'"><div class="capsel" id="capSel"><i data-h="nw"></i><i data-h="ne"></i><i data-h="sw"></i><i data-h="se"></i></div></div></div>'
-   +'<button class="capall" data-cp="crop">고른 부분만 읽기</button><div class="cap2"><button class="capx" data-cp="full">사진 전체 읽기</button><button class="capx" data-cp="pick">다른 사진</button></div>');CAP.sel=s;capSelDraw();capBind();$('capRes').scrollIntoView({block:'start',behavior:'smooth'})}
-function capSelDraw(){const s=CAP.sel,e=$('capSel');if(!e)return;e.style.left=s.x*100+'%';e.style.top=s.y*100+'%';e.style.width=s.w*100+'%';e.style.height=s.h*100+'%'}
+  capSelDraw();capBind();return R}
+function capStMsg(){const a=CAP.auto;if(!a)return '';if(a.sel)return '<div class="capst ok" id="capSt">주소로 보이는 곳을 노란 네모로 골라 두었어요. 맞지 않으면 노란 점을 끌어 고쳐 주세요.<b>'+esc(a.A.map(x=>x.a).join(' / '))+'</b></div>';
+  return '<div class="capst no" id="capSt">'+(a.A&&a.A.length?'주소는 읽었는데 위치를 못 잡았어요. 「사진 전체 읽기」를 누르거나 네모를 직접 맞춰 주세요.':'주소로 보이는 곳을 찾지 못했어요. 노란 네모를 주소 위에 직접 맞춰 주세요.')+'</div>'}
+function capReShow(){const s=CAP.sel;CAP.sel=s;capView(capStMsg());$('capRes').scrollIntoView({block:'start',behavior:'smooth'})}
+function capSelDraw(){const s=CAP.sel,e=$('capSel');if(!e)return;e.style.left=s.x*100+'%';e.style.top=s.y*100+'%';e.style.width=s.w*100+'%';e.style.height=s.h*100+'%';const I=$('capI');if(I){const r=I.getBoundingClientRect();e.classList.toggle('thin',s.h*r.height<80);e.classList.toggle('narrow',s.w*r.width<110)}}
 function capBind(){const V=$('capV');if(!V)return;let d=null;const cl=v=>v<0?0:v>1?1:v;
   const at=(e,r)=>[cl((e.clientX-r.left)/r.width),cl((e.clientY-r.top)/r.height)];
-  V.addEventListener('pointerdown',e=>{const r=$('capI').getBoundingClientRect();const [px,py]=at(e,r);const h=e.target.dataset&&e.target.dataset.h;
+  V.addEventListener('pointerdown',e=>{CAP.touched=true;const r=$('capI').getBoundingClientRect();const [px,py]=at(e,r);const h=e.target.dataset&&e.target.dataset.h;
     d={m:h||(e.target.id==='capSel'?'move':'new'),px,py,s:Object.assign({},CAP.sel),r};try{V.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault()});
   V.addEventListener('pointermove',e=>{if(!d)return;const [px,py]=at(e,d.r),s=d.s;let x1=s.x,y1=s.y,x2=s.x+s.w,y2=s.y+s.h;
     if(d.m==='move'){x1=Math.min(Math.max(0,s.x+px-d.px),1-s.w);y1=Math.min(Math.max(0,s.y+py-d.py),1-s.h);x2=x1+s.w;y2=y1+s.h}
@@ -934,6 +942,46 @@ function capBind(){const V=$('capV');if(!V)return;let d=null;const cl=v=>v<0?0:v
     CAP.sel={x:Math.min(x1,x2),y:Math.min(y1,y2),w:Math.abs(x2-x1),h:Math.abs(y2-y1)};capSelDraw();e.preventDefault()});
   const up=()=>{if(!d)return;if(CAP.sel.w<.04||CAP.sel.h<.015)CAP.sel=d.s;d=null;capSelDraw()};
   V.addEventListener('pointerup',up);V.addEventListener('pointercancel',up)}
+function capLines(cv){const W=cv.width,H=cv.height,f=Math.min(1,640/W),w=Math.max(2,Math.round(W*f)),h=Math.max(2,Math.round(H*f));
+  const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(cv,0,0,w,h);const D=g.getImageData(0,0,w,h).data;
+  const G=new Uint8Array(w*h);for(let i=0,j=0;i<G.length;i++,j+=4)G[i]=(D[j]*299+D[j+1]*587+D[j+2]*114)/1000;
+  const E=new Uint8Array(w*h),rc=new Uint16Array(h);
+  for(let y=0;y<h;y++){let n=0;const o=y*w;for(let x=0;x<w-1;x++){if(Math.abs(G[o+x+1]-G[o+x])>40){E[o+x]=1;n++}}rc[y]=n}
+  const thr=Math.max(5,w*.008);const R=[];
+  for(let y=0;y<h;y++){if(rc[y]>thr){const L=R[R.length-1];if(L&&y-L[1]<=2)L[1]=y+1;else R.push([y,y+1])}}
+  const out=[];
+  for(const [y0,y1] of R){const hh=y1-y0;if(hh<3||hh>h*.09)continue;
+    let x0=w,x1=-1;for(let x=0;x<w;x++){let k=0;for(let y=y0;y<y1;y++)k+=E[y*w+x];if(k){if(x<x0)x0=x;x1=x}}
+    if(x1<x0)continue;out.push({x:x0/f,y:y0/f,w:(x1-x0+2)/f,h:hh/f})}
+  return out.slice(0,80)}
+function capSheet(cv,L){const P=6,LW=74,GAP=34,MX=1400;const rows=[];let W=0,Y=GAP;
+  for(const l of L){const sx=Math.max(0,Math.floor(l.x-P)),sy=Math.max(0,Math.floor(l.y-P)),sw=Math.min(cv.width-sx,Math.ceil(l.w+P*2)),sh=Math.min(cv.height-sy,Math.ceil(l.h+P*2));
+    let k=Math.min(2.5,Math.max(1,40/sh));if(sw*k>MX)k=MX/sw;const dw=Math.round(sw*k),dh=Math.round(sh*k);rows.push({sx,sy,sw,sh,dw,dh,y:Y});Y+=dh+GAP;W=Math.max(W,LW+dw+16)}
+  const c=document.createElement('canvas');c.width=Math.max(300,W);c.height=Y;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.imageSmoothingQuality='high';
+  g.fillStyle='#000';g.font='bold 30px Arial,sans-serif';g.textBaseline='middle';
+  rows.forEach((r,i)=>{g.fillText('['+(i+1)+']',10,r.y+r.dh/2);g.drawImage(cv,r.sx,r.sy,r.sw,r.sh,LW,r.y,r.dw,r.dh)});
+  return c}
+function capParse(t,n){const T=Array(n).fill('');let cur=-1;
+  for(let s of String(t||'').replace(/\r/g,'').split('\n')){s=s.trim();if(!s)continue;const m=s.match(/^[\[\(\{【|]\s*(\d{1,2})\s*[\]\)\}】|lIJ1]\s*(.*)$/)||s.match(/^(\d{1,2})\s*[\]\)\}】]\s*(.*)$/);
+    if(m&&+m[1]>=1&&+m[1]<=n){cur=+m[1]-1;T[cur]+=(T[cur]?' ':'')+m[2]}else if(cur>=0)T[cur]+=' '+s}
+  return T}
+function capHit(T,A){const nz=s=>String(s).replace(/\s/g,'');const hit=new Set();
+  for(const a of A){const toks=String(a.a).split(/\s+/).filter(x=>x.length>=2);
+    T.forEach((t,i)=>{const z=nz(t);if(!z)return;let c=0,road=0;for(const k of toks){if(z.includes(nz(k))){c++;if(/(로|길)$/.test(k))road++}}if(c>=2||road)hit.add(i)})}
+  return [...hit].sort((a,b)=>a-b)}
+function capBoxOf(L,ix,cv){let x0=1e9,y0=1e9,x1=-1,y1=-1;for(const i of ix){const l=L[i];x0=Math.min(x0,l.x);y0=Math.min(y0,l.y);x1=Math.max(x1,l.x+l.w);y1=Math.max(y1,l.y+l.h)}
+  const lh=L[ix[0]].h,px=Math.max(14,cv.width*.035),py=Math.max(12,lh*.75);x0=Math.max(0,x0-px);y0=Math.max(0,y0-py);x1=Math.min(cv.width,x1+px);y1=Math.min(cv.height,y1+py);
+  return {x:x0/cv.width,y:y0/cv.height,w:(x1-x0)/cv.width,h:(y1-y0)/cv.height}}
+async function capAuto(gen){const cv=CAP.cv,ok=()=>gen===CAP.gen&&CAP.cv===cv;
+  let a={sel:null,A:[],text:''};
+  try{const L=capLines(cv);if(L.length){const b=capSheet(cv,L).toDataURL('image/jpeg',.9).split(',')[1];
+      const ac=new AbortController();const tm=setTimeout(()=>ac.abort(),45000);let j=null;
+      try{const r=await fetch(KNV_URL,{method:'POST',body:JSON.stringify({k:'brl-ocr-v1',img:b,mime:'image/jpeg'}),signal:ac.signal});j=await r.json()}finally{clearTimeout(tm)}
+      if(j&&j.ok){const T=capParse(j.text,L.length);a.text=T.filter(Boolean).join('\n');a.A=capAddrs(a.text);const ix=capHit(T,a.A);if(ix.length)a.sel=capBoxOf(L,ix,cv)}}}
+  catch(e){}
+  if(!ok())return;CAP.auto=a;if(a.sel&&!CAP.touched){CAP.sel=Object.assign({},a.sel);capSelDraw()}
+  const E=$('capSt');if(E)E.outerHTML=capStMsg()}
+function capSame(p,q){return !!(p&&q)&&['x','y','w','h'].every(k=>Math.abs(p[k]-q[k])<.002)}
 function capCut(){const cv=CAP.cv,s=CAP.sel;const sx=Math.round(s.x*cv.width),sy=Math.round(s.y*cv.height),sw=Math.max(8,Math.round(s.w*cv.width)),sh=Math.max(8,Math.round(s.h*cv.height));
   const k=Math.min(3,Math.max(1,900/sw)),P=16;const c=document.createElement('canvas');c.width=Math.round(sw*k)+P*2;c.height=Math.round(sh*k)+P*2;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.imageSmoothingQuality='high';g.drawImage(cv,sx,sy,sw,sh,P,P,c.width-P*2,c.height-P*2);return c}
 async function capRead(cv,cut){
@@ -966,8 +1014,8 @@ function capDraw(){const L=CAP.list;
 document.addEventListener('click',e=>{const b=e.target.closest('[data-cp]');if(!b)return;const k=b.dataset.cp;
   if(k==='close'){$('capRes').innerHTML='';CAP.list=[];CAP.cv=null;return}
   if(k==='pick'){capPick();return}
-  if(k==='crop'){if(CAP.cv)capRead(capCut(),1);return}
-  if(k==='full'){if(CAP.cv)capRead(CAP.cv,0);return}
+  if(k==='crop'){if(!CAP.cv)return;const a=CAP.auto;if(a&&a.sel&&a.A.length&&capSame(CAP.sel,a.sel)){CAP.text=a.text;CAP.list=[];capFind(a.A);return}capRead(capCut(),1);return}
+  if(k==='full'){if(!CAP.cv)return;const a=CAP.auto;if(a&&a.A.length){CAP.text=a.text;CAP.list=[];capFind(a.A);return}capRead(CAP.cv,0);return}
   if(k==='again'){if(!CAP.cv)return;const s=CAP.sel;capBox('');const R=$('capRes');R.innerHTML='';CAP.sel=s;capReShow();return}
   if(k==='re'){const q=($('capQ').value||'').trim();if(!q){toast('주소나 이름을 넣어 주세요');return}const A=capAddrs(q);capFind(A.length?A:[{a:q,n:'',det:''}]);return}
   if(k==='all'){let n=0;CAP.list.forEach((x,j)=>{const st=capStop(x,j);if(!S.stops.some(s=>s.id===st.id)){S.stops.push(st);n++}});if(n){delete S.preset;noPlan();save();render()}capDraw();toast(n?n+'곳을 오늘 배송에 넣었어요':'이미 모두 오늘 배송에 있어요');return}
@@ -1551,7 +1599,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v047';
+const APP_VER='v048';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){

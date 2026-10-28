@@ -169,6 +169,19 @@ main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .sb.ok.undo{background:#fff;color:var(--or);border:2px solid var(--or)}
 .go{font-family:inherit}
 #plW{margin-top:10px}
+/* v046 캡처 사진으로 주소 찾기 */
+.capb{width:100%;min-height:56px;margin:0 0 10px;border-radius:12px;border:2px solid var(--br);background:#fff;color:var(--br);font-size:18px;font-weight:800;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px}
+.capb svg{width:24px;height:24px;flex:none}
+.capw{margin:0 0 12px;padding:12px;border-radius:12px;background:#FBF6F0;border:1.5px solid #e2d3c2}
+.caph{font-size:18px;font-weight:800;color:var(--br);margin-bottom:4px}
+.capw2{color:#b45309}
+.capbar{height:8px;border-radius:4px;background:#eadccc;overflow:hidden;margin-top:8px}.capbar i{display:block;height:100%;width:40%;background:var(--br);border-radius:4px;animation:capmv 1.2s ease-in-out infinite}
+@keyframes capmv{0%{margin-left:-40%}100%{margin-left:100%}}
+.capall{width:100%;min-height:54px;margin-top:10px;border-radius:12px;border:0;background:var(--br);color:#fff;font-size:17px;font-weight:800;font-family:inherit}
+.cape{margin-top:12px}.cape label{display:block;font-size:15px;font-weight:700;color:#555;margin-bottom:6px}.cape input{width:100%;box-sizing:border-box}.cape .plg{width:100%;margin-top:8px}
+.capt{margin-top:10px;font-size:15px;color:#555}.capt summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer}.capt pre{white-space:pre-wrap;word-break:keep-all;font-family:inherit;font-size:15px;background:#fff;border-radius:8px;padding:10px;margin:6px 0 0;max-height:260px;overflow:auto}
+.capx{width:100%;min-height:48px;margin-top:10px;border-radius:12px;border:1.5px solid #c9c9cf;background:#fff;color:#444;font-size:16px;font-weight:700;font-family:inherit}
+
 .plb{display:flex;gap:10px}.plg,.plt{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px;border-radius:12px;font-size:18px;font-weight:800;font-family:inherit;text-decoration:none;border:0}
 .plg{background:var(--br);color:#fff}.plt{background-color:#2B3BCF;background-image:linear-gradient(90deg,#1F4FE0,#5A2BC8);color:#fff}.plt .tlogo{width:30px;height:30px}
 .plr .fs a{color:#1F4FBF}.plb3{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;flex:1 0 100%}.plb3>*{flex:1 1 30%;min-height:54px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:16px;font-weight:700;border-radius:10px;word-break:keep-all;padding:0 6px}
@@ -410,7 +423,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
 <body>
 <header><div class="hb">
   <span class="hlogo"><img src="brand_croissant.png" alt="빵을그리다"></span>
-  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v045 · 10/27</span><span class="hd" id="hdrInfo"></span></div>
+  <h1>빵을그리다 배송앱</h1><div class="hinfo"><span class="hv" id="hdrVer">v046 · 10/28</span><span class="hd" id="hdrInfo"></span></div>
 </div></header>
 <main>
   <div id="keyBox" style="display:none"></div>
@@ -423,6 +436,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
     <div id="nextCard"></div>
     <div id="list"></div>
     <div id="tabBtns" class="two"><button class="btn ln" id="eOpen">순서 바꾸기 · 빼기</button><button class="btn ln" id="eAdd">＋ 거래처 넣기</button></div>
+    <button class="btn ln" id="capOpen1" style="margin-top:10px">캡처 사진으로 길안내</button>
     <button class="btn ln" id="loadOpen" style="margin-top:10px">차에 싣는 순서 보기</button>
     <div id="tripEnd"></div>
   </section>
@@ -434,6 +448,7 @@ document.addEventListener('DOMContentLoaded',function(){thRowDraw();
   </section>
   <section class="tab" id="tab2">
     <div class="box" id="findBox" style="margin:0 0 6px">
+      <button class="capb" id="capOpen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M9 16l2-2 2 2 2-3"/><circle cx="12" cy="8" r="2"/></svg>캡처 사진으로 주소 찾기</button><input id="capF" type="file" accept="image/*" style="display:none"><div id="capRes"></div>
       <input id="fq" type="search" placeholder="거래처 이름·지역 (예: 바다백미, 곤지암)" autocomplete="off">
       <div class="hint" id="fmsg"></div>
       <div id="fpass" style="display:none">
@@ -858,6 +873,73 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-pl]');if(!
   if(b.dataset.pl==='fav'){if(FAV.some(f=>f.id===st.id)){toast('이미 자주 가는 곳에 있어요');return}FAV.push({id:st.id,n:st.n,a:st.a,y:st.y,x:st.x});saveFav();renderFav();plDraw();toast('「'+st.n+'」을(를) 자주 가는 곳에 저장했어요')}});
 setTimeout(()=>{const g=$('plGo');if(g)g.onclick=plSearch;const t=$('plTm');if(t)t.addEventListener('click',()=>{if(isIOS){const t0=Date.now();setTimeout(()=>{if(!document.hidden&&Date.now()-t0<3000)toast('티맵이 안 열리면 앱스토어에서 「TMAP」을 설치해 주세요.')},2000)}});
   const f=$('fq');if(f)f.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){const ql=norm(f.value);const has=C.list&&C.list.some(c=>norm(c.n+' '+c.e+' '+c.al+' '+c.r+' '+c.a).includes(ql));if(!has)plSearch()}})},0);
+
+/* ===== v046 캡처 사진으로 주소 찾기: 휴대폰 화면 캡처(카톡·문자·지도 앱) → 구글 글자인식(바로연락과 같은 서버, 사진은 읽은 뒤 서버에서 바로 지움) → 주소를 골라 좌표 찾기 → 티맵·카카오내비 길안내 / 오늘 배송에 넣기 ===== */
+
+const CAP_SIDO='(?:서울특별시|서울시|서울|부산광역시|부산|대구광역시|대구|인천광역시|인천|광주광역시|대전광역시|대전|울산광역시|울산|세종특별자치시|세종시|세종|경기도|경기|강원특별자치도|강원도|강원|충청북도|충북|충청남도|충남|전북특별자치도|전라북도|전북|전라남도|전남|경상북도|경북|경상남도|경남|제주특별자치도|제주도|제주)';
+function capAddrs(t){
+  t=String(t||'').replace(/\r/g,'').replace(/[‐-―−]/g,'-').replace(/\(?우\)?\s*\d{5}/g,' ').replace(/[\[\]【】<>「」]/g,' ');
+  const lines=t.split('\n').map(s=>s.replace(/\s+/g,' ').trim()).filter(Boolean);const st0=[];let pos=0;for(const l of lines){st0.push(pos);pos+=l.length+1}
+  const one=lines.join(' ');
+  const lineAt=i=>{let k=0;for(let q=0;q<st0.length;q++)if(st0[q]<=i)k=q;return k};
+  const nameAt=i=>{const k=lineAt(i);if(lines[k].indexOf(one.slice(i,i+4))>2){const pre=lines[k].slice(0,lines[k].indexOf(one.slice(i,i+4))).replace(/(주소|배송지|도착지|위치)\s?[:：]?\s?$/,'').trim();if(pre&&pre.length<=20&&!/\d{2,}[:\-]\d/.test(pre))return pre.replace(/^\d{1,2}[.)]\s?/,'')}
+    const p=(lines[k-1]||'').replace(/^\d{1,2}[.)]\s?/,'').trim();if(!p||p.length>20||/(다|요|까)[.!?]?$/.test(p)||/\d{2,4}[-\s]?\d{3,4}[-\s]?\d{4}|\d{1,2}:\d{2}|[:：]$/.test(p)||/(로|길)\s?\d/.test(p))return '';return p.replace(/^(상호|업체명|가게|거래처|받는\s?분)\s?[:：]\s?/,'')};
+  const NUM='\\d{1,5}(?:\\s?-\\s?\\d{1,5})?(?:번지)?';
+  const SGG='(?:[가-힣]{1,6}(?:시|군|구)\\s?){1,3}';
+  const EMD='(?:[가-힣0-9]{1,8}(?:읍|면)\\s?)?';
+  const ROAD='[가-힣0-9]{1,12}(?:로|길)(?:\\s?\\d{1,4}(?:번길|번안길|길))?';
+  const JIB='[가-힣0-9]{1,8}(?:동|리|가)';
+  const pats=[new RegExp('(?:'+CAP_SIDO+'\\s?)?'+SGG+EMD+'(?:'+ROAD+'|'+JIB+')\\s?'+NUM,'g'),
+              new RegExp(ROAD+'\\s?'+NUM,'g')];
+  const out=[];const seen=new Set();
+  for(let pi=0;pi<pats.length;pi++){if(pi===1&&out.length)break;
+    for(const m of one.matchAll(pats[pi])){let a=m[0].replace(/\s?-\s?/g,'-').replace(/번지$/,'').trim();
+      if(pi===0&&!/(로|길)\s?\d|(동|리|가)\s?\d/.test(a))continue;
+      // 뒤따르는 건물·층 정보(괄호 안, 쉼표 뒤 몇 글자)는 메모로
+      const rest=one.slice(m.index+m[0].length,m.index+m[0].length+40);const det=(rest.match(/^\s?(?:\([^)]{1,30}\)|,\s?[^,\n]{1,25}?(?:층|호|동))/)||[''])[0].trim();
+      const k=a.replace(/\s/g,'');if([...seen].some(s=>s.includes(k)||k.includes(s)))continue;seen.add(k);const dp=(det.match(/^\(([^)]+)\)$/)||[])[1];out.push({a,det,n:dp||nameAt(m.index)});if(out.length>=6)break}}
+  return out}
+
+const CAP={list:[],text:'',q:''};
+function capPick(){const f=$('capF');if(!f)return;f.value='';f.click()}
+function capImg(file){return new Promise((ok,no)=>{const u=URL.createObjectURL(file);const im=new Image();im.onload=()=>{const w=im.naturalWidth,h=im.naturalHeight;const s=Math.min(1,1280/w,4200/h);const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*s));c.height=Math.max(1,Math.round(h*s));const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c)};im.onerror=()=>{URL.revokeObjectURL(u);no(new Error('img'))};im.src=u})}
+function capBox(h){const R=$('capRes');R.innerHTML='<div class="capw">'+h+'</div>';return R}
+function capEdit(v){return '<div class="cape"><label for="capQ">주소·이름이 틀렸으면 고쳐서 다시 찾기</label><input id="capQ" type="search" autocomplete="off" value="'+esc(v||'')+'" placeholder="예) 경기 화성시 서신면 궁평항로 1069-11"><button class="plg" data-cp="re">다시 찾기</button></div>'}
+function capText(){return CAP.text?'<details class="capt"><summary>사진에서 읽은 글자 보기</summary><pre>'+esc(CAP.text)+'</pre></details>':''}
+async function capRun(file){showTab(2);
+  const R=capBox('<div class="caph">사진에서 주소 읽는 중이에요</div><div class="hint">보통 5~10초 걸려요.</div><div class="capbar"><i></i></div>');R.scrollIntoView({block:'start',behavior:'smooth'});
+  CAP.text='';CAP.list=[];
+  try{const cv=await capImg(file);const b=cv.toDataURL('image/jpeg',.88).split(',')[1];
+    const ac=new AbortController();const tm=setTimeout(()=>ac.abort(),45000);let j=null;
+    try{const r=await fetch(KNV_URL,{method:'POST',body:JSON.stringify({k:'brl-ocr-v1',img:b,mime:'image/jpeg'}),signal:ac.signal});j=await r.json()}finally{clearTimeout(tm)}
+    if(!j||!j.ok)throw new Error((j&&j.err)||'ocr');
+    CAP.text=String(j.text||'').replace(/\r/g,'').trim();
+    const A=capAddrs(CAP.text);
+    if(!A.length){capBox('<div class="caph">사진에서 주소를 찾지 못했어요</div><div class="hint">주소가 잘 보이게 다시 캡처하거나, 아래 칸에 주소나 가게 이름을 넣어 주세요.</div>'+capEdit('')+capText()+'<button class="capx" data-cp="close">닫기</button>');return}
+    await capFind(A)}
+  catch(e){capBox('<div class="caph">사진 글자를 읽지 못했어요</div><div class="hint">인터넷 연결을 확인하고 다시 올려 주세요. 아래 칸에 주소를 직접 넣어도 돼요.</div>'+capEdit('')+'<button class="capx" data-cp="close">닫기</button>')}}
+async function capFind(A){capBox('<div class="caph">주소 위치 찾는 중이에요</div><div class="capbar"><i></i></div>');
+  const L=await Promise.all(A.slice(0,6).map(async(o,i)=>{let g=null;try{g=await plSrv({act:'geo',addr:o.a})}catch(e){}
+    if(g&&g.ok&&g.lat)return {name:o.n||o.a.replace(new RegExp('^'+CAP_SIDO+'\\s?'),''),addr:o.a,lat:g.lat,lng:g.lng,det:o.det||''};
+    try{const pos=PL.pos||{lat:OFFICE.y,lng:OFFICE.x};const p=await plSrv({act:'place',q:o.a,lat:pos.lat,lng:pos.lng});const f=p&&p.ok&&p.list&&p.list[0];if(f)return {name:o.n||f.name,addr:f.addr||o.a,lat:f.lat,lng:f.lng,det:o.det||'',url:f.url}}catch(e){}
+    return {name:o.n||o.a,addr:o.a,det:o.det||'',nogeo:1}}));
+  CAP.list=L;capDraw()}
+function capStop(x,j){if(x.nogeo)return {id:'c'+norm(x.addr).replace(/[^0-9a-z가-힣]/g,'').slice(0,24),n:x.name,a:x.addr};return plStop(x)}
+function capDraw(){const L=CAP.list;
+  const rows=L.map((x,j)=>{const st=capStop(x,j),inL=S.stops.some(s=>s.id===st.id),inF=FAV.some(f=>f.id===st.id);
+    return '<div class="fr plr"><div class="t"><div class="fn">'+esc(x.name)+'</div><div class="fs">'+esc(x.addr)+(x.det?' '+esc(x.det):'')+'</div>'+(x.nogeo?'<div class="fs capw2">지도 위치를 못 찾아서 티맵에서 주소로 검색해요</div>':'')+'</div>'
+     +'<div class="plb3"><a class="fgo" href="'+tmapHref(st)+'" data-tm="'+tmapHref(st)+'" data-act="go" data-nv="tmap">티맵</a><a class="fgo k" href="'+kakaoHref(st)+'" data-tm="'+tmapHref(st)+'" data-act="go" data-nv="kakao">카카오내비</a>'
+     +'<button class="plx'+(inL?' in':'')+'" data-cp="stop" data-j="'+j+'">'+(inL?'넣었어요':'오늘 배송에 넣기')+'</button>'
+     +'<button class="plx'+(inF?' in':'')+'" data-cp="fav" data-j="'+j+'">'+(inF?'저장됨':'자주 가는 곳에 저장')+'</button></div></div>'}).join('');
+  capBox('<div class="caph">사진에서 찾은 주소 '+L.length+'곳</div>'+(L.length>1?'<div class="hint">갈 곳의 티맵 또는 카카오내비를 누르세요. 여러 곳이면 「오늘 배송에 넣기」로 코스에 넣을 수 있어요.</div>':'')+rows+(L.length>1?'<button class="capall" data-cp="all">'+L.length+'곳 모두 오늘 배송에 넣기</button>':'')+capEdit(L[0]?L[0].addr:'')+capText()+'<button class="capx" data-cp="close">닫기</button>')}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-cp]');if(!b)return;const k=b.dataset.cp;
+  if(k==='close'){$('capRes').innerHTML='';CAP.list=[];return}
+  if(k==='re'){const q=($('capQ').value||'').trim();if(!q){toast('주소나 이름을 넣어 주세요');return}const A=capAddrs(q);capFind(A.length?A:[{a:q,n:'',det:''}]);return}
+  if(k==='all'){let n=0;CAP.list.forEach((x,j)=>{const st=capStop(x,j);if(!S.stops.some(s=>s.id===st.id)){S.stops.push(st);n++}});if(n){delete S.preset;noPlan();save();render()}capDraw();toast(n?n+'곳을 오늘 배송에 넣었어요':'이미 모두 오늘 배송에 있어요');return}
+  const x=CAP.list[+b.dataset.j];if(!x)return;const st=capStop(x,+b.dataset.j);
+  if(k==='stop'){if(S.stops.some(s=>s.id===st.id)){toast('이미 오늘 배송에 있어요');return}S.stops.push(st);delete S.preset;noPlan();save();render();capDraw();toast('「'+st.n+'」을(를) 배송 목록 '+S.stops.length+'번에 넣었어요')}
+  if(k==='fav'){if(FAV.some(f=>f.id===st.id)){toast('이미 자주 가는 곳에 있어요');return}FAV.push({id:st.id,n:st.n,a:st.a,y:st.y,x:st.x});saveFav();renderFav();capDraw();toast('「'+st.n+'」을(를) 자주 가는 곳에 저장했어요')}});
+setTimeout(()=>{['capOpen','capOpen1'].forEach(id=>{const b=$(id);if(b)b.addEventListener('click',capPick)});const f=$('capF');if(f)f.addEventListener('change',()=>{const x=f.files&&f.files[0];if(x)capRun(x)})},0);
 function manRead(){const n=$('fn').value.trim(), a=$('fa').value.trim();if(!n&&!a){toast('이름이나 주소를 넣어 주세요');return null}return {id:'m'+Date.now(),n:n||a,a:a||n}}
 function manDone(){$('fn').value=$('fa').value='';$('manBox').style.display='none'}
 $('addManual').addEventListener('click',()=>{const m=manRead();if(!m)return;
@@ -1434,7 +1516,7 @@ async function keyUnlock(p){const m=$('kbMsg');if(!p){m.textContent='암호를 �
     localStorage.setItem('tmapgo_k',k);m.textContent='열렸어요';setTimeout(()=>location.reload(),400)}
   catch(e){m.innerHTML='<span style="color:#C0392B;font-weight:700">암호가 맞지 않아요. 다시 넣어 주세요</span>';$('kbGo').disabled=false;$('kbIn').select()}}
 setTimeout(keyBox,0);
-const APP_VER='v045';
+const APP_VER='v046';
 async function verCheck(){
   try{const r=await fetch('index.html?vc='+Date.now(),{cache:'no-store'});const t=await r.text();const v=(t.match(/const APP_VER='(v\d+)'/)||[])[1];
     if(v&&v!==APP_VER){
